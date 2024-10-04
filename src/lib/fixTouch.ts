@@ -1,0 +1,99 @@
+import WebApp from '@twa-dev/sdk'
+
+export function fixTouch() {
+  let shouldExpand = false
+  let lastTouchEnd = 0
+
+  function handleViewportChange({ isStateStable }: { isStateStable: boolean }) {
+    if (!WebApp.isExpanded) WebApp.expand()
+
+    if (isStateStable) {
+      WebApp.expand()
+      WebApp.disableVerticalSwipes()
+    } else {
+      shouldExpand = true
+    }
+  }
+
+  function findScrollableElement(el: HTMLElement): HTMLElement | null {
+    let currentElement: HTMLElement | null = el
+    while (currentElement) {
+      const overflowY = window.getComputedStyle(currentElement).overflowY
+      const isScrollable = overflowY === 'auto' || overflowY === 'scroll'
+      if (isScrollable && currentElement.scrollHeight > currentElement.clientHeight) {
+        return currentElement
+      }
+      currentElement = currentElement.parentElement
+    }
+    return null
+  }
+
+  function handleTouchStart(e: TouchEvent) {
+    const target = findScrollableElement(e.target as HTMLElement)
+    if (!target) return
+    ;(target as any).dataset.touchStartY = String(e.touches[0].clientY)
+  }
+
+  function preventTouchMove(e: TouchEvent) {
+    if (!e.cancelable) return
+    const target = findScrollableElement(e.target as HTMLElement)
+    if (!target) {
+      e.preventDefault()
+      return
+    }
+    const startY = parseFloat((target as any).dataset.touchStartY || '0')
+    const currentY = e.touches[0].clientY
+    const scrollTop = target.scrollTop
+    const scrollHeight = target.scrollHeight
+    const clientHeight = target.clientHeight
+    const atTop = scrollTop === 0
+    const atBottom = scrollTop + clientHeight >= scrollHeight
+    if ((atTop && currentY > startY) || (atBottom && currentY < startY)) {
+      e.preventDefault()
+    }
+  }
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+  function handleDoubleTapIOS(e: TouchEvent) {
+    const now = new Date().getTime()
+    const timeSinceLastTouch = now - lastTouchEnd
+    if (timeSinceLastTouch <= 300 && timeSinceLastTouch > 0) {
+      e.preventDefault()
+    }
+    lastTouchEnd = now
+  }
+
+  function handleAppMaximize() {
+    if (shouldExpand) {
+      WebApp.expand()
+      WebApp.disableVerticalSwipes()
+      shouldExpand = false
+    }
+  }
+
+  $effect(() => {
+    const html = document.documentElement
+    WebApp.disableVerticalSwipes()
+
+    WebApp.onEvent('viewportChanged', handleViewportChange)
+    html.addEventListener('touchstart', handleAppMaximize, { passive: true })
+
+    if (isIOS || isSafari) {
+      html.addEventListener('touchstart', handleTouchStart, { passive: false })
+      html.addEventListener('touchmove', preventTouchMove, { passive: false })
+      html.addEventListener('touchend', handleDoubleTapIOS, { passive: false })
+    }
+
+    return () => {
+      WebApp.offEvent('viewportChanged', handleViewportChange)
+      html.removeEventListener('touchstart', handleAppMaximize)
+      if (isIOS || isSafari) {
+        html.removeEventListener('touchstart', handleTouchStart)
+        html.removeEventListener('touchmove', preventTouchMove)
+        html.removeEventListener('touchend', handleDoubleTapIOS)
+      }
+    }
+  })
+}
