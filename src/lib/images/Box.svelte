@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { w8 } from '$lib/utils'
+  import { w8 } from '@utils'
+  import { onMount } from 'svelte'
+
   const { classes = '' } = $props()
 
   const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
@@ -27,7 +29,7 @@
     }
   }
 
-  $effect(() => {
+  onMount(() => {
     createAnimation()
   })
 </script>

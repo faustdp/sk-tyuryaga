@@ -5,6 +5,9 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   preprocess: vitePreprocess(),
+  compilerOptions: {
+    runes: true,
+  },
   kit: {
     adapter: adapter({ fallback: 'index.html', precompress: true }),
     alias: {
@@ -12,6 +15,8 @@ const config = {
       '@components': './src/lib/components',
       '@state': './src/lib/state',
       '@images': './src/lib/images',
+      '@icons': './src/lib/icons',
+      '@utils': './src/lib/utils',
     },
   },
 }

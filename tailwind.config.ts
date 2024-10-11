@@ -6,10 +6,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        // primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        textwhite: 'rgb(var(--c-text-white) / <alpha-value>)',
+        textgrey: 'rgb(var(--c-text-grey) / <alpha-value>)',
+        textlight: 'rgb(var(--c-text-light) / <alpha-value>)',
+        cblue: 'rgb(var(--c-blue) / <alpha-value>)',
+        cgreen: 'rgb(var(--c-green) / <alpha-value>)',
+        cbrown: 'rgb(var(--c-brown) / <alpha-value>)',
+        cyellow: 'rgb(var(--c-yellow) / <alpha-value>)',
+        clightgrey: 'rgb(var(--c-lightgrey) / <alpha-value>)',
+        cgrey: 'rgb(var(--c-grey) / <alpha-value>)',
+        cwallet: 'rgb(var(--c-wallet) / <alpha-value>)',
+      },
+      width: {
+        limit: 'var(--width-limit)',
+      },
+      maxWidth: {
+        limit: 'var(--width-limit)',
       },
       backgroundSize: {
-        'half': '540px 915px',
+        half: 'var(--width-limit) var(--height-limit)',
+      },
+      screens: {
+        maxheight: { raw: '(max-height: var(--height-limit))' },
       },
     },
   },

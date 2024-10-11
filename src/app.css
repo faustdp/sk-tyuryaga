@@ -1,15 +1,23 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
-@import '@fontsource/fira-mono';
 
 :root {
-  --font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
-    'Helvetica Neue', sans-serif;
-  --font-mono: 'Fira Mono', monospace;
-  --color-theme-2: #4075a6;
-  --color-text: rgba(0, 0, 0, 0.7);
-  font-family: var(--font-body);
+  --font-russo: 'Russo One', sans-serif;
+  --c-text-white: 255 255 255;
+  --c-text-grey: 217 214 206;
+  --c-text-light: 248 242 232;
+  --c-blue: 0 136 204;
+  --c-green: 14 131 103;
+  --c-brown: 191 158 73;
+  --c-yellow: 245 193 54;
+  --c-lightgrey: 89 108 118;
+  --c-grey: 123 123 123;
+  --c-wallet: 126 118 86;
+  --width-limit: 540px;
+  --height-limit: 915px;
+  --screen: 100vh;
+  font-family: var(--font-russo);
   color: #fff;
 }
 
@@ -36,12 +44,11 @@ p {
 }
 
 a {
-  @apply text-red-500;
   text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 h1 {
@@ -55,13 +62,13 @@ h2 {
 
 pre {
   font-size: 16px;
-  font-family: var(--font-mono);
+  font-family: var(--font-russo);
   background-color: rgba(255, 255, 255, 0.45);
   border-radius: 3px;
   box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
   padding: 0.5em;
   overflow-x: auto;
-  color: var(--color-text);
+  color: var(--c-text);
 }
 
 input,
@@ -96,4 +103,12 @@ button:focus:not(:focus-visible) {
   .perspective {
     perspective: 500px;
   }
+
+  .arbutus {
+    font-family: 'Arbutus', sans-serif;
+  }
+}
+
+.bg-nav {
+  background: linear-gradient(360deg, #6d6a57 0%, #2d4e61 96.64%);
 }

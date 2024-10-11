@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     sveltekit(),
     svg({
-      includePaths: ['./src/lib/images/'],
+      includePaths: ['./src/lib/images/', './src/lib/icons/'],
     }),
   ],
   server: {

@@ -1,14 +1,17 @@
 <script lang="ts">
   import '../app.css'
+  import '@fontsource/russo-one/400.css'
+  import '@fontsource/arbutus/400.css'
 
   import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
-
-  import { fixTouch } from '$lib/fixTouch'
+  import { fixTouch } from '@utils/fixTouch'
+  import { onMount } from 'svelte'
 
   // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
-  import Header from './Header.svelte'
+  import BottomNav from '$lib/BottomNav.svelte'
+  import Header from '$lib/Header.svelte'
 
-  $effect(() => {
+  onMount(() => {
     try {
       init()
       mountMiniApp()
@@ -30,6 +33,7 @@
 </script>
 
 <div class="relative size-full overflow-y-auto overflow-x-hidden bg-slate-900">
-  <Header></Header>
+  <Header />
   {@render children()}
+  <BottomNav />
 </div>

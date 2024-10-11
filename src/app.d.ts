@@ -1,6 +1,6 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
 import '@poppanator/sveltekit-svg/dist/svg'
+
+import type { Snippet } from 'svelte'
 
 declare global {
   namespace App {
@@ -10,6 +10,8 @@ declare global {
     // interface PageState {}
     // interface Platform {}
   }
+
+  type Children = Snippet
 
   interface IconsState {
     readonly icons: {
