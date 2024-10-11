@@ -1,7 +1,7 @@
-<svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.2 568.4">
+<svg id="b" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.2 568.4">
   <defs>
     <style>
-      .b{fill:#7b8b84}.c{fill:#77817c}.d{fill:#0c0c0d}.e{fill:#d6c7ab}.f{fill:#839189}.g{fill:#df9851}.h{fill:#010102}.i{fill:#dbccae}.j{fill:#331a0e}.k{fill:#be8656}.l{fill:#67706a}.m{fill:#0e0b0b}.n{fill:#5e6762}.o{fill:#f7f7f7}.p{fill:#070709}.q{fill:#84928a}
+      #b .b{fill:#7b8b84}#b .c{fill:#77817c}#b .d{fill:#0c0c0d}#b .e{fill:#d6c7ab}#b .f{fill:#839189}#b .g{fill:#df9851}#b .h{fill:#010102}#b .i{fill:#dbccae}#b .j{fill:#331a0e}#b .k{fill:#be8656}#b .l{fill:#67706a}#b .m{fill:#0e0b0b}#b .n{fill:#5e6762}#b .o{fill:#f7f7f7}#b .p{fill:#070709}#b .q{fill:#84928a}
     </style>
   </defs>
   <path class="o" d="M0 568h595.2s.2.3-.2.3H1.6c-.5 0-1.2.4-1.6-.4Z"/>

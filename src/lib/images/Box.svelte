@@ -1,7 +1,7 @@
 <script lang="ts">
   import { w8 } from '$lib/utils'
+  const { classes = '' } = $props()
 
-  // let { progress = 100 } = $props()
   const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
   let el: SVGElement
   let animation: Animation
@@ -21,7 +21,7 @@
 
     animation.onfinish = async () => {
       if (animation.playbackRate < 0) {
-        await w8(1200)
+        await w8(1500)
       }
       animation.reverse()
     }
@@ -36,7 +36,7 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="330 400 550 460"
   preserveAspectRatio="xMidYMid"
-  class="absolute left-[calc(50%_-_167px)] top-[calc(50%_-_62px)]"
+  class={`${classes ? classes : 'absolute'} left-[calc(50%_-_167px)] top-[calc(50%_-_62px)]`}
   style="transform:translate3d(0,0,0);content-visibility:visible;width:80px;height:56px;overflow:hidden">
   <defs>
     <clipPath id="ee">

@@ -1,15 +1,26 @@
-import WebApp from '@twa-dev/sdk'
+import {
+  disableVerticalSwipes,
+  expandViewport,
+  isSwipeBehaviorSupported,
+  isViewportExpanded,
+  mountSwipeBehavior,
+  on,
+  postEvent,
+} from '@telegram-apps/sdk'
 
 export function fixTouch() {
+  mountSwipeBehavior()
+  if (!isSwipeBehaviorSupported()) return
   let shouldExpand = false
   let lastTouchEnd = 0
 
-  function handleViewportChange({ isStateStable }: { isStateStable: boolean }) {
-    if (!WebApp.isExpanded) WebApp.expand()
+  function handleViewportChange({ is_state_stable }: { is_state_stable: boolean }) {
+    if (!isViewportExpanded) expandViewport()
 
-    if (isStateStable) {
-      WebApp.expand()
-      WebApp.disableVerticalSwipes()
+    if (is_state_stable) {
+      expandViewport()
+      postEvent('web_app_expand')
+      disableVerticalSwipes()
     } else {
       shouldExpand = true
     }
@@ -67,17 +78,21 @@ export function fixTouch() {
 
   function handleAppMaximize() {
     if (shouldExpand) {
-      WebApp.expand()
-      WebApp.disableVerticalSwipes()
+      expandViewport()
+      postEvent('web_app_expand')
+      disableVerticalSwipes()
       shouldExpand = false
     }
   }
 
   $effect(() => {
     const html = document.documentElement
-    WebApp.disableVerticalSwipes()
+    expandViewport()
+    postEvent('web_app_expand')
+    postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false })
+    disableVerticalSwipes()
 
-    WebApp.onEvent('viewportChanged', handleViewportChange)
+    const removeListener = on('viewport_changed', handleViewportChange)
     html.addEventListener('touchstart', handleAppMaximize, { passive: true })
 
     if (isIOS || isSafari) {
@@ -87,7 +102,7 @@ export function fixTouch() {
     }
 
     return () => {
-      WebApp.offEvent('viewportChanged', handleViewportChange)
+      removeListener()
       html.removeEventListener('touchstart', handleAppMaximize)
       if (isIOS || isSafari) {
         html.removeEventListener('touchstart', handleTouchStart)

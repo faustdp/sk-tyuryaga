@@ -1,6 +1,8 @@
 import eslint from '@eslint/js'
 import prettier from 'eslint-config-prettier'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import svelte from 'eslint-plugin-svelte'
+import tailwind from 'eslint-plugin-tailwindcss'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
@@ -8,6 +10,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   ...svelte.configs['flat/recommended'],
+  ...tailwind.configs['flat/recommended'],
   prettier,
   ...svelte.configs['flat/prettier'],
   {
@@ -25,12 +28,17 @@ export default tseslint.config(
         parser: tseslint.parser,
       },
     },
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
-          argsIgnorePattern: '[_]',
-          varsIgnorePattern: '[_]',
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
           ignoreRestSiblings: true,
         },
       ],
@@ -59,8 +67,8 @@ export default tseslint.config(
       //     ignoreComments: true,
       //   },
       // ],
-      // 'simple-import-sort/imports': 'warn',
-      // 'simple-import-sort/exports': 'warn',
+      'simple-import-sort/imports': 'warn',
+      'simple-import-sort/exports': 'warn',
     },
   },
   {

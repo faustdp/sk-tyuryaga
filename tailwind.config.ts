@@ -8,6 +8,9 @@ export default {
       colors: {
         // primary: 'rgb(var(--color-primary) / <alpha-value>)',
       },
+      backgroundSize: {
+        'half': '540px 915px',
+      },
     },
   },
 

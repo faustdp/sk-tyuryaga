@@ -16,3 +16,6 @@ vite.config.ts.timestamp-*
 *.local
 *.log
 npm-debug.log*
+database/
+uploads/
+extensions/

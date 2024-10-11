@@ -2,53 +2,54 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 595.3 557.9"
   class="absolute left-[calc(50%_-_167px)] top-[calc(50%_-_145px)]"
+  id="p"
   width="70"
   height="63">
   <defs>
     <style>
-      .b {
+      #p .b {
         fill: #817456;
       }
-      .c {
+      #p .c {
         fill: #95625d;
       }
-      .d {
+      #p .d {
         fill: #0f0c0b;
       }
-      .e {
+      #p .e {
         fill: #040303;
       }
-      .f {
+      #p .f {
         fill: #f9ca77;
       }
-      .g {
+      #p .g {
         fill: #739396;
       }
-      .h {
+      #p .h {
         fill: #dcb57c;
       }
-      .i {
+      #p .i {
         fill: #607079;
       }
-      .j {
+      #p .j {
         fill: #583934;
       }
-      .k {
+      #p .k {
         fill: #a2b3bb;
       }
-      .l {
+      #p .l {
         fill: #eab99e;
       }
-      .m {
+      #p .m {
         fill: #221e1c;
       }
-      .n {
+      #p .n {
         fill: #cccccb;
       }
-      .o {
+      #p .o {
         fill: #0d0809;
       }
-      .p {
+      #p .p {
         fill: #010101;
       }
     </style>
