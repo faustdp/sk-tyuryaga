@@ -10,6 +10,7 @@
   // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
   import BottomNav from '$lib/BottomNav.svelte'
   import Header from '$lib/Header.svelte'
+  import Stats from '$lib/Stats.svelte'
 
   onMount(() => {
     try {
@@ -34,6 +35,7 @@
 
 <div class="relative size-full overflow-y-auto overflow-x-hidden bg-slate-900">
   <Header />
+  <Stats />
   {@render children()}
   <BottomNav />
 </div>

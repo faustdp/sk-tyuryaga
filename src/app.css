@@ -25,6 +25,7 @@ html {
   height: 100dvh;
   overflow: hidden;
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -111,4 +112,8 @@ button:focus:not(:focus-visible) {
 
 .bg-nav {
   background: linear-gradient(360deg, #6d6a57 0%, #2d4e61 96.64%);
+}
+
+.bg-header {
+  background: linear-gradient(0deg, rgba(90, 79, 49, 0.1) 4.2%, rgba(41, 36, 36, 0.5) 29.03%, #292424 105.34%);
 }
