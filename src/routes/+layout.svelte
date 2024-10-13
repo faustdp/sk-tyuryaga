@@ -3,14 +3,12 @@
   import '@fontsource/russo-one/400.css'
   import '@fontsource/arbutus/400.css'
 
+  // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
+  import BottomNav from '@lib/BottomNav.svelte'
+  import Header from '@lib/Header.svelte'
   import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
   import { fixTouch } from '@utils/fixTouch'
   import { onMount } from 'svelte'
-
-  // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
-  import BottomNav from '$lib/BottomNav.svelte'
-  import Header from '$lib/Header.svelte'
-  import Stats from '$lib/Stats.svelte'
 
   onMount(() => {
     try {
@@ -35,7 +33,6 @@
 
 <div class="relative size-full overflow-y-auto overflow-x-hidden bg-slate-900">
   <Header />
-  <Stats />
   {@render children()}
   <BottomNav />
 </div>

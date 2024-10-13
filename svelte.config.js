@@ -17,6 +17,7 @@ const config = {
       '@images': './src/lib/images',
       '@icons': './src/lib/icons',
       '@utils': './src/lib/utils',
+      '@lib': './src/lib/',
     },
   },
 }

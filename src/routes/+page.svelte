@@ -5,6 +5,8 @@
   import Portrait from '@images/Portrait.svelte'
   import Trash from '@images/trash.svg?component'
   import Tv from '@images/Tv.svelte'
+  import Farming from '@lib/Farming.svelte'
+  import Stats from '@lib/Stats.svelte'
   import { iconsState } from '@state/icons.svelte'
 </script>
 
@@ -16,6 +18,7 @@
 <main
   class="perspective relative mx-auto h-full max-w-limit flex-col items-center justify-center
        overflow-hidden bg-[url('@images/bg.webp')] bg-half bg-center bg-no-repeat">
+  <Stats />
   {#if iconsState.trash}
     <Trash class="absolute left-[calc(50%_-_157px)] top-[calc(50%_-_59px)] w-14" />
   {:else}
@@ -27,4 +30,5 @@
     <Tv />
   {/if}
   <Portrait />
+  <Farming />
 </main>

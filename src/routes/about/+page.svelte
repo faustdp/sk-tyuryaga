@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Box from '$lib/images/Box.svelte'
-  import Cigarette from '$lib/images/cigarette.svg?component'
-  import Trash from '$lib/images/trash.svg?component'
-  import Tv from '$lib/images/Tv.svelte'
-  import { iconsState, setCig, setTrash } from '$lib/state/icons.svelte'
+  import Box from '@lib/images/Box.svelte'
+  import Cigarette from '@lib/images/cigarette.svg?component'
+  import Trash from '@lib/images/trash.svg?component'
+  import Tv from '@lib/images/Tv.svelte'
+  import { iconsState, setCig, setTrash } from '@lib/state/icons.svelte'
 </script>
 
 <svelte:head>

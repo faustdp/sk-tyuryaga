@@ -28,6 +28,7 @@ export default {
       },
       screens: {
         maxheight: { raw: '(max-height: var(--height-limit))' },
+        smallscreen: { raw: '(max-width: 350px)' },
       },
     },
   },

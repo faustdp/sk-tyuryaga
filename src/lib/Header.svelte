@@ -7,7 +7,7 @@
 <header
   class="fixed top-[max(0px,_calc((var(--screen)_-_var(--height-limit))_/_2))] z-30 flex
    w-full justify-center maxheight:!left-0 maxheight:!-z-10">
-  <section class="bg-header flex w-full max-w-limit justify-between px-4 pt-2">
+  <section class="bg-header flex w-full max-w-limit justify-between px-4 pt-2.5">
     <p class="flex items-center justify-center gap-x-1">
       <User />
       <span>Макс Козлов</span>

@@ -13,7 +13,7 @@ function iconsStore() {
   }
 
   return {
-    get icons() {
+    get iconsState() {
       return state
     },
     setCig,
@@ -21,6 +21,6 @@ function iconsStore() {
   }
 }
 
-const { icons: iconsState, setCig, setTrash } = iconsStore()
+const { iconsState, setCig, setTrash } = iconsStore()
 
 export { iconsState, setCig, setTrash }
