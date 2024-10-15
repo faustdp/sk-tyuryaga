@@ -1,18 +1,18 @@
 <script lang="ts">
+  import { app } from '@state/app.svelte'
   import { w8 } from '@utils'
-  import { onMount } from 'svelte'
 
   const { classes = '' } = $props()
 
   const quadInOut = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)'
   let el: SVGElement
-  let animation: Animation
+  let animation: Animation | null
 
   function createAnimation() {
     const keyframes = [{ opacity: 1 }, { opacity: 0 }]
 
     const options: KeyframeAnimationOptions = {
-      duration: 2000,
+      duration: 1600,
       easing: quadInOut,
       fill: 'both',
     }
@@ -20,13 +20,35 @@
     animation = el.animate(keyframes, options)
 
     animation.onfinish = async () => {
-      await w8(100)
-      animation.reverse()
+      if (animation && animation.playbackRate < 0) {
+        await w8(150)
+      }
+      animation?.reverse()
     }
   }
 
-  onMount(() => {
-    createAnimation()
+  $effect(() => {
+    if (app.farm === 'farming') {
+      createAnimation()
+      return
+    }
+    if (app.farm === 'claimed' || !animation) return
+
+    const isReversed = animation.playbackRate < 0
+    if (Number(animation.currentTime) === 0) {
+      animation = null
+    } else {
+      animation.playbackRate = isReversed ? -3 : 3
+      if (!isReversed) animation.reverse()
+
+      animation.onfinish = () => {
+        if (animation) {
+          animation.playbackRate = 0
+          animation.currentTime = 0
+        }
+        animation = null
+      }
+    }
   })
 </script>
 
@@ -200,14 +222,3 @@
     <use bind:this={el} href="#ton" width="270" height="270" x="205" y="335"></use>
   </g>
 </svg>
-
-<!-- <circle class="st0" cx="345" cy="470" r="130" fill="#0088CC" />
-      <path
-        fill="#FFFFFF"
-        d="M305.05,423.95h79.9c3.05,0,5.6,0.55,8.65,2.05c3.55,1.5,5.6,4.1,6.6,6.15c0,0,0,0.55,0.5,0.55
-    c1.5,2.55,2.55,5.6,2.55,9.2c0,3.05-0.5,6.15-2.55,9.2c0,0,0,0,0,0l-50.45,86.55c-1,2.05-3.05,3.05-5.6,3.05
-    c-2.05,0-4.1-1-5.6-3.05l-49.4-86.55c0,0,0,0,0,0c-1-2.05-3.05-4.6-3.05-8.65c-0.5-3.55,0.5-6.6,2.05-9.7
-    c1.5-3.05,4.1-5.6,7.65-6.65C299.7,423.95,303,423.95,305.05,423.95z M338.65,436.2h-33.6c-2.05,0-3.05,0-3.55,0.5
-    c-1,0.5-1.5,1-2.05,2.05c-0.5,0.5-0.5,1.5-0.5,2.55c0,0.5,0.5,1,1.5,3.05c0,0,0,0,0,0l38.25,66.3V436.2z M351.15,436.2v74.95
-    c0,0,38.75-66.8,38.75-66.8c0.5-1,0.5-2.05,0.5-3.05c0-1,0-2.05-0.5-2.55c-0.5-0.5-0.5-1-1-1c0,0-0.5-0.5-0.5-0.5
-    c-1-0.5-2.05-0.5-3.55-0.5H351.15z" /> -->

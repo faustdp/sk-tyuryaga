@@ -11,6 +11,7 @@
     isBlue?: boolean
     isHeader?: boolean
     children?: Children
+    onclick?: any
   }
 
   const { Icon, url = '', isBig = false, isBlue = false, isHeader = false, children, ...rest }: Props = $props()

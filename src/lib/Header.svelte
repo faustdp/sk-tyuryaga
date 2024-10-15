@@ -2,6 +2,7 @@
   import NavBtn from '@components/NavBtn.svelte'
   import User from '@icons/user.svg?component'
   import Wallet from '@icons/wallet.svg?component'
+  import { openWallet } from '@state/app.svelte'
 </script>
 
 <header
@@ -12,6 +13,6 @@
       <User />
       <span>Макс Козлов</span>
     </p>
-    <NavBtn Icon={Wallet} isHeader />
+    <NavBtn onclick={openWallet} Icon={Wallet} isHeader />
   </section>
 </header>

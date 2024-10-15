@@ -138,7 +138,7 @@
   </button>
   {#if showConfetti}
     <div class="absolute left-1/2 top-0">
-      <Confetti y={[0.5, 1.3]} x={[-0.75, 0.75]} size={28} amount={70} colorArray={[`url(${cigarette})`]} />
+      <Confetti y={[0.5, 1.3]} x={[-0.75, 0.75]} size={28} colorArray={[`url(${cigarette})`]} />
     </div>
   {/if}
 </section>

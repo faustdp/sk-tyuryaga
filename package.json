@@ -15,6 +15,7 @@
     "server": "tsx watch --env-file=.env ./server.ts --trace-warnings"
   },
   "devDependencies": {
+    "@poppanator/sveltekit-svg": "^5.0.0-svelte5.5",
     "@types/eslint": "^9.6.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.5",
@@ -31,23 +32,22 @@
     "svelte-check": "^4.0.5",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.8.1"
+    "typescript-eslint": "^8.9.0"
   },
   "dependencies": {
     "@fontsource/arbutus": "^5.1.0",
     "@fontsource/russo-one": "^5.1.0",
-    "@poppanator/sveltekit-svg": "^5.0.0-svelte5.5",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/adapter-static": "^3.0.5",
-    "@sveltejs/kit": "^2.7.0",
+    "@sveltejs/kit": "^2.7.1",
     "@sveltejs/vite-plugin-svelte": "^4.0.0-next.8",
     "@telegram-apps/sdk": "^2.4.0",
     "autoprefixer": "^10.4.20",
     "express": "^5.0.1",
-    "svelte": "^5.0.0-next.264",
+    "svelte": "^5.0.0-next.265",
     "svelte-confetti": "^2.1.2",
     "tailwindcss": "^3.4.9",
-    "vite": "^5.0.3",
+    "vite": "^5.4.9",
     "vitest": "^2.0.0"
   }
 }

@@ -1,1 +1,1 @@
-export const FARM_TIME = 5000
+export const FARM_TIME = 4000

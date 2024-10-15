@@ -14,3 +14,8 @@ export function formatTime(ms) {
 
   return `${padZero(hours)}ч ${padZero(remainingMinutes)}м ${padZero(remainingSeconds)}с`
 }
+
+export function shortenAddress(addr: string) {
+  if (addr.length < 10) return addr
+  return `${addr.slice(0, 5)}...${addr.slice(-5)}`
+}

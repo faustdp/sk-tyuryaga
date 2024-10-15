@@ -1,7 +1,7 @@
 <script lang="ts">
   const { isConnected = false } = $props()
 
-  let fill = $derived(isConnected ? '#0088CC' : '#728B97')
+  let fill = $derived(isConnected ? '#728B97' : '#0088CC')
 </script>
 
 <svg width="343" height="60" viewBox="0 0 343 60" fill="none" xmlns="http://www.w3.org/2000/svg">

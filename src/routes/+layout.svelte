@@ -6,6 +6,7 @@
   // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
   import BottomNav from '@lib/BottomNav.svelte'
   import Header from '@lib/Header.svelte'
+  import Wallet from '@lib/Wallet.svelte'
   import { setIsMounted } from '@state/app.svelte'
   import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
   import { fixTouch } from '@utils/fixTouch'
@@ -38,5 +39,6 @@
 <div class="relative size-full overflow-y-auto overflow-x-hidden bg-slate-900">
   <Header />
   {@render children()}
+  <Wallet />
   <BottomNav />
 </div>

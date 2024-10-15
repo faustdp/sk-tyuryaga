@@ -11,7 +11,7 @@
   class="fixed bottom-[max(0px,_calc((var(--screen)_-_var(--height-limit))_/_2))] z-30 flex
    w-full justify-center maxheight:!left-0 maxheight:!-z-10">
   <nav
-    class="bg-nav smallscreen:justify-center flex w-full max-w-limit justify-around bg-slate-300 px-3 pb-9 pt-8"
+    class="bg-nav flex w-full max-w-limit justify-around px-3 pb-9 pt-8 smallscreen:justify-center"
     data-sveltekit-keepfocus>
     <NavBtn url="/" Icon={Inmates}>Кенты</NavBtn>
     <NavBtn url="/about" Icon={Quest}>Задания</NavBtn>

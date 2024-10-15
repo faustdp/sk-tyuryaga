@@ -1,12 +1,12 @@
 <script lang="ts">
+  import { app } from '@state/app.svelte'
   import { w8 } from '@utils'
-  import { onMount } from 'svelte'
 
   const { classes = '' } = $props()
 
   const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
   let el: SVGElement
-  let animation: Animation
+  let animation: Animation | null
 
   const base = 100
   const end = -30
@@ -22,15 +22,35 @@
     animation = el.animate(keyframes, options)
 
     animation.onfinish = async () => {
-      if (animation.playbackRate < 0) {
-        await w8(1500)
+      if (animation && animation.playbackRate < 0) {
+        await w8(1100)
       }
-      animation.reverse()
+      animation?.reverse()
     }
   }
 
-  onMount(() => {
-    createAnimation()
+  $effect(() => {
+    if (app.farm === 'farming') {
+      createAnimation()
+      return
+    }
+    if (app.farm === 'claimed' || !animation) return
+
+    const isReversed = animation.playbackRate < 0
+    if (Number(animation.currentTime) === 0) {
+      animation = null
+    } else {
+      animation.playbackRate = isReversed ? -3 : 3
+      if (!isReversed) animation.reverse()
+
+      animation.onfinish = () => {
+        if (animation) {
+          animation.playbackRate = 0
+          animation.currentTime = 0
+        }
+        animation = null
+      }
+    }
   })
 </script>
 
@@ -85,7 +105,7 @@
         d="m364.997 444.893 14.643 10.03 16.45 2.407 11.635 4.614 5.817-1.003 8.828 1.003 9.226 15.848 8.225 2.808 24.073 29.489-1.203 3.611 9.628 8.024 12.638 32.297m30.057-132.729 6.62 10.461 14.443 4.513-1.504 3.912 11.133 1.505 8.426 8.425 9.328 2.708"
         fill="none" />
     </g>
-    <g clip-path="url(#ee)" bind:this={el}>
+    <g clip-path="url(#ee)" bind:this={el} transform="matrix(1,0,0,1,0,{base})">
       <path
         fill="#ECBDB5"
         d="M552.334 763.382s5.15-3.943 9.433-6.112c5.282-.353 16.365.73 21.732.377 3.983-.262 15.469-2.792 15.469-2.792l-3.698-7.018 12.375.906s7.848 8.45 5.056 11.545c-2.37 2.625-13.205.453-27.995 2.49-1.33.183-3.499 2.017-4.754 2.49-2.465-.1-9.96 1.283-9.96 1.283l3.621-3.849 4.15-.83s-6.383.418-8.451.906c-2.364 1.056-10.514 3.496-10.514 3.496l1.836-2.163-6.439.654 2.893-2.214zm101.567-6.188c6.718 0 4.382 5.841 6.037 7.622.854.919 2.49 2.64 3.698 3.395.754 1.244 1.358 5.66 1.358 5.66l-4.755-1.51-.3-2.414-3.623-1.51s-3.32 1.13-3.32 2.114c0 1.961-2.867 4.376-2.867 4.376v-5.584l-10.414 6.037 1.358-5.66-13.28 4.302 3.32-4.15-7.148 1.821s3.491-4.097 5.449-4.272c5.055-.453 14.904-1.85 19.356-6.604 1.073-1.147 1.132-3.623 5.131-3.623" />
