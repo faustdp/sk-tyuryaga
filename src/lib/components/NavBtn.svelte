@@ -72,7 +72,7 @@
   {#if children}
     <span
       class="{isBlue ? 'z-10 mt-[-3px] bg-cblue pt-1' : 'pt-0.5'} {isCurrPath ? 'text-cyellow' : 'text-textgrey'}
-      smallscreen:px-0.5 inline-block rounded-md px-1.5 pb-1 text-sm">{@render children()}</span>
+      inline-block rounded-md px-1.5 pb-1 text-sm smallscreen:px-0.5">{@render children()}</span>
   {/if}
   {#if isBlue}
     <svg class="absolute -top-2.5 right-1.5 h-5 w-5"><use href="#ton"></use></svg>

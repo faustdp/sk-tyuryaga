@@ -68,7 +68,6 @@ export default tseslint.config(
       //   },
       // ],
       'simple-import-sort/imports': 'warn',
-      'simple-import-sort/exports': 'warn',
     },
   },
   {

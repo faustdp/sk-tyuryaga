@@ -6,11 +6,15 @@
   // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
   import BottomNav from '@lib/BottomNav.svelte'
   import Header from '@lib/Header.svelte'
+  import { setIsMounted } from '@state/app.svelte'
   import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
   import { fixTouch } from '@utils/fixTouch'
   import { onMount } from 'svelte'
 
+  console.clear()
+
   onMount(() => {
+    setIsMounted()
     try {
       init()
       mountMiniApp()

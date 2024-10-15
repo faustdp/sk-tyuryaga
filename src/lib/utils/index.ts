@@ -1,3 +1,16 @@
 export async function w8(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms, true))
 }
+
+export function formatTime(ms) {
+  const seconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+
+  const remainingSeconds = seconds % 60
+  const remainingMinutes = minutes % 60
+
+  const padZero = (num) => num.toString().padStart(2, '0')
+
+  return `${padZero(hours)}ч ${padZero(remainingMinutes)}м ${padZero(remainingSeconds)}с`
+}
