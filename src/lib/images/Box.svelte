@@ -5,11 +5,10 @@
   const { classes = '' } = $props()
 
   const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
-  let el: SVGElement
-  let animation: Animation | null
-
   const base = 100
   const end = -30
+  let el: SVGElement
+  let animation: Animation | null
 
   function createAnimation() {
     const keyframes = [{ transform: `matrix(1,0,0,1,0,${base})` }, { transform: `matrix(1,0,0,1,0,${end})` }]

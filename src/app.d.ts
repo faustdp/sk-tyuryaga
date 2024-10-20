@@ -1,5 +1,6 @@
 import '@poppanator/sveltekit-svg/dist/svg'
 
+import { type TonConnectUI } from '@tonconnect/ui'
 import type { Snippet } from 'svelte'
 
 declare global {
@@ -13,6 +14,8 @@ declare global {
 
   type Children = Snippet
 
+  type TonUI = TonConnectUI
+
   interface IconsState {
     readonly icons: {
       cig: boolean
@@ -20,6 +23,10 @@ declare global {
     }
     setCig: () => void
     setTrash: () => void
+  }
+
+  interface Window {
+    _tonConnectUI?: TonConnectUI
   }
 }
 

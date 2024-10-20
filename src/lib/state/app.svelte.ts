@@ -26,6 +26,9 @@ function appStore() {
   }
 
   function setEndTime(time: number) {
+    if (time < Date.now()) {
+      throw new Error('Internal Error')
+    }
     state.endTime = time
   }
 

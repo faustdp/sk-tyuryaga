@@ -1,12 +1,13 @@
 import {
   disableVerticalSwipes,
-  // expandViewport,
+  expandViewport,
   isSwipeBehaviorSupported,
   isViewportExpanded,
   mountSwipeBehavior,
   on,
   postEvent,
 } from '@telegram-apps/sdk'
+import { debug } from '@utils'
 import { onMount } from 'svelte'
 
 export function fixTouch() {
@@ -23,11 +24,10 @@ export function fixTouch() {
   function handleViewportChange({ is_state_stable }: { is_state_stable: boolean }) {
     updateWindowHeight()
 
-    if (!isViewportExpanded) postEvent('web_app_expand')
+    if (!isViewportExpanded) expandViewport()
 
     if (is_state_stable) {
-      // expandViewport()
-      postEvent('web_app_expand')
+      expandViewport()
       disableVerticalSwipes()
     } else {
       shouldExpand = true
@@ -86,23 +86,22 @@ export function fixTouch() {
 
   function handleAppMaximize() {
     if (shouldExpand) {
-      // expandViewport()
-      postEvent('web_app_expand')
+      expandViewport()
       disableVerticalSwipes()
       shouldExpand = false
     }
   }
 
   onMount(() => {
-    // expandViewport()
+    expandViewport()
     disableVerticalSwipes()
-    postEvent('web_app_expand')
     postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false })
     const removeListener = on('viewport_changed', handleViewportChange)
 
     const html = document.documentElement
     html.addEventListener('touchstart', handleAppMaximize, { passive: true })
 
+    debug('test')
     if (isIOS || isSafari) {
       html.addEventListener('touchstart', handleTouchStart, { passive: false })
       html.addEventListener('touchmove', preventTouchMove, { passive: false })

@@ -3,24 +3,42 @@
   import '@fontsource/russo-one/400.css'
   import '@fontsource/arbutus/400.css'
 
-  // import { initData, restoreInitData , retrieveLaunchParams } from '@telegram-apps/sdk'
   import BottomNav from '@lib/BottomNav.svelte'
   import Header from '@lib/Header.svelte'
   import Wallet from '@lib/Wallet.svelte'
   import { setIsMounted } from '@state/app.svelte'
-  import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
+  import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //initData, restoreInitData , retrieveLaunchParams
   import { fixTouch } from '@utils/fixTouch'
+  import { useTonConnect } from '@utils/useTonConnect'
   import { onMount } from 'svelte'
 
+  import { dev } from '$app/environment'
+
   console.clear()
+
+  const tonConnectUI = useTonConnect()
+
+  if (dev) {
+    async function disconnect() {
+      if (tonConnectUI.connected) {
+        await tonConnectUI.disconnect()
+      }
+    }
+    disconnect()
+  }
+
+  try {
+    init()
+    fixTouch()
+  } catch (_err) {}
 
   onMount(() => {
     setIsMounted()
     try {
-      init()
       mountMiniApp()
       miniAppReady()
-      fixTouch()
+      // mountBackButton()
+      // showBackButton()
     } catch (_err) {}
   })
 
@@ -36,7 +54,7 @@
   let { children } = $props()
 </script>
 
-<div class="relative size-full overflow-y-auto overflow-x-hidden bg-slate-900">
+<div class="relative size-full overflow-y-auto overflow-x-hidden bg-cdarkblue">
   <Header />
   {@render children()}
   <Wallet />
