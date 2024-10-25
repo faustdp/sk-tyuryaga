@@ -15,9 +15,11 @@
   --c-grey: 123 123 123;
   --c-wallet: 126 118 86;
   --c-darkblue: 43 75 96;
+  --c-border: 123 123 123;
   --width-limit: 540px;
   --height-limit: 915px;
   --screen: 100vh;
+  --nav-height: 146px;
   font-family: var(--font-russo);
   color: #fff;
 }
@@ -109,6 +111,36 @@ button:focus:not(:focus-visible) {
   .arbutus {
     font-family: 'Arbutus', sans-serif;
   }
+
+  .roboto {
+    font-family: 'Roboto';
+  }
+
+  .shadow-heading {
+    text-shadow:
+      0px 4px 8px rgba(0, 0, 0, 0.3),
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000,
+      -2px -2px 0 #000,
+      2px -2px 0 #000,
+      -2px 2px 0 #000,
+      2px 2px 0 #000;
+  }
+}
+
+.page-circle:before {
+  z-index: 0;
+  content: '';
+  position: absolute;
+  width: 125%;
+  height: 125%;
+  left: -10%;
+  top: -10%;
+  filter: blur(30px);
+  border-radius: 50%;
+  background-color: #bf9e49e3;
 }
 
 .bg-nav {

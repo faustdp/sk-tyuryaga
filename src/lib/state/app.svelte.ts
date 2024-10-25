@@ -1,3 +1,5 @@
+import { CLAIMED } from '@utils/const'
+
 type Farm = 'farming' | 'farmed' | 'claimed'
 
 interface State {
@@ -10,7 +12,7 @@ interface State {
 
 function appStore() {
   const state = $state<State>({
-    farm: 'claimed',
+    farm: CLAIMED,
     isMounted: false,
     endTime: 0,
     isWalletOpened: false,

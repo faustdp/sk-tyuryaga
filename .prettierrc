@@ -7,6 +7,8 @@
   "bracketSameLine": true,
   "bracketSpacing": true,
   "trailingComma": "all",
+  "svelteBracketNewLine": false,
+  "htmlWhitespaceSensitivity": "ignore",
   "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
   "overrides": [
     {

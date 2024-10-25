@@ -20,7 +20,7 @@ export function shortenAddress(addr: string) {
   return `${addr.slice(0, 5)}...${addr.slice(-5)}`
 }
 
-export function debug(data: any, file?: string) {
+export function logServer(data: any, file?: string) {
   fetch('/api/test', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

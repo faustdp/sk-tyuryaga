@@ -1,10 +1,11 @@
 <script lang="ts">
   import { app } from '@state/app.svelte'
   import { w8 } from '@utils'
+  import { quadInOut } from '@utils/const'
+  import { CLAIMED, FARMING } from '@utils/const'
 
   const { classes = '' } = $props()
 
-  const quadInOut = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)'
   let el: SVGElement
   let animation: Animation | null
 
@@ -28,11 +29,11 @@
   }
 
   $effect(() => {
-    if (app.farm === 'farming') {
+    if (app.farm === FARMING) {
       createAnimation()
       return
     }
-    if (app.farm === 'claimed' || !animation) return
+    if (app.farm === CLAIMED || !animation) return
 
     const isReversed = animation.playbackRate < 0
     if (Number(animation.currentTime) === 0) {

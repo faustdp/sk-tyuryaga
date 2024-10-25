@@ -27,6 +27,7 @@
         <Cigarette />
       {:else}
         <Tv classes="static" />
-      {/if}</button>
+      {/if}
+    </button>
   </div>
 </div>

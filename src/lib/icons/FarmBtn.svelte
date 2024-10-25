@@ -1,10 +1,14 @@
 <script lang="ts">
   import { app } from '@state/app.svelte'
+  import { FARMED } from '@utils/const'
   import { type Tweened } from 'svelte/motion'
 
   let { progress }: { progress: Tweened<number> } = $props()
 
-  let fill = $state(app.farm === 'farmed' ? '#0E8367' : '#BF9E49')
+  const green = '#0E8367'
+  const brown = '#BF9E49'
+
+  let fill = $state(app.farm === FARMED ? green : brown)
   let path: SVGPathElement
   let isMounted = false
 
@@ -13,7 +17,7 @@
     if (!isMounted) {
       isMounted = true
     } else {
-      fill = farm === 'farmed' ? '#0E8367' : '#BF9E49'
+      fill = farm === FARMED ? green : brown
     }
   })
 </script>

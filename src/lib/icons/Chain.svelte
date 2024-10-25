@@ -1,5 +1,10 @@
+<script lang="ts">
+  let { classes = 'absolute top-[-13px] z-[-1] size-full' } = $props()
+</script>
+
 <svg
-  class="pointer-events-none absolute top-[-43%] z-[-1] size-full"
+  class="pointer-events-none max-h-[50px] {classes}"
+  preserveAspectRatio="none"
   viewBox="0 0 375 36"
   fill="none"
   xmlns="http://www.w3.org/2000/svg">

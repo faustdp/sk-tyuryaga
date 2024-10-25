@@ -4,7 +4,7 @@
   import FarmBtn from '@icons/FarmBtn.svelte'
   import { app, setEndTime, setFarm } from '@state/app.svelte'
   import { formatTime } from '@utils'
-  import { FARM_TIME } from '@utils/const'
+  import { CLAIMED, FARM_TIME, FARMED, FARMING } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
   import { tweened } from 'svelte/motion'
@@ -13,7 +13,7 @@
   function getProgress(time: number) {
     const now = Date.now()
     if (now > time) {
-      if (app.farm === 'farming') setFarm('farmed')
+      if (app.farm === FARMING) setFarm(FARMED)
       return 1
     }
     return Math.max(0, (time - now) / FARM_TIME)
@@ -32,13 +32,13 @@
   let isMounted = false
 
   const progress = tweened(prevProgress, {
-    duration: () => (app.farm !== 'farming' ? 200 : wasFarming ? prevProgress * FARM_TIME : FARM_TIME),
-    easing: (t) => (app.farm === 'farming' ? linear(t) : sineOut(t)),
+    duration: () => (app.farm !== FARMING ? 200 : wasFarming ? prevProgress * FARM_TIME : FARM_TIME),
+    easing: (t) => (app.farm === FARMING ? linear(t) : sineOut(t)),
   })
 
   $effect(() => {
     if ($progress === 0) {
-      setFarm('farmed')
+      setFarm(FARMED)
       stopInterval()
       $progress = 1
       wasFarming = false
@@ -66,9 +66,9 @@
       isMounted = true
       return
     }
-    if (farm === 'claimed') {
+    if (farm === CLAIMED) {
       showConfetti = true
-    } else if (farm === 'farmed') {
+    } else if (farm === FARMED) {
       showConfetti = false
     }
   })
@@ -90,14 +90,14 @@
   }
 
   async function handleClick() {
-    if (app.farm === 'farming') return
-    if (app.farm === 'claimed') {
-      setFarm('farming')
+    if (app.farm === FARMING) return
+    if (app.farm === CLAIMED) {
+      setFarm(FARMING)
       setEndTime(Date.now() + FARM_TIME)
       startInterval()
       $progress = 0
-    } else if (app.farm === 'farmed') {
-      setFarm('claimed')
+    } else if (app.farm === FARMED) {
+      setFarm(CLAIMED)
     }
   }
 
@@ -128,10 +128,11 @@
     onmousedown={setActive}
     onmouseup={removeActive}
     onmouseleave={removeActive}>
-    {#if app.farm === 'farmed'}
+    {#if app.farm === FARMED}
       Сюда 100 <Cigarette class="mb-1" />
-    {:else if app.farm === 'farming'}
-      Фарминг <span>{cigs}</span> <span class="mb-[-3px] text-xs">{time}</span>
+    {:else if app.farm === FARMING}
+      Фарминг <span>{cigs}</span>
+      <span class="mb-[-3px] text-xs">{time}</span>
     {:else}
       Начать фармить
     {/if}

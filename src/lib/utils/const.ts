@@ -1,3 +1,10 @@
 export const FARM_TIME = 4000
 export const TEST_ADDRESS = 'EQChHpu8-rFBQyVCXJtT1aTwODTBc1dFUAEatbYy11ZLcBST'
 export const TON_KEY = 'TON_CONNECT'
+export const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
+export const quadInOut = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)'
+export const FARMING = 'farming'
+export const FARMED = 'farmed'
+export const CLAIMED = 'claimed'
+// export const circOut = 'cubic-bezier(0, 0.55, 0.45, 1)'
+// export const circIn = 'cubic-bezier(0.55, 0, 1, 0.45)'

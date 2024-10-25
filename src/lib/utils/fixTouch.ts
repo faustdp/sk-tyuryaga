@@ -7,7 +7,6 @@ import {
   on,
   postEvent,
 } from '@telegram-apps/sdk'
-import { debug } from '@utils'
 import { onMount } from 'svelte'
 
 export function fixTouch() {
@@ -101,7 +100,6 @@ export function fixTouch() {
     const html = document.documentElement
     html.addEventListener('touchstart', handleAppMaximize, { passive: true })
 
-    debug('test')
     if (isIOS || isSafari) {
       html.addEventListener('touchstart', handleTouchStart, { passive: false })
       html.addEventListener('touchmove', preventTouchMove, { passive: false })

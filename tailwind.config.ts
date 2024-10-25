@@ -17,6 +17,7 @@ export default {
         cgrey: 'rgb(var(--c-grey) / <alpha-value>)',
         cwallet: 'rgb(var(--c-wallet) / <alpha-value>)',
         cdarkblue: 'rgb(var(--c-darkblue) / <alpha-value>)',
+        cborder: 'rgb(var(--c-border) / <alpha-value>)',
       },
       width: {
         limit: 'var(--width-limit)',
@@ -32,7 +33,10 @@ export default {
         smallscreen: { raw: '(max-width: 350px)' },
       },
       boxShadow: {
-        wallet: '0px -4px 6px 0px var(--c-darkblue)',
+        wallet: '0px -4px 6px 0px rgb(var(--c-darkblue))',
+      },
+      content: {
+        empty: '""',
       },
     },
   },

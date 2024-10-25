@@ -2,30 +2,20 @@
   import '../app.css'
   import '@fontsource/russo-one/400.css'
   import '@fontsource/arbutus/400.css'
+  import '@fontsource/roboto/400.css'
 
   import BottomNav from '@lib/BottomNav.svelte'
-  import Header from '@lib/Header.svelte'
-  import Wallet from '@lib/Wallet.svelte'
   import { setIsMounted } from '@state/app.svelte'
   import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //initData, restoreInitData , retrieveLaunchParams
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
   import { onMount } from 'svelte'
 
-  import { dev } from '$app/environment'
+  import { page } from '$app/stores'
 
   console.clear()
 
-  const tonConnectUI = useTonConnect()
-
-  if (dev) {
-    async function disconnect() {
-      if (tonConnectUI.connected) {
-        await tonConnectUI.disconnect()
-      }
-    }
-    disconnect()
-  }
+  useTonConnect()
 
   try {
     init()
@@ -54,9 +44,10 @@
   let { children } = $props()
 </script>
 
-<div class="relative size-full overflow-y-auto overflow-x-hidden bg-cdarkblue">
-  <Header />
+<div
+  class="relative w-full {$page.url.pathname === '/'
+    ? 'h-full'
+    : 'h-[calc(100%_-_var(--nav-height))]'} overflow-y-auto overflow-x-hidden bg-cdarkblue">
   {@render children()}
-  <Wallet />
   <BottomNav />
 </div>
