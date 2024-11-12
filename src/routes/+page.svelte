@@ -9,14 +9,15 @@
   import Tv from '@images/Tv.svelte'
   import Farming from '@lib/Farming.svelte'
   import Header from '@lib/Header.svelte'
+  import data from '@lib/messages.json'
   import Stats from '@lib/Stats.svelte'
   import Wallet from '@lib/Wallet.svelte'
   import { iconsState } from '@state/icons.svelte'
 </script>
 
 <svelte:head>
-  <title>Home</title>
-  <meta name="description" content="Svelte demo app" />
+  <title>{data.home_title}</title>
+  <meta name="description" content={data.home_content} />
 </svelte:head>
 
 <main

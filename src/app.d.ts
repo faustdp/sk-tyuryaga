@@ -6,7 +6,6 @@ import type { Snippet } from 'svelte'
 declare global {
   namespace App {
     // interface Error {}
-    // interface Locals {}
     // interface PageData {}
     // interface PageState {}
     // interface Platform {}
@@ -16,6 +15,15 @@ declare global {
 
   type TonUI = TonConnectUI
 
+  interface User {
+    address: string
+    id: number | null
+    first_name: string | null
+    direct_invites: number
+    indirect_invites: number
+    username?: string | null
+  }
+
   interface IconsState {
     readonly icons: {
       cig: boolean
@@ -23,6 +31,16 @@ declare global {
     }
     setCig: () => void
     setTrash: () => void
+  }
+
+  type Status = 0 | 1 | 2 | 3
+
+  interface SocialItem {
+    Icon: Component
+    task: string
+    reward: string
+    status: Status
+    delay?: number
   }
 
   interface Window {

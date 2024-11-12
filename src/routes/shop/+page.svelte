@@ -3,12 +3,13 @@
   import Cigarette from '@lib/images/cigarette.svg?component'
   import Trash from '@lib/images/trash.svg?component'
   import Tv from '@lib/images/Tv.svelte'
+  import data from '@lib/messages.json'
   import { iconsState, setCig, setTrash } from '@state/icons.svelte'
 </script>
 
 <svelte:head>
-  <title>About</title>
-  <meta name="description" content="About this app" />
+  <title>{data.shop_title}</title>
+  <meta name="description" content={data.shop_content} />
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center pt-20">

@@ -7,11 +7,11 @@ import {
   on,
   postEvent,
 } from '@telegram-apps/sdk'
-import { onMount } from 'svelte'
+import { noop } from '@utils'
 
-export function fixTouch() {
+export function fixTouch(): () => void {
   mountSwipeBehavior()
-  if (!isSwipeBehaviorSupported()) return
+  if (!isSwipeBehaviorSupported) return noop
 
   let shouldExpand = false
   let lastTouchEnd = 0
@@ -91,29 +91,28 @@ export function fixTouch() {
     }
   }
 
-  onMount(() => {
-    expandViewport()
-    disableVerticalSwipes()
-    postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false })
-    const removeListener = on('viewport_changed', handleViewportChange)
+  postEvent('web_app_expand')
+  expandViewport()
+  postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false })
+  disableVerticalSwipes()
+  const removeListener = on('viewport_changed', handleViewportChange)
 
-    const html = document.documentElement
-    html.addEventListener('touchstart', handleAppMaximize, { passive: true })
+  const html = document.documentElement
+  html.addEventListener('touchstart', handleAppMaximize, { passive: true })
 
+  if (isIOS || isSafari) {
+    html.addEventListener('touchstart', handleTouchStart, { passive: false })
+    html.addEventListener('touchmove', preventTouchMove, { passive: false })
+    html.addEventListener('touchend', handleDoubleTapIOS, { passive: false })
+  }
+
+  return () => {
+    removeListener()
+    html.removeEventListener('touchstart', handleAppMaximize)
     if (isIOS || isSafari) {
-      html.addEventListener('touchstart', handleTouchStart, { passive: false })
-      html.addEventListener('touchmove', preventTouchMove, { passive: false })
-      html.addEventListener('touchend', handleDoubleTapIOS, { passive: false })
+      html.removeEventListener('touchstart', handleTouchStart)
+      html.removeEventListener('touchmove', preventTouchMove)
+      html.removeEventListener('touchend', handleDoubleTapIOS)
     }
-
-    return () => {
-      removeListener()
-      html.removeEventListener('touchstart', handleAppMaximize)
-      if (isIOS || isSafari) {
-        html.removeEventListener('touchstart', handleTouchStart)
-        html.removeEventListener('touchmove', preventTouchMove)
-        html.removeEventListener('touchend', handleDoubleTapIOS)
-      }
-    }
-  })
+  }
 }

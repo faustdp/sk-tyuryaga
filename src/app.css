@@ -150,3 +150,97 @@ button:focus:not(:focus-visible) {
 .bg-header {
   background: linear-gradient(0deg, rgba(90, 79, 49, 0.1) 4.2%, rgba(41, 36, 36, 0.5) 29.03%, #292424 105.34%);
 }
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+.spinner-rotate {
+  animation: rotate 1.9s linear infinite;
+}
+.spinner-dash {
+  animation: dash 1.4s ease-in-out infinite;
+}
+
+.spinner-arrows {
+  position: relative;
+  width: 40px;
+  height: 32px;
+  display: flex;
+  border-radius: 10px;
+  margin-top: -2px;
+}
+
+.spinner-arrows i {
+  width: 7%;
+  height: 20%;
+  background: white;
+  position: absolute;
+  left: 49%;
+  top: 43%;
+  opacity: 0;
+  border-radius: 50px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  animation: fade 1s linear infinite;
+}
+
+@keyframes fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+
+.spinner-arrows i:nth-child(1) {
+  transform: rotate(0deg) translate(0, -130%);
+  animation-delay: 0s;
+}
+
+.spinner-arrows i:nth-child(2) {
+  transform: rotate(45deg) translate(0, -130%);
+  animation-delay: -0.834s;
+}
+
+.spinner-arrows i:nth-child(3) {
+  transform: rotate(90deg) translate(0, -130%);
+  animation-delay: -0.833s;
+}
+.spinner-arrows i:nth-child(4) {
+  transform: rotate(135deg) translate(0, -130%);
+  animation-delay: -0.7497s;
+}
+.spinner-arrows i:nth-child(5) {
+  transform: rotate(180deg) translate(0, -130%);
+  animation-delay: -0.667s;
+}
+.spinner-arrows i:nth-child(6) {
+  transform: rotate(225deg) translate(0, -130%);
+  animation-delay: -0.5s;
+}
+.spinner-arrows i:nth-child(7) {
+  transform: rotate(270deg) translate(0, -130%);
+  animation-delay: -0.334s;
+}
+.spinner-arrows i:nth-child(8) {
+  transform: rotate(315deg) translate(0, -130%);
+  animation-delay: -0.167s;
+}

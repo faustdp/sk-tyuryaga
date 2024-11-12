@@ -4,12 +4,22 @@
   import '@fontsource/arbutus/400.css'
   import '@fontsource/roboto/400.css'
 
+  import Ig from '@icons/socials/ig.svg?component'
+  import Tg from '@icons/socials/tg.svg?component'
+  import Tt from '@icons/socials/tt.svg?component'
+  import Vk from '@icons/socials/vk.svg?component'
+  import Yt from '@icons/socials/yt.svg?component'
   import BottomNav from '@lib/BottomNav.svelte'
-  import { setIsMounted } from '@state/app.svelte'
-  import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //initData, restoreInitData , retrieveLaunchParams
+  import data from '@lib/messages.json'
+  import { app, setIsLoaded, setIsMounted } from '@state/app.svelte' //setError
+  import {} from '@sveltejs/kit'
+  import { init, isTMA, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //closeMiniApp
+  import { noop, sortTasks } from '@utils'
+  import { TASK_CTX, taskStatus } from '@utils/const'
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
-  import { onMount } from 'svelte'
+  import { validate } from '@utils/verifyUser'
+  import { onMount, setContext } from 'svelte'
 
   import { page } from '$app/stores'
 
@@ -17,29 +27,87 @@
 
   useTonConnect()
 
-  try {
-    init()
-    fixTouch()
-  } catch (_err) {}
+  async function initApp() {
+    const isTG = await isTMA()
+    if (!isTG) {
+      // setError('Tg app')
+    }
+    try {
+      await validate()
+    } catch (_err) {
+      // if (err instanceof Error) {
+      //   if (err.message === 'Data is outdated') {
+      //     closeMiniApp()
+      //   }
+      //   setError(err.message)
+      // } else if (typeof err === 'string') {
+      //   setError(err)
+      // } else {
+      //   setError('Unexpected Error')
+      // }
+    } finally {
+      setIsLoaded()
+    }
+  }
+
+  initApp()
+
+  let tasks: SocialItem[] = $state(
+    sortTasks([
+      {
+        Icon: Yt,
+        task: 'Посмотри видео и впиши код',
+        reward: '200 USDT',
+        status: taskStatus.start,
+        delay: 6000,
+      },
+      {
+        Icon: Tg,
+        task: 'Позови 100 корешей',
+        reward: '200 USDT',
+        status: taskStatus.start,
+        delay: 5000,
+      },
+      {
+        Icon: Tt,
+        task: 'Посмотри видео и впиши код',
+        reward: '200 USDT',
+        status: taskStatus.done,
+      },
+      {
+        Icon: Ig,
+        task: 'Посмотри видео и впиши код',
+        reward: '200 USDT',
+        status: taskStatus.claim,
+      },
+      {
+        Icon: Vk,
+        task: 'Посмотри видео и впиши код',
+        reward: '200 USDT',
+        status: taskStatus.loading,
+      },
+    ]),
+  )
+
+  setContext(TASK_CTX, tasks)
 
   onMount(() => {
-    setIsMounted()
+    let removeListeners = noop
+
     try {
+      init()
       mountMiniApp()
       miniAppReady()
+      removeListeners = fixTouch()
+      setIsMounted()
       // mountBackButton()
       // showBackButton()
     } catch (_err) {}
+
+    return () => {
+      removeListeners()
+    }
   })
-
-  // restoreInitData()
-  // console.log('+layout7', initData.user())
-  // const params = retrieveLaunchParams()
-  // console.log('+layout11', params?.initData?.user)
-
-  // const initData = parseInitData(
-  //   'user=%7B%22id%22%3A883729040%2C%22first_name%22%3A%22Denis%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22paskodenis%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=8084724315231179358&chat_type=private&auth_date=1728214924&hash=34ed36bf7e67585d9d78c6d07bae62c8d59902d22cd24cb119c180cda909ff5d',
-  // )
 
   let { children } = $props()
 </script>
@@ -48,6 +116,10 @@
   class="relative w-full {$page.url.pathname === '/'
     ? 'h-full'
     : 'h-[calc(100%_-_var(--nav-height))]'} overflow-y-auto overflow-x-hidden bg-cdarkblue">
-  {@render children()}
-  <BottomNav />
+  {#if app.error}
+    {data.error_msg} {app.error}
+  {:else if !app.isLoading}
+    {@render children()}
+    <BottomNav />
+  {/if}
 </div>
