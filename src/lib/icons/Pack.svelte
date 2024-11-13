@@ -1,4 +1,8 @@
-<svg width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<script lang="ts">
+  let { ...rest } = $props()
+</script>
+
+<svg {...rest} width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <g clip-path="url(#clip0_935_2441)">
     <path
       opacity="0.99"

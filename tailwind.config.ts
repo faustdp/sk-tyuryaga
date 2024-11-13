@@ -18,6 +18,9 @@ export default {
         cwallet: 'rgb(var(--c-wallet) / <alpha-value>)',
         cdarkblue: 'rgb(var(--c-darkblue) / <alpha-value>)',
         cborder: 'rgb(var(--c-border) / <alpha-value>)',
+        ctabs: 'rgb(var(--c-tabs) / <alpha-value>)',
+        ccard: 'rgb(var(--c-card) / <alpha-value>)',
+        ccardboost: 'rgb(var(--c-cardboost) / <alpha-value>)',
       },
       width: {
         limit: 'var(--width-limit)',
@@ -37,6 +40,9 @@ export default {
       },
       content: {
         empty: '""',
+      },
+      zIndex: {
+        one: '1',
       },
     },
   },

@@ -50,7 +50,7 @@
     <Cigarette width="64" height="64" class="relative" />
   </div>
   <h1 class="shadow-heading mb-2.5 text-xl">{data.available_tasks}</h1>
-  <p class="roboto mb-4 max-w-sm text-center text-xs tracking-wide">
+  <p class="roboto mb-4 max-w-sm text-center text-xs tracking-wide text-textgrey">
     {data.tasks_desc}
   </p>
   <div class="relative mb-7 h-9 w-[calc(100%_+_2rem)]">
@@ -58,14 +58,15 @@
   </div>
   <ul class="flex w-full list-none flex-col">
     {#each tasks as socialItem (socialItem)}
+      {@const isDone = socialItem.status === taskStatus.done}
       {@const Icon = socialItem.Icon}
       <li
         animate:flip={{ duration: 250 }}
         class="flex flex-1 items-center gap-x-3 border-b border-solid border-cborder py-2">
         <Icon />
-        <span class="flex flex-1 flex-col gap-y-2.5 text-sm">
+        <span class="flex flex-1 flex-col gap-y-2.5 text-sm {isDone ? 'text-cborder' : ''}">
           {socialItem.task}
-          <span class="text-xs text-textgrey">{socialItem.reward}</span>
+          <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">{socialItem.reward}</span>
         </span>
         <button
           onclick={() => handleClick(socialItem)}

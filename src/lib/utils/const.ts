@@ -110,3 +110,7 @@ export const taskStatus = {
 } as const
 
 export const TASK_CTX = 'task'
+
+export const BOOST = ['time', 'income', 'combo'] as const
+
+export type ShopTabs = 0 | 1 | 2

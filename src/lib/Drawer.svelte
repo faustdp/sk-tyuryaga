@@ -19,7 +19,7 @@
    mx-auto flex w-full -translate-x-1/2 justify-center bg-cdarkblue
      pb-10 pt-12 shadow-wallet maxheight:!left-0">
     <Chain />
-    <div class="flex w-full max-w-[340px] flex-col items-center gap-y-4">
+    <div class="flex w-full max-w-[360px] flex-col items-center gap-y-4 px-2">
       <button
         onclick={handleClose}
         class="-mr-2 flex items-center justify-center self-end outline-none transition-transform active:scale-95">

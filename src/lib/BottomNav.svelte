@@ -5,6 +5,7 @@
   import Inmates from '@icons/inmates.svg?component'
   import Pack from '@icons/Pack.svelte'
   import Quest from '@icons/quest.svg?component'
+  import data from '@lib/messages.json'
 </script>
 
 <!-- max(0px,_calc((var(--screen)_-_var(--height-limit))_/_2)) -->
@@ -14,10 +15,10 @@
   <nav
     class="flex w-full max-w-limit justify-around px-3 pb-9 pt-8 smallscreen:justify-center"
     data-sveltekit-keepfocus>
-    <NavBtn url="/friends" Icon={Inmates}>Кенты</NavBtn>
-    <NavBtn url="/tasks" Icon={Quest}>Задания</NavBtn>
-    <NavBtn url="/" Icon={Cell} isBig>Камера</NavBtn>
-    <NavBtn url="/shop" Icon={Pack}>Магазин</NavBtn>
-    <NavBtn url="/" Icon={Brass} isBlue>Бусты</NavBtn>
+    <NavBtn url="/friends" Icon={Inmates}>{data.nav_frens}</NavBtn>
+    <NavBtn url="/tasks" Icon={Quest}>{data.nav_tasks}</NavBtn>
+    <NavBtn url="/" Icon={Cell} isBig>{data.nav_cell}</NavBtn>
+    <NavBtn url="/shop" Icon={Pack}>{data.nav_shop}</NavBtn>
+    <NavBtn url="/" Icon={Brass} isBlue>{data.nav_inventory}</NavBtn>
   </nav>
 </footer>

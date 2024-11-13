@@ -27,12 +27,12 @@
     "globals": "^15.12.0",
     "npm-run-all2": "^7.0.1",
     "prettier": "^3.3.3",
-    "prettier-plugin-svelte": "^3.2.7",
+    "prettier-plugin-svelte": "^3.2.8",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "svelte-check": "^4.0.6",
+    "svelte-check": "^4.0.7",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.13.0"
+    "typescript-eslint": "^8.14.0"
   },
   "dependencies": {
     "@fontsource/arbutus": "^5.1.0",
@@ -44,7 +44,7 @@
     "@sveltejs/adapter-static": "^3.0.6",
     "@sveltejs/kit": "^2.8.0",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
-    "@telegram-apps/sdk": "^2.5.2",
+    "@telegram-apps/sdk": "^2.6.0",
     "@ton/core": "^0.59.0",
     "@ton/ton": "^15.1.0",
     "@tonconnect/sdk": "^3.0.5",
@@ -54,11 +54,11 @@
     "dotenv": "^16.4.5",
     "express": "^5.0.1",
     "lottie-web": "^5.12.2",
-    "svelte": "^5.1.13",
+    "svelte": "^5.1.15",
     "svelte-confetti": "^2.1.2",
     "tailwindcss": "^3.4.14",
     "telegraf": "^4.16.3",
-    "vite": "^5.4.10",
+    "vite": "^5.4.11",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vitest": "^2.1.4"
   }

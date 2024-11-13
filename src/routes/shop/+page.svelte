@@ -1,10 +1,60 @@
 <script lang="ts">
-  import Box from '@lib/images/Box.svelte'
-  import Cigarette from '@lib/images/cigarette.svg?component'
-  import Trash from '@lib/images/trash.svg?component'
-  import Tv from '@lib/images/Tv.svelte'
+  import Cigarette from '@icons/cigarette.svg?component'
+  import Pack from '@icons/Pack.svelte'
+  import WalletBtn from '@icons/WalletBtn.svelte'
+  import ShopCard from '@lib/components/ShopCard.svelte'
+  import Drawer from '@lib/Drawer.svelte'
+  // import Box from '@lib/images/Box.svelte'
+  // import Cigarette from '@lib/images/cigarette.svg?component'
+  // import Trash from '@lib/images/trash.svg?component'
+  // import Tv from '@lib/images/Tv.svelte'
   import data from '@lib/messages.json'
-  import { iconsState, setCig, setTrash } from '@state/icons.svelte'
+  import { app, setActiveTab } from '@state/app.svelte'
+  import { BOOST, cubicOut, type ShopTabs } from '@utils/const'
+  import useRipple from '@utils/useRipple'
+
+  let tabCont: HTMLDivElement
+  let activeTab: HTMLSpanElement
+  let isMounted = false
+
+  let isDrawerOpened = $state(false)
+  let selectedItem = $state(100)
+  let isTaskAllowed = $state(false)
+
+  function closeDrawer() {
+    isDrawerOpened = false
+  }
+
+  function openDrawer() {
+    isDrawerOpened = true
+    selectedItem = 20
+  }
+
+  const tabs: Map<ShopTabs, string> = new Map([
+    [0, data[BOOST[0]]],
+    [1, data[BOOST[1]]],
+    [2, data[BOOST[2]]],
+  ])
+
+  function handleTab(tab: ShopTabs) {
+    if (app.activeShopTab === tab) return
+    setActiveTab(tab)
+  }
+
+  $effect(() => {
+    const index = app.activeShopTab
+    const tab = tabCont.children[index + 1] as HTMLButtonElement
+    const left = tab.getBoundingClientRect().left - tabCont.getBoundingClientRect().left
+    activeTab.animate(
+      {
+        transform: `translateX(${left}px)`,
+      },
+      { duration: isMounted ? 270 : 0, easing: cubicOut, fill: 'both' },
+    )
+    if (!isMounted) {
+      isMounted = true
+    }
+  })
 </script>
 
 <svelte:head>
@@ -12,8 +62,43 @@
   <meta name="description" content={data.shop_content} />
 </svelte:head>
 
-<div class="flex flex-col items-center justify-center pt-20">
-  <div class="flex items-center">
+<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pb-2 pt-4">
+  <div class="page-circle relative mb-5">
+    <Pack class="size-11" />
+  </div>
+  <h1 class="shadow-heading mb-5 text-xl">{data.shop_title}</h1>
+  <p class="roboto mb-4 max-w-sm text-center text-xs tracking-wide text-textgrey">
+    {data.shop_desc}
+  </p>
+  <div bind:this={tabCont} class="relative z-0 mb-4 flex w-full justify-center rounded-md bg-ctabs">
+    <span
+      bind:this={activeTab}
+      class="pointer-events-none absolute left-0 -z-one h-full w-1/3 rounded-md bg-cgreen will-change-transform">
+    </span>
+    {#each tabs as [key, value]}
+      <button
+        use:useRipple={{ color: 'currentColor' }}
+        class="relative flex-1 overflow-hidden rounded-md py-3 tracking-wide"
+        onclick={() => handleTab(key)}>
+        <span class="pointer-events-none">{value}</span>
+      </button>
+    {/each}
+  </div>
+  <ShopCard onclick={openDrawer} />
+  <ShopCard onclick={openDrawer} />
+  <Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
+    <button class="outline-none transition-transform will-change-transform active:scale-95">
+      <WalletBtn
+        fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : '#728B97'}
+        stroke={isTaskAllowed ? '#95804C' : undefined} />
+      <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
+        {data.shop_upgrade}
+        <Cigarette class="mr-1" width="38" height="23" />
+        {selectedItem}
+      </span>
+    </button>
+  </Drawer>
+  <!-- <div class="flex items-center">
     Click: <button class="ml-4 h-20 w-20" onclick={setTrash}>
       {#if iconsState.trash}
         <Trash />
@@ -30,5 +115,5 @@
         <Tv classes="static" />
       {/if}
     </button>
-  </div>
+  </div> -->
 </div>

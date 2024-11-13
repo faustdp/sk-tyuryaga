@@ -1,4 +1,4 @@
-import { CLAIMED } from '@utils/const'
+import { CLAIMED, type ShopTabs } from '@utils/const'
 
 type Farm = 'farming' | 'farmed' | 'claimed'
 
@@ -10,6 +10,7 @@ interface State {
   endTime: number
   isWalletOpened: boolean
   isWalletConnected: boolean
+  activeShopTab: ShopTabs
 }
 
 function appStore() {
@@ -21,6 +22,7 @@ function appStore() {
     endTime: 0,
     isWalletOpened: false,
     isWalletConnected: false,
+    activeShopTab: 0,
   })
 
   function setFarm(farming: Farm) {
@@ -62,6 +64,10 @@ function appStore() {
     state.isWalletConnected = false
   }
 
+  function setActiveTab(tab: ShopTabs) {
+    state.activeShopTab = tab
+  }
+
   return {
     get app() {
       return state
@@ -75,6 +81,7 @@ function appStore() {
     closeWallet,
     connectWallet,
     disconnectWallet,
+    setActiveTab,
   }
 }
 
@@ -89,6 +96,7 @@ const {
   closeWallet,
   connectWallet,
   disconnectWallet,
+  setActiveTab,
 } = appStore()
 
 export {
@@ -102,4 +110,5 @@ export {
   closeWallet,
   connectWallet,
   disconnectWallet,
+  setActiveTab,
 }
