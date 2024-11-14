@@ -1,6 +1,7 @@
 import '@poppanator/sveltekit-svg/dist/svg'
 
 import { type TonConnectUI } from '@tonconnect/ui'
+import { BOOST } from '@utils/const'
 import type { Snippet } from 'svelte'
 
 declare global {
@@ -33,13 +34,18 @@ declare global {
     setTrash: () => void
   }
 
-  type Status = 0 | 1 | 2 | 3
+  type Status = 0 | 1 | 2 | 3 | 4
+
+  type BoostValue = (typeof BOOST)[number]
+
+  type TaskType = 'code' | 'link'
 
   interface SocialItem {
     Icon: Component
     task: string
     reward: string
     status: Status
+    type: TaskType
     delay?: number
   }
 

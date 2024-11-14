@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { classes = 'absolute top-[-13px] z-[-1] size-full' } = $props()
+  let { classes = 'absolute top-[-18px] -z-one size-full' } = $props()
 </script>
 
 <svg

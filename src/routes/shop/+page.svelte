@@ -1,7 +1,11 @@
 <script lang="ts">
+  import ArrowRight from '@icons/arrowRight.svg?component'
+  import CheckDone from '@icons/checkDone.svg?component'
   import Cigarette from '@icons/cigarette.svg?component'
   import Pack from '@icons/Pack.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
+  import BoostTag from '@lib/components/BoostTag.svelte'
+  import LevelCard from '@lib/components/LevelCard.svelte'
   import ShopCard from '@lib/components/ShopCard.svelte'
   import Drawer from '@lib/Drawer.svelte'
   // import Box from '@lib/images/Box.svelte'
@@ -12,6 +16,8 @@
   import { app, setActiveTab } from '@state/app.svelte'
   import { BOOST, cubicOut, type ShopTabs } from '@utils/const'
   import useRipple from '@utils/useRipple'
+  import { sineOut } from 'svelte/easing'
+  import { fly } from 'svelte/transition'
 
   let tabCont: HTMLDivElement
   let activeTab: HTMLSpanElement
@@ -55,6 +61,11 @@
       isMounted = true
     }
   })
+
+  function test(el: any) {
+    // el.style.position = 'absolute'
+    el.target.style.position = 'absolute'
+  }
 </script>
 
 <svelte:head>
@@ -84,13 +95,60 @@
       </button>
     {/each}
   </div>
-  <ShopCard onclick={openDrawer} />
-  <ShopCard onclick={openDrawer} />
+  <div class="relative w-full">
+    {#key app.activeShopTab}
+      <div
+        out:fly={{ duration: 220, x: 200, easing: sineOut }}
+        in:fly={{ duration: 220, x: -200, easing: sineOut }}
+        onoutrostart={test}
+        class="flex w-full flex-col">
+        <ShopCard onclick={openDrawer} />
+        <ShopCard onclick={openDrawer} />
+      </div>
+    {/key}
+  </div>
   <Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
+    <div class="mb-2 flex items-center gap-x-2">
+      <LevelCard />
+      <ArrowRight class="mt-[22px]" />
+      <LevelCard level={2} />
+    </div>
+    <h2 class="shadow-heading mb-2 text-base">{data.cig_1}</h2>
+    <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
+      Описание предмета описание предмета nbnjkkkgедмета описание предмета описание премета описание предмета qwertyui
+    </p>
+    <div class="mb-4 flex gap-x-6"><BoostTag boost={BOOST[0]} /> <BoostTag boost={BOOST[2]} /></div>
+    <h3 class="shadow-heading mb-2 text-base text-cyellow">{data.shop_requirements}</h3>
+    <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
+      Чтобы прокачать элемент для следующего уровня необходимо выполнить следующие условия:
+    </p>
+    <ul class="mb-3 flex flex-col gap-y-3">
+      <li class="flex w-full items-center gap-x-2.5">
+        {#if true}
+          <CheckDone />
+        {:else}
+          <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+        {/if}
+        <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+          Прокачать все эелементы до 1 уровня
+        </span>
+      </li>
+      <li class="flex w-full items-center gap-x-2.5">
+        {#if false}
+          <CheckDone />
+        {:else}
+          <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+        {/if}
+        <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+          Прокачать все эелементы до 1 уровня Прокачать все эелементы до 1 уровня
+        </span>
+      </li>
+    </ul>
+
     <button class="outline-none transition-transform will-change-transform active:scale-95">
       <WalletBtn
         fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : '#728B97'}
-        stroke={isTaskAllowed ? '#95804C' : undefined} />
+        stroke={isTaskAllowed ? 'var(--darkyellow)' : undefined} />
       <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
         {data.shop_upgrade}
         <Cigarette class="mr-1" width="38" height="23" />

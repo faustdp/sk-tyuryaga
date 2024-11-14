@@ -59,6 +59,7 @@
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.start,
+        type: 'code',
         delay: 6000,
       },
       {
@@ -66,25 +67,29 @@
         task: 'Позови 100 корешей',
         reward: '200 USDT',
         status: taskStatus.start,
+        type: 'code',
         delay: 5000,
       },
       {
         Icon: Tt,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
-        status: taskStatus.done,
+        status: taskStatus.check,
+        type: 'link',
       },
       {
         Icon: Ig,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.claim,
+        type: 'link',
       },
       {
         Icon: Vk,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.loading,
+        type: 'link',
       },
     ]),
   )

@@ -105,8 +105,9 @@ export const levels = [
 export const taskStatus = {
   start: 0,
   loading: 1,
-  claim: 2,
-  done: 3,
+  check: 2,
+  claim: 3,
+  done: 4,
 } as const
 
 export const TASK_CTX = 'task'

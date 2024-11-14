@@ -23,6 +23,7 @@
   --height-limit: 915px;
   --screen: 100vh;
   --nav-height: 146px;
+  --dark-yellow: #95804c;
   font-family: var(--font-russo);
   color: #fff;
 }

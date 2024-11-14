@@ -83,7 +83,7 @@
 
 {#snippet btn({ text, onclick, classes = '' }: { text: string; onclick: () => void; classes?: string })}
   <button class="{classes} outline-none transition-transform will-change-transform active:scale-95" {onclick}>
-    <WalletBtn fill="rgb(var(--c-yellow))" stroke="#95804C" />
+    <WalletBtn fill="rgb(var(--c-yellow))" stroke="var(--darkyellow)" />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">{text}</span>
   </button>
 {/snippet}
@@ -129,6 +129,6 @@
 </div>
 
 <Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
-  {@render btn({ text: data.send_tg, onclick: () => null, classes: 'mb-0.5' })}
-  {@render btn({ text: data.copy_link, onclick: () => null })}
+  {@render btn({ text: data.send_tg, onclick: () => null, classes: 'mb-0.5 mt-4' })}
+  {@render btn({ text: data.copy_link, onclick: () => null, classes: 'mt-4' })}
 </Drawer>

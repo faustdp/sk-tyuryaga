@@ -75,10 +75,12 @@
             <use
               href="#social-chain"
               color={socialItem.status === taskStatus.start || socialItem.status === taskStatus.loading
-                ? 'rgb(var(--c-brown))'
+                ? 'rgb(var(--c-yellow))'
                 : socialItem.status === taskStatus.claim
                   ? 'rgb(var(--c-green))'
-                  : 'rgb(var(--c-text-grey))'}>
+                  : socialItem.status === taskStatus.check
+                    ? 'rgb(var(--c-brown))'
+                    : 'rgb(var(--c-text-grey))'}>
             </use>
           </svg>
           <span class="relative text-sm">
@@ -86,6 +88,8 @@
               {data.start}
             {:else if socialItem.status === taskStatus.claim}
               {data.take}
+            {:else if socialItem.status === taskStatus.check}
+              {data.check}
             {:else if socialItem.status === taskStatus.loading}
               <!--  <Spinner /> -->
               {@render spinner()}

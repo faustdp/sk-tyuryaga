@@ -25,7 +25,7 @@
 <svg
   width="343"
   height="60"
-  class="absolute z-[-1]"
+  class="absolute -z-one"
   viewBox="0 0 343 60"
   fill="none"
   xmlns="http://www.w3.org/2000/svg">
