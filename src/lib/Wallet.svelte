@@ -1,8 +1,6 @@
 <script lang="ts">
   import Link from '@icons/link.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import Drawer from '@lib/Drawer.svelte'
-  import data from '@lib/messages.json'
   import { app, closeWallet } from '@state/app.svelte'
   import { user } from '@state/user.svelte'
   import { logServer, shortenAddress } from '@utils'
@@ -10,6 +8,9 @@
   import { getContext } from 'svelte'
   import { quartOut } from 'svelte/easing'
   import { scale } from 'svelte/transition'
+
+  import Drawer from '@/Drawer.svelte'
+  import data from '@/messages.json'
 
   const tonConnectUI = getContext<TonUI>(TON_KEY)
 
@@ -46,7 +47,7 @@
   <button
     onclick={handleWallet}
     class="relative mt-4 outline-none transition-transform will-change-transform active:scale-95">
-    <WalletBtn fill={app.isWalletConnected ? '#728B97' : 'rgb(var(--c-blue))'} />
+    <WalletBtn fill={app.isWalletConnected ? 'rgb(var(--c-lightblue))' : 'rgb(var(--c-blue))'} />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center">
       {#if app.isWalletConnected}
         {data.wallet_disconnect}

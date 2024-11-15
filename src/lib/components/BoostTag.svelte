@@ -1,8 +1,9 @@
 <script lang="ts">
   import Flash from '@icons/flash.svg?component'
   import Timesand from '@icons/timesand.svg?component'
-  import data from '@lib/messages.json'
   import { BOOST } from '@utils/const'
+
+  import data from '@/messages.json'
 
   let { boost, amount = 123 }: { boost: BoostValue; amount?: number } = $props()
 </script>

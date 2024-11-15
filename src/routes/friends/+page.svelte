@@ -3,10 +3,11 @@
   import FriendsAmount from '@icons/friendsAmount.svg?component'
   import Inmates from '@icons/inmates.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import Drawer from '@lib/Drawer.svelte'
-  import data from '@lib/messages.json'
   import { app } from '@state/app.svelte'
   import { FARMED } from '@utils/const'
+
+  import Drawer from '@/Drawer.svelte'
+  import data from '@/messages.json'
 
   interface FriendStat {
     name: string
@@ -104,7 +105,7 @@
         <WalletBtn
           width={165}
           height={37}
-          stroke={app.farm === FARMED ? '#186F5A' : 'black'}
+          stroke={app.farm === FARMED ? 'var(--dark-green)' : 'black'}
           fill={app.farm === FARMED ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'} />
         <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xs">
           {#if app.farm === FARMED}

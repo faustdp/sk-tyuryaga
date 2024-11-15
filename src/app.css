@@ -19,11 +19,14 @@
   --c-tabs: 19 47 66;
   --c-card: 57 98 124;
   --c-cardboost: 86 129 156;
+  --c-lightblue: 114 139 151;
+  --input-red: 250 84 75;
   --width-limit: 540px;
   --height-limit: 915px;
   --screen: 100vh;
   --nav-height: 146px;
   --dark-yellow: #95804c;
+  --dark-green: #186f5a;
   font-family: var(--font-russo);
   color: #fff;
 }
@@ -269,4 +272,39 @@ button:focus:not(:focus-visible) {
 
 .card-level-clip {
   clip-path: polygon(20% 0, 87% 0, 100% 84%, 6% 83%);
+}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 }

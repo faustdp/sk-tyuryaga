@@ -2,48 +2,50 @@
   import Chain from '@icons/Chain.svelte'
   import Cigarette from '@icons/cigarette.svg?component'
   import Done from '@icons/done.svg?component'
-  // import Spinner from '@icons/Spinner.svelte'
-  import data from '@lib/messages.json'
+  import Spinner from '@icons/Spinner.svelte'
+  import { openModal } from '@state/app.svelte'
+  import { app } from '@state/app.svelte'
   import { sortTasks, w8 } from '@utils'
   import { TASK_CTX, taskStatus } from '@utils/const'
   import { getContext } from 'svelte'
   import { flip } from 'svelte/animate'
 
+  import Modal from '@/components/Modal.svelte'
+  import data from '@/messages.json'
+
   let tasks: SocialItem[] = getContext(TASK_CTX)
+  let selectedTaskCheck: SocialItem | null = $state(null)
 
   async function handleClick(item: SocialItem) {
-    if (item.status === taskStatus.done) return
+    if (item.status === taskStatus.done || item.status === taskStatus.loading) return
     if (item.status === taskStatus.claim) {
       item.status = taskStatus.done
       sortTasks(tasks)
     } else if (item.status === taskStatus.start) {
       item.status = taskStatus.loading
-      window.open('https://x.com/intent/follow?screen_name=NASA', '_blank')
+      window.open(item.link, '_blank')
       if (item.delay) {
         await w8(item.delay)
         item.status = taskStatus.claim
       }
+    } else if (item.status === taskStatus.check) {
+      selectedTaskCheck = item
+      openModal()
     }
   }
+
+  $effect(() => {
+    const isModalOpened = app.isModalOpened
+    if (!isModalOpened) {
+      selectedTaskCheck = null
+    }
+  })
 </script>
 
 <svelte:head>
   <title>{data.tasks_title}</title>
   <meta name="description" content={data.tasks_content} />
 </svelte:head>
-
-{#snippet spinner()}
-  <span class="spinner-arrows">
-    <i></i>
-    <i></i>
-    <i></i>
-    <i></i>
-    <i></i>
-    <i></i>
-    <i></i>
-    <i></i>
-  </span>
-{/snippet}
 
 <div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-4">
   <div class="page-circle relative mb-5">
@@ -91,8 +93,7 @@
             {:else if socialItem.status === taskStatus.check}
               {data.check}
             {:else if socialItem.status === taskStatus.loading}
-              <!--  <Spinner /> -->
-              {@render spinner()}
+              <Spinner />
             {:else}
               <Done />
             {/if}
@@ -102,3 +103,5 @@
     {/each}
   </ul>
 </div>
+
+<Modal task={selectedTaskCheck} />

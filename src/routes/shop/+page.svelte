@@ -4,20 +4,21 @@
   import Cigarette from '@icons/cigarette.svg?component'
   import Pack from '@icons/Pack.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import BoostTag from '@lib/components/BoostTag.svelte'
-  import LevelCard from '@lib/components/LevelCard.svelte'
-  import ShopCard from '@lib/components/ShopCard.svelte'
-  import Drawer from '@lib/Drawer.svelte'
-  // import Box from '@lib/images/Box.svelte'
-  // import Cigarette from '@lib/images/cigarette.svg?component'
-  // import Trash from '@lib/images/trash.svg?component'
-  // import Tv from '@lib/images/Tv.svelte'
-  import data from '@lib/messages.json'
   import { app, setActiveTab } from '@state/app.svelte'
   import { BOOST, cubicOut, type ShopTabs } from '@utils/const'
   import useRipple from '@utils/useRipple'
   import { sineOut } from 'svelte/easing'
   import { fly } from 'svelte/transition'
+
+  import BoostTag from '@/components/BoostTag.svelte'
+  import LevelCard from '@/components/LevelCard.svelte'
+  import ShopCard from '@/components/ShopCard.svelte'
+  import Drawer from '@/Drawer.svelte'
+  // import Box from '@/images/Box.svelte'
+  // import Cigarette from '@/images/cigarette.svg?component'
+  // import Trash from '@/images/trash.svg?component'
+  // import Tv from '@/images/Tv.svelte'
+  import data from '@/messages.json'
 
   let tabCont: HTMLDivElement
   let activeTab: HTMLSpanElement
@@ -62,9 +63,9 @@
     }
   })
 
-  function test(el: any) {
-    // el.style.position = 'absolute'
-    el.target.style.position = 'absolute'
+  function handleOutroStart(event: any) {
+    if (!event.target) return
+    event.target.style.position = 'absolute'
   }
 </script>
 
@@ -100,7 +101,7 @@
       <div
         out:fly={{ duration: 220, x: 200, easing: sineOut }}
         in:fly={{ duration: 220, x: -200, easing: sineOut }}
-        onoutrostart={test}
+        onoutrostart={handleOutroStart}
         class="flex w-full flex-col">
         <ShopCard onclick={openDrawer} />
         <ShopCard onclick={openDrawer} />
@@ -147,7 +148,7 @@
 
     <button class="outline-none transition-transform will-change-transform active:scale-95">
       <WalletBtn
-        fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : '#728B97'}
+        fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
         stroke={isTaskAllowed ? 'var(--darkyellow)' : undefined} />
       <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
         {data.shop_upgrade}

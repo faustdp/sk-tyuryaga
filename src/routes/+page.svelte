@@ -7,12 +7,13 @@
   import Steam from '@images/Steam.svelte'
   import Trash from '@images/trash.svg?component'
   import Tv from '@images/Tv.svelte'
-  import Farming from '@lib/Farming.svelte'
-  import Header from '@lib/Header.svelte'
-  import data from '@lib/messages.json'
-  import Stats from '@lib/Stats.svelte'
-  import Wallet from '@lib/Wallet.svelte'
   import { iconsState } from '@state/icons.svelte'
+
+  import Farming from '@/Farming.svelte'
+  import Header from '@/Header.svelte'
+  import data from '@/messages.json'
+  import Stats from '@/Stats.svelte'
+  import Wallet from '@/Wallet.svelte'
 </script>
 
 <svelte:head>

@@ -38,14 +38,13 @@ declare global {
 
   type BoostValue = (typeof BOOST)[number]
 
-  type TaskType = 'code' | 'link'
-
   interface SocialItem {
     Icon: Component
     task: string
     reward: string
     status: Status
-    type: TaskType
+    link: string
+    code?: string
     delay?: number
   }
 

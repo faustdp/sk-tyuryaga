@@ -1,7 +1,8 @@
-import data from '@lib/messages.json'
 import { setUser } from '@state/user.svelte'
 import { retrieveLaunchParams } from '@telegram-apps/sdk'
 import { meUrl } from '@utils/const'
+
+import data from '@/messages.json'
 
 interface ValidationResponse {
   valid: boolean

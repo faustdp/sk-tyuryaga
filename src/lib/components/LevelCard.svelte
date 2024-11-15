@@ -1,6 +1,7 @@
 <script lang="ts">
   import CardLevel from '@icons/cardLevel.svg?component'
-  import data from '@lib/messages.json'
+
+  import data from '@/messages.json'
 
   let { level = 1 }: { level?: number } = $props()
 </script>

@@ -9,8 +9,6 @@
   import Tt from '@icons/socials/tt.svg?component'
   import Vk from '@icons/socials/vk.svg?component'
   import Yt from '@icons/socials/yt.svg?component'
-  import BottomNav from '@lib/BottomNav.svelte'
-  import data from '@lib/messages.json'
   import { app, setIsLoaded, setIsMounted } from '@state/app.svelte' //setError
   import {} from '@sveltejs/kit'
   import { init, isTMA, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //closeMiniApp
@@ -21,7 +19,10 @@
   import { validate } from '@utils/verifyUser'
   import { onMount, setContext } from 'svelte'
 
+  import BottomNav from '@/BottomNav.svelte'
+  import data from '@/messages.json'
   import { page } from '$app/stores'
+  import * as Dialog from '$lib/components/dialog/'
 
   console.clear()
 
@@ -58,38 +59,46 @@
         Icon: Yt,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
-        status: taskStatus.start,
-        type: 'code',
-        delay: 6000,
+        status: taskStatus.check,
+        link: 'https://google.com',
+        code: '123456',
       },
       {
         Icon: Tg,
         task: 'Позови 100 корешей',
         reward: '200 USDT',
         status: taskStatus.start,
-        type: 'code',
+        link: 'https://x.com/intent/follow?screen_name=NASA',
         delay: 5000,
       },
       {
         Icon: Tt,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
+        status: taskStatus.done,
+        link: 'https://google.com',
+      },
+      {
+        Icon: Yt,
+        task: 'Посмотри видео и впиши код',
+        reward: '200 USDT',
         status: taskStatus.check,
-        type: 'link',
+        link: 'https://google.com',
+        code: 'asdfgh',
       },
       {
         Icon: Ig,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.claim,
-        type: 'link',
+        link: 'https://google.com',
       },
       {
         Icon: Vk,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.loading,
-        type: 'link',
+        link: 'https://google.com',
       },
     ]),
   )
@@ -121,10 +130,12 @@
   class="relative w-full {$page.url.pathname === '/'
     ? 'h-full'
     : 'h-[calc(100%_-_var(--nav-height))]'} overflow-y-auto overflow-x-hidden bg-cdarkblue">
-  {#if app.error}
-    {data.error_msg} {app.error}
-  {:else if !app.isLoading}
-    {@render children()}
-    <BottomNav />
-  {/if}
+  <Dialog.Root bind:open={app.isModalOpened}>
+    {#if app.error}
+      {data.error_msg} {app.error}
+    {:else if !app.isLoading}
+      {@render children()}
+      <BottomNav />
+    {/if}
+  </Dialog.Root>
 </div>

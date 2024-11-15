@@ -3,10 +3,11 @@
   import CardLevel from '@icons/cardLevel.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import Spider from '@images/Spider.svelte'
-  import dudka from '@lib/images/dudka.webp'
-  import data from '@lib/messages.json'
   import { noop } from '@utils'
   import { BOOST } from '@utils/const'
+
+  import dudka from '@/images/dudka.webp'
+  import data from '@/messages.json'
 
   let {
     title = 'Советское шампанское',

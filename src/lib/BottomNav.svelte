@@ -5,7 +5,8 @@
   import Inmates from '@icons/inmates.svg?component'
   import Pack from '@icons/Pack.svelte'
   import Quest from '@icons/quest.svg?component'
-  import data from '@lib/messages.json'
+
+  import data from '@/messages.json'
 </script>
 
 <!-- max(0px,_calc((var(--screen)_-_var(--height-limit))_/_2)) -->

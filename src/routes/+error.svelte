@@ -1,6 +1,5 @@
 <script>
-  import data from '@lib/messages.json'
-
+  import data from '@/messages.json'
   import { page } from '$app/stores'
 
   console.log('+error4', $page.error)

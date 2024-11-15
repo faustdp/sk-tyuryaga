@@ -11,6 +11,7 @@ interface State {
   isWalletOpened: boolean
   isWalletConnected: boolean
   activeShopTab: ShopTabs
+  isModalOpened: boolean
 }
 
 function appStore() {
@@ -23,6 +24,7 @@ function appStore() {
     isWalletOpened: false,
     isWalletConnected: false,
     activeShopTab: 0,
+    isModalOpened: false,
   })
 
   function setFarm(farming: Farm) {
@@ -68,6 +70,14 @@ function appStore() {
     state.activeShopTab = tab
   }
 
+  function openModal() {
+    state.isModalOpened = true
+  }
+
+  function closeModal() {
+    state.isModalOpened = false
+  }
+
   return {
     get app() {
       return state
@@ -82,6 +92,8 @@ function appStore() {
     connectWallet,
     disconnectWallet,
     setActiveTab,
+    openModal,
+    closeModal,
   }
 }
 
@@ -97,6 +109,8 @@ const {
   connectWallet,
   disconnectWallet,
   setActiveTab,
+  openModal,
+  closeModal,
 } = appStore()
 
 export {
@@ -111,4 +125,6 @@ export {
   connectWallet,
   disconnectWallet,
   setActiveTab,
+  openModal,
+  closeModal,
 }
