@@ -1,10 +1,12 @@
 function userStore() {
   let state = $state<User>({
-    address: '',
     id: null,
     first_name: '',
+    address: '',
     direct_invites: 0,
     indirect_invites: 0,
+    cigs: 0,
+    level: 0,
     username: null,
   })
 
@@ -16,15 +18,23 @@ function userStore() {
     state = { ...state, ...user }
   }
 
+  function setCigs(cigs: number) {
+    state.cigs += cigs
+  }
+
+  function upLevel() {
+    state.level += 1
+  }
+
   return {
     get user() {
       return state
     },
     setAddress,
     setUser,
+    setCigs,
+    upLevel,
   }
 }
 
-const { user, setAddress, setUser } = userStore()
-
-export { user, setAddress, setUser }
+export const { user, setAddress, setUser, setCigs, upLevel } = userStore()

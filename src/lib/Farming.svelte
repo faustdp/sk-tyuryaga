@@ -3,12 +3,17 @@
   import cigarette from '@icons/cigarette.svg?url'
   import FarmBtn from '@icons/FarmBtn.svelte'
   import { app, setEndTime, setFarm } from '@state/app.svelte'
+  import { setCigs } from '@state/user.svelte'
   import { formatTime } from '@utils'
-  import { CLAIMED, FARM_TIME, FARMED, FARMING } from '@utils/const'
+  import { CLAIMED, FARM_TIME, FARMED, FARMING, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
   import { tweened } from 'svelte/motion'
   import { Confetti } from 'svelte-confetti'
+
+  import data from '@/messages.json'
+
+  const CIGS_NUM = 100
 
   function getProgress(time: number) {
     const now = Date.now()
@@ -18,8 +23,6 @@
     }
     return Math.max(0, (time - now) / FARM_TIME)
   }
-
-  const CIGS_NUM = 100
 
   const prevProgress = app.endTime === 0 ? 1 : getProgress(app.endTime)
   let wasFarming = app.endTime !== 0 && prevProgress !== 0
@@ -98,6 +101,7 @@
       $progress = 0
     } else if (app.farm === FARMED) {
       setFarm(CLAIMED)
+      setCigs(CIGS_NUM)
     }
   }
 
@@ -105,7 +109,7 @@
     time = formatTime($progress * FARM_TIME)
     timeInterval = setInterval(() => {
       time = formatTime($progress * FARM_TIME)
-    }, 1000)
+    }, SECOND)
   }
 
   function stopInterval() {
@@ -129,12 +133,13 @@
     onmouseup={removeActive}
     onmouseleave={removeActive}>
     {#if app.farm === FARMED}
-      Сюда 100 <Cigarette class="mb-1" />
+      {data.take} 100 <Cigarette class="mb-1" />
     {:else if app.farm === FARMING}
-      Фарминг <span>{cigs}</span>
+      {data.farming}
+      <span>{cigs}</span>
       <span class="mb-[-3px] text-xs">{time}</span>
     {:else}
-      Начать фармить
+      {data.start_farm}
     {/if}
   </button>
   {#if showConfetti}

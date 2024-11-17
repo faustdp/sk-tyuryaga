@@ -44,3 +44,5 @@ export function logServer(data: any, file?: string) {
 export function sortTasks(tasks: SocialItem[]) {
   return tasks.sort((a, b) => (b.status === taskStatus.done && a.status !== taskStatus.done ? -1 : 0))
 }
+
+export const getImgUrl = (img: number, level: number) => `/imgs/${img}/${level + 1}.webp`

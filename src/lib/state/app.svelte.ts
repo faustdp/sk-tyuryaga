@@ -4,36 +4,36 @@ type Farm = 'farming' | 'farmed' | 'claimed'
 
 interface State {
   farm: Farm
-  isMounted: boolean
+  // isMounted: boolean
   isLoading: boolean
-  error: null | string
-  endTime: number
   isWalletOpened: boolean
   isWalletConnected: boolean
-  activeShopTab: ShopTabs
   isModalOpened: boolean
+  activeShopTab: ShopTabs
+  error: null | string
+  endTime: number
 }
 
 function appStore() {
   const state = $state<State>({
     farm: CLAIMED,
-    isMounted: false,
+    // isMounted: false,
     isLoading: true,
-    error: null,
-    endTime: 0,
     isWalletOpened: false,
     isWalletConnected: false,
-    activeShopTab: 0,
     isModalOpened: false,
+    activeShopTab: 0,
+    error: null,
+    endTime: 0,
   })
 
   function setFarm(farming: Farm) {
     state.farm = farming
   }
 
-  function setIsMounted() {
-    state.isMounted = true
-  }
+  // function setIsMounted() {
+  //   state.isMounted = true
+  // }
 
   function setIsLoaded() {
     state.isLoading = false
@@ -83,7 +83,7 @@ function appStore() {
       return state
     },
     setFarm,
-    setIsMounted,
+    // setIsMounted,
     setIsLoaded,
     setError,
     setEndTime,
@@ -97,10 +97,10 @@ function appStore() {
   }
 }
 
-const {
+export const {
   app,
   setFarm,
-  setIsMounted,
+  // setIsMounted,
   setIsLoaded,
   setError,
   setEndTime,
@@ -112,19 +112,3 @@ const {
   openModal,
   closeModal,
 } = appStore()
-
-export {
-  app,
-  setFarm,
-  setIsMounted,
-  setIsLoaded,
-  setError,
-  setEndTime,
-  openWallet,
-  closeWallet,
-  connectWallet,
-  disconnectWallet,
-  setActiveTab,
-  openModal,
-  closeModal,
-}

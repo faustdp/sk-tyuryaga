@@ -14,10 +14,6 @@
   import LevelCard from '@/components/LevelCard.svelte'
   import ShopCard from '@/components/ShopCard.svelte'
   import Drawer from '@/Drawer.svelte'
-  // import Box from '@/images/Box.svelte'
-  // import Cigarette from '@/images/cigarette.svg?component'
-  // import Trash from '@/images/trash.svg?component'
-  // import Tv from '@/images/Tv.svelte'
   import data from '@/messages.json'
 
   let tabCont: HTMLDivElement
@@ -157,22 +153,4 @@
       </span>
     </button>
   </Drawer>
-  <!-- <div class="flex items-center">
-    Click: <button class="ml-4 h-20 w-20" onclick={setTrash}>
-      {#if iconsState.trash}
-        <Trash />
-      {:else}
-        <Box classes="static" />
-      {/if}
-    </button>
-  </div>
-  <div class="flex items-center">
-    Click: <button class="ml-4 h-20 w-20" onclick={setCig}>
-      {#if iconsState.cig}
-        <Cigarette />
-      {:else}
-        <Tv classes="static" />
-      {/if}
-    </button>
-  </div> -->
 </div>

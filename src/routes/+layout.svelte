@@ -9,7 +9,7 @@
   import Tt from '@icons/socials/tt.svg?component'
   import Vk from '@icons/socials/vk.svg?component'
   import Yt from '@icons/socials/yt.svg?component'
-  import { app, setIsLoaded, setIsMounted } from '@state/app.svelte' //setError
+  import { app, setIsLoaded } from '@state/app.svelte' //setError
   import {} from '@sveltejs/kit'
   import { init, isTMA, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //closeMiniApp
   import { noop, sortTasks } from '@utils'
@@ -25,8 +25,6 @@
   import * as Dialog from '$lib/components/dialog/'
 
   console.clear()
-
-  useTonConnect()
 
   async function initApp() {
     const isTG = await isTMA()
@@ -52,6 +50,7 @@
   }
 
   initApp()
+  useTonConnect()
 
   let tasks: SocialItem[] = $state(
     sortTasks([
@@ -113,7 +112,7 @@
       mountMiniApp()
       miniAppReady()
       removeListeners = fixTouch()
-      setIsMounted()
+      // setIsMounted()
       // mountBackButton()
       // showBackButton()
     } catch (_err) {}

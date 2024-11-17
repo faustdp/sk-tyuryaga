@@ -11,6 +11,165 @@ export const coefAmount = 0.434
 export const coefTime = 0.219
 export const coefAmountTime = 0.347
 
+interface Images {
+  // url: string
+  name: string[]
+  boost: { time?: number; cig?: number }[]
+}
+
+export const imgs: Images[] = [
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+  {
+    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    boost: [
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+      { time: 123, cig: 22 },
+    ],
+  },
+]
+
 export const levels = [
   {
     time: 2,
@@ -115,3 +274,5 @@ export const TASK_CTX = 'task'
 export const BOOST = ['time', 'income', 'combo'] as const
 
 export type ShopTabs = 0 | 1 | 2
+
+export const SECOND = 1000

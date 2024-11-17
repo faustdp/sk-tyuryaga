@@ -308,3 +308,16 @@ button:focus:not(:focus-visible) {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
+
+.trans-z-40 {
+  transform: translateZ(-40px);
+}
+
+.rotate-left {
+  transform: rotateY(73deg) rotateZ(-15deg) rotateX(-10deg);
+  transform-origin: left;
+}
+
+.rotate-y-26 {
+  transform: rotateY(26deg);
+}

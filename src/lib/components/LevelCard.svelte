@@ -13,5 +13,5 @@
       {data.shop_level}.{level}
     </span>
   </p>
-  <img src={`/imgs/glass.webp`} alt={`${level} image`} width="100" height="100" />
+  <img src={`/imgs/1/1.webp`} alt={`${level} image`} width="100" height="100" />
 </div>

@@ -22,16 +22,9 @@ declare global {
     first_name: string | null
     direct_invites: number
     indirect_invites: number
+    cigs: number
+    level: number
     username?: string | null
-  }
-
-  interface IconsState {
-    readonly icons: {
-      cig: boolean
-      trash: boolean
-    }
-    setCig: () => void
-    setTrash: () => void
   }
 
   type Status = 0 | 1 | 2 | 3 | 4

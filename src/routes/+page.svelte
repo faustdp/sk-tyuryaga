@@ -1,13 +1,12 @@
 <script lang="ts">
   // let {data} = $props() $effect(() => {console.log('+page12', data)})
-  import Basket from '@images/basket.svg?component'
-  import Box from '@images/Box.svelte'
-  import Cigarette from '@images/cigarette.svg?component'
-  import Portrait from '@images/Portrait.svelte'
+  // import Box from '@images/Box.svelte'
+  // import Portrait from '@images/Portrait.svelte'
   import Steam from '@images/Steam.svelte'
-  import Trash from '@images/trash.svg?component'
   import Tv from '@images/Tv.svelte'
-  import { iconsState } from '@state/icons.svelte'
+  import { user } from '@state/user.svelte'
+  import { getImgUrl } from '@utils'
+  import { imgs } from '@utils/const'
 
   import Farming from '@/Farming.svelte'
   import Header from '@/Header.svelte'
@@ -27,20 +26,60 @@
   <Header />
   <Stats />
 
-  {#if iconsState.trash}
-    <Trash class="absolute left-[calc(50%_-_157px)] top-[calc(50%_-_59px)] w-14" />
-  {:else}
-    <Box />
-  {/if}
-  {#if iconsState.cig}
-    <Cigarette class="absolute left-[calc(50%_-_152px)] top-[calc(50%_-_172px)] w-14 rotate-[33deg]" />
-  {:else}
-    <Tv />
-  {/if}
-  <Portrait />
+  <!-- <Trash class="absolute left-[calc(50%_-_157px)] top-[calc(50%_-_59px)] w-14" /> -->
+  <!-- <Cigarette class="absolute left-[calc(50%_-_152px)] top-[calc(50%_-_172px)] w-14 rotate-[33deg]" /> -->
+  <!-- <Box /> -->
+  <Tv />
+  <!-- <Portrait /> -->
+  <img
+    src={getImgUrl(0, user.level + 3)}
+    alt={imgs[0].name[user.level]}
+    width="100"
+    class="absolute left-[calc(50%_-_183px)] top-1/2" />
+  <img
+    src={getImgUrl(1, user.level)}
+    alt={imgs[1].name[user.level]}
+    width="100"
+    class="absolute left-[calc(50%_-_203px)] top-[calc(50%_+_100px)]" />
+  <img
+    src={getImgUrl(2, user.level)}
+    alt={imgs[2].name[user.level]}
+    width="80"
+    class="trans-z-40 absolute left-[calc(50%_+_109px)] top-[calc(50%_+_96px)]" />
+  <img
+    src={getImgUrl(3, user.level)}
+    alt={imgs[3].name[user.level]}
+    width="130"
+    class="absolute left-[calc(50%_+_79px)] top-[calc(50%_-_39px)]" />
+  <img
+    src={getImgUrl(4, user.level)}
+    alt={imgs[4].name[user.level]}
+    width="100"
+    class="absolute left-[calc(50%_+_71px)] top-[calc(50%_-_180px)]" />
+  <img
+    src={getImgUrl(5, user.level)}
+    alt={imgs[5].name[user.level]}
+    width="100"
+    class="rotate-y-26 absolute left-[calc(50%_+_133px)] top-[calc(50%_-_272px)]" />
+  <img
+    src={getImgUrl(6, user.level)}
+    alt={imgs[6].name[user.level]}
+    width="90"
+    class="rotate-left absolute left-[calc(50%_-_201px)] top-[calc(50%_-_334px)]" />
+  <img
+    src={getImgUrl(7, user.level)}
+    alt={imgs[7].name[user.level]}
+    width="60"
+    class="absolute left-[calc(50%_-_164px)] top-[calc(50%_-_142px)]" />
+  <img
+    src={getImgUrl(8, user.level)}
+    alt={imgs[8].name[user.level]}
+    width="60"
+    class="trans-z-40 absolute left-[calc(50%_-_170px)] top-[calc(50%_-_57px)]" />
+
   <Farming />
   <Steam />
-  <Basket class="absolute left-[calc(50%_-_202px)] top-[calc(50%_+_0px)] h-28 w-28" />
+  <!-- <Basket class="absolute left-[calc(50%_-_202px)] top-[calc(50%_+_0px)] h-28 w-28" /> -->
 </main>
 
 <Wallet />
