@@ -77,6 +77,9 @@ importers:
       svelte-confetti:
         specifier: ^2.1.2
         version: 2.1.2(svelte@5.2.2)
+      svelte-hot-french-toast:
+        specifier: ^1.0.0
+        version: 1.0.0(svelte@5.2.2)
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.5.4
@@ -2569,6 +2572,11 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
+
+  svelte-hot-french-toast@1.0.0:
+    resolution: {integrity: sha512-SmJUwq7iHu9m0a794UBhCnp5YBQw0NV54j5z2oG+S/dtMMxbwC1s7bOGPpsPJrtZY7EED6jGV7BuulyorAaXWA==}
+    peerDependencies:
+      svelte: '>= 5'
 
   svelte-toolbelt@0.4.6:
     resolution: {integrity: sha512-k8OUvXBUifHZcAlWeY/HLg/4J0v5m2iOfOhn8fDmjt4AP8ZluaDh9eBFus9lFiLX6O5l6vKqI1dKL5wy7090NQ==}
@@ -5297,6 +5305,10 @@ snapshots:
       postcss: 8.4.49
       postcss-scss: 4.0.9(postcss@8.4.49)
     optionalDependencies:
+      svelte: 5.2.2
+
+  svelte-hot-french-toast@1.0.0(svelte@5.2.2):
+    dependencies:
       svelte: 5.2.2
 
   svelte-toolbelt@0.4.6(svelte@5.2.2):

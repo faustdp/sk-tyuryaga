@@ -10,7 +10,7 @@
   import { getContext } from 'svelte'
   import { flip } from 'svelte/animate'
 
-  import Modal from '@/components/Modal.svelte'
+  import ModalTasks from '@components/ModalTasks.svelte'
   import data from '@/messages.json'
 
   let tasks: SocialItem[] = getContext(TASK_CTX)
@@ -40,6 +40,14 @@
       selectedTaskCheck = null
     }
   })
+
+  function setTask(id: number, status: Status) {
+    const task = tasks.find((el) => el.id === id)
+    if (task) {
+      task.status = status
+      sortTasks(tasks)
+    }
+  }
 </script>
 
 <svelte:head>
@@ -63,7 +71,7 @@
       {@const isDone = socialItem.status === taskStatus.done}
       {@const Icon = socialItem.Icon}
       <li
-        animate:flip={{ duration: 250 }}
+        animate:flip={{ duration: 280 }}
         class="flex flex-1 items-center gap-x-3 border-b border-solid border-cborder py-2">
         <Icon />
         <span class="flex flex-1 flex-col gap-y-2.5 text-sm {isDone ? 'text-cborder' : ''}">
@@ -104,4 +112,4 @@
   </ul>
 </div>
 
-<Modal task={selectedTaskCheck} />
+<ModalTasks task={selectedTaskCheck} {setTask} />

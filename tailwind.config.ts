@@ -24,6 +24,7 @@ export default {
         ccard: 'rgb(var(--c-card) / <alpha-value>)',
         ccardboost: 'rgb(var(--c-cardboost) / <alpha-value>)',
         clightblue: 'rgb(var(--c-lightblue) / <alpha-value>)',
+        clightgreen: 'rgb(var(--c-lightgreen) / <alpha-value>)',
         cinputred: 'rgb(var(--input-red) / <alpha-value>)',
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
@@ -86,6 +87,7 @@ export default {
       },
       screens: {
         maxheight: { raw: '(max-height: var(--height-limit))' },
+        maxheightSm: { raw: '(max-height: 755px)' },
         smallscreen: { raw: '(max-width: 350px)' },
       },
       boxShadow: {

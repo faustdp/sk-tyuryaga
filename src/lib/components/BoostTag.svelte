@@ -14,5 +14,5 @@
   {:else}
     <Flash />
   {/if} +{amount}
-  {boost === BOOST[0] ? data.boost_time : data.boost_cig}
+  {boost === BOOST[0] ? data.boost_time : `${data.boost_cig}/${data.boost_time}`}
 </span>

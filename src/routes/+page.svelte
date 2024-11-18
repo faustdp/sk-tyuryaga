@@ -7,6 +7,7 @@
   import { user } from '@state/user.svelte'
   import { getImgUrl } from '@utils'
   import { imgs } from '@utils/const'
+  import { cn } from '@utils'
 
   import Farming from '@/Farming.svelte'
   import Header from '@/Header.svelte'
@@ -34,13 +35,13 @@
   <img
     src={getImgUrl(0, user.level + 3)}
     alt={imgs[0].name[user.level]}
-    width="100"
-    class="absolute left-[calc(50%_-_183px)] top-1/2" />
+    width="90"
+    class="absolute left-[calc(50%_-_185px)] top-[calc(50%_+_5px)]" />
   <img
     src={getImgUrl(1, user.level)}
     alt={imgs[1].name[user.level]}
-    width="100"
-    class="absolute left-[calc(50%_-_203px)] top-[calc(50%_+_100px)]" />
+    width="85"
+    class="absolute left-[calc(50%_-_180px)] top-[calc(50%_+_88px)]" />
   <img
     src={getImgUrl(2, user.level)}
     alt={imgs[2].name[user.level]}
@@ -55,17 +56,12 @@
     src={getImgUrl(4, user.level)}
     alt={imgs[4].name[user.level]}
     width="100"
-    class="absolute left-[calc(50%_+_71px)] top-[calc(50%_-_180px)]" />
-  <img
-    src={getImgUrl(5, user.level)}
-    alt={imgs[5].name[user.level]}
-    width="100"
-    class="rotate-y-26 absolute left-[calc(50%_+_133px)] top-[calc(50%_-_272px)]" />
-  <img
-    src={getImgUrl(6, user.level)}
-    alt={imgs[6].name[user.level]}
-    width="90"
-    class="rotate-left absolute left-[calc(50%_-_201px)] top-[calc(50%_-_334px)]" />
+    class={cn(
+      'absolute left-[calc(50%_+_71px)]',
+      user.level === 1 ? 'top-[calc(50%_-_160px)]' : 'top-[calc(50%_-_180px)]',
+    )} />
+  <img src={getImgUrl(5, user.level)} alt={imgs[5].name[user.level]} width="100" class="right-wall-img absolute" />
+  <img src={getImgUrl(6, user.level)} alt={imgs[6].name[user.level]} width="80" class="left-wallet-img absolute" />
   <img
     src={getImgUrl(7, user.level)}
     alt={imgs[7].name[user.level]}
@@ -79,7 +75,6 @@
 
   <Farming />
   <Steam />
-  <!-- <Basket class="absolute left-[calc(50%_-_202px)] top-[calc(50%_+_0px)] h-28 w-28" /> -->
 </main>
 
 <Wallet />

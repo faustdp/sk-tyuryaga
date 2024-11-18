@@ -105,7 +105,7 @@
     {/key}
   </div>
   <Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
-    <div class="mb-2 flex items-center gap-x-2">
+    <div class="mb-2 mt-3 flex items-center gap-x-2">
       <LevelCard />
       <ArrowRight class="mt-[22px]" />
       <LevelCard level={2} />

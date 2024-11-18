@@ -57,7 +57,7 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="40 60 640 640"
   preserveAspectRatio="xMinYMin meet"
-  class={`${classes ? classes : 'absolute'} left-[calc(50%_-_181px)] top-[calc(50%_-_235px)]`}
+  class={`${classes ? classes : 'absolute'} left-[calc(50%_-_181px)] top-[calc(50%_-_235px)] z-one`}
   style="width:89px;height:89px;transform:translate3d(0,0,0);content-visibility:visible">
   <defs>
     <clipPath id="animation">

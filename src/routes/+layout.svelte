@@ -9,6 +9,7 @@
   import Tt from '@icons/socials/tt.svg?component'
   import Vk from '@icons/socials/vk.svg?component'
   import Yt from '@icons/socials/yt.svg?component'
+  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import { app, setIsLoaded } from '@state/app.svelte' //setError
   import {} from '@sveltejs/kit'
   import { init, isTMA, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //closeMiniApp
@@ -18,6 +19,7 @@
   import { useTonConnect } from '@utils/useTonConnect'
   import { validate } from '@utils/verifyUser'
   import { onMount, setContext } from 'svelte'
+  import { Toaster } from 'svelte-hot-french-toast'
 
   import BottomNav from '@/BottomNav.svelte'
   import data from '@/messages.json'
@@ -55,14 +57,15 @@
   let tasks: SocialItem[] = $state(
     sortTasks([
       {
+        id: 1,
         Icon: Yt,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.check,
         link: 'https://google.com',
-        code: '123456',
       },
       {
+        id: 6,
         Icon: Tg,
         task: 'Позови 100 корешей',
         reward: '200 USDT',
@@ -71,6 +74,7 @@
         delay: 5000,
       },
       {
+        id: 5,
         Icon: Tt,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
@@ -78,14 +82,15 @@
         link: 'https://google.com',
       },
       {
+        id: 3,
         Icon: Yt,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.check,
         link: 'https://google.com',
-        code: 'asdfgh',
       },
       {
+        id: 2,
         Icon: Ig,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
@@ -93,6 +98,7 @@
         link: 'https://google.com',
       },
       {
+        id: 4,
         Icon: Vk,
         task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
@@ -126,9 +132,9 @@
 </script>
 
 <div
-  class="relative w-full {$page.url.pathname === '/'
+  class="relative w-full overflow-x-hidden {$page.url.pathname === '/'
     ? 'h-full'
-    : 'h-[calc(100%_-_var(--nav-height))]'} overflow-y-auto overflow-x-hidden bg-cdarkblue">
+    : 'h-[calc(100%_-_var(--nav-height))]'} overflow-y-auto bg-cdarkblue">
   <Dialog.Root bind:open={app.isModalOpened}>
     {#if app.error}
       {data.error_msg} {app.error}
@@ -138,3 +144,9 @@
     {/if}
   </Dialog.Root>
 </div>
+
+<Toaster
+  toastOptions={{
+    duration: 3000,
+    icon: CheckSuccess,
+  }} />

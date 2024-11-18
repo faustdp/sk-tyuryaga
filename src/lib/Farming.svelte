@@ -118,7 +118,7 @@
 </script>
 
 <section
-  class="fixed bottom-[calc(50%_-_((min(var(--height-limit),_var(--screen))_/_2)_-_160px))] left-1/2 z-30
+  class="farming-btn fixed left-1/2 z-30
     mx-auto flex h-14 w-full max-w-xs -translate-x-1/2 {isActive ? 'scale-95' : 'scale-100'} items-center
     justify-center gap-x-4 rounded-xl transition-transform">
   <FarmBtn {progress} />

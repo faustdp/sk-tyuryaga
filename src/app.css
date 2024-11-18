@@ -20,6 +20,7 @@
   --c-card: 57 98 124;
   --c-cardboost: 86 129 156;
   --c-lightblue: 114 139 151;
+  --c-lightgreen: 74 222 185;
   --input-red: 250 84 75;
   --width-limit: 540px;
   --height-limit: 915px;
@@ -92,12 +93,6 @@ button:focus:not(:focus-visible) {
   outline: none;
 }
 
-@media (min-width: 720px) {
-  h1 {
-    font-size: 2.4rem;
-  }
-}
-
 .visually-hidden {
   border: 0;
   clip: rect(0 0 0 0);
@@ -108,33 +103,6 @@ button:focus:not(:focus-visible) {
   position: absolute;
   width: 1px;
   white-space: nowrap;
-}
-
-@layer components {
-  .perspective {
-    perspective: 500px;
-  }
-
-  .arbutus {
-    font-family: 'Arbutus', sans-serif;
-  }
-
-  .roboto {
-    font-family: 'Roboto';
-  }
-
-  .shadow-heading {
-    text-shadow:
-      0px 4px 8px rgba(0, 0, 0, 0.3),
-      -1px -1px 0 #000,
-      1px -1px 0 #000,
-      -1px 1px 0 #000,
-      1px 1px 0 #000,
-      -2px -2px 0 #000,
-      2px -2px 0 #000,
-      -2px 2px 0 #000,
-      2px 2px 0 #000;
-  }
 }
 
 .page-circle:before {
@@ -273,6 +241,7 @@ button:focus:not(:focus-visible) {
 .card-level-clip {
   clip-path: polygon(20% 0, 87% 0, 100% 84%, 6% 83%);
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -309,15 +278,123 @@ button:focus:not(:focus-visible) {
   }
 }
 
+@layer components {
+  .perspective {
+    perspective: 500px;
+  }
+
+  .arbutus {
+    font-family: 'Arbutus', sans-serif;
+  }
+
+  .roboto {
+    font-family: 'Roboto';
+  }
+
+  .shadow-heading {
+    text-shadow:
+      0px 4px 8px rgba(0, 0, 0, 0.3),
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000,
+      -2px -2px 0 #000,
+      2px -2px 0 #000,
+      -2px 2px 0 #000,
+      2px 2px 0 #000;
+  }
+}
+
 .trans-z-40 {
   transform: translateZ(-40px);
 }
 
-.rotate-left {
-  transform: rotateY(73deg) rotateZ(-15deg) rotateX(-10deg);
+.left-wallet-img {
+  transform: rotateY(57deg) rotateZ(-15deg) rotateX(-10deg);
   transform-origin: left;
+  left: calc(50% - 200px);
+  top: calc(50% - 310px);
 }
 
-.rotate-y-26 {
+.right-wall-img {
+  left: calc(50% + 125px);
+  top: calc(50% - 272px);
   transform: rotateY(26deg);
+}
+
+.farming-btn {
+  bottom: calc(50% - ((min(var(--height-limit), var(--screen)) / 2) - 160px));
+}
+
+.stats {
+  top: calc(50% - (var(--height-limit) / 2.9));
+  border-radius: 12px;
+  width: 256px;
+  height: 50px;
+  background: linear-gradient(
+    87.46deg,
+    rgba(138, 120, 88, 0.7) 3.68%,
+    rgba(184, 180, 174, 0.7) 53.35%,
+    rgba(138, 120, 88, 0.7) 98.92%
+  );
+  backdrop-filter: blur(4px);
+}
+
+.stats-amount {
+  width: 262px;
+  top: -7px;
+}
+
+@media screen and (max-width: 400px) {
+  .stats-amount,
+  .stats {
+    width: 200px;
+  }
+  .right-wall-img {
+    left: calc(50% + 87px);
+    top: calc(50% - 279px);
+    transform: rotateY(18deg);
+  }
+  .left-wallet-img {
+    transform: rotateY(23deg) rotateZ(-5deg) rotateX(-10deg);
+    left: calc(50% - 177px);
+  }
+}
+
+@media screen and (max-height: 800px) {
+  .stats {
+    top: calc(50% - (var(--screen) / 2.6));
+  }
+}
+
+@media screen and (max-height: 755px) {
+  .farming-btn {
+    bottom: calc(50% - ((min(var(--height-limit), var(--screen)) / 2) - 104px));
+  }
+  :root {
+    --nav-height: 102px;
+  }
+}
+
+@media (min-width: 720px) {
+  h1 {
+    font-size: 2.4rem;
+  }
+}
+
+.toaster .base {
+  background-color: rgb(var(--c-green)) !important;
+  color: white !important;
+  font-size: 14px;
+  width: 90%;
+  padding: 6px;
+  justify-content: center;
+  max-width: 320px;
+}
+.toaster .message {
+  flex: none !important;
+  margin: 4px 0px 4px 7px !important;
+}
+.toaster .indicator {
+  margin-top: -2px;
 }

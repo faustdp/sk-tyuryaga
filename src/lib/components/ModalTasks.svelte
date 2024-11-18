@@ -5,25 +5,51 @@
   import Spider from '@images/Spider.svelte'
   import { closeModal } from '@state/app.svelte'
   import { onDestroy } from 'svelte'
+  import Spinner from '@icons/Spinner.svelte'
+  import { scale } from 'svelte/transition'
+  import { taskStatus } from '@utils/const'
 
   import data from '@/messages.json'
   import * as Dialog from '$lib/components/dialog/'
+  import { w8 } from '@utils'
+  import { cubicOut } from 'svelte/easing'
+  import toast from 'svelte-hot-french-toast'
 
-  let { task }: { task: SocialItem | null } = $props()
+  let { task, setTask }: { task: SocialItem | null; setTask: (id: number, status: Status) => void } = $props()
 
+  const errorTO = 2400
+
+  let isFetchingCode = $state(false)
   let codeIsWrong = $state(false)
+  let codeIsRight = $state(false)
   let inputValue = $state('')
+  let lastWrongCode = $state('')
   let TO: NodeJS.Timeout
 
-  function handleCodeCheck() {
+  async function handleCodeCheck() {
+    const value = inputValue.trim()
+    if (value.length < 4 || isFetchingCode || value === lastWrongCode) return
     clearTimeout(TO)
-    if (task?.code && inputValue !== task.code) {
+    isFetchingCode = true
+    await w8(500)
+    const x = Math.random()
+    isFetchingCode = false
+    if (x > 0.5) {
       codeIsWrong = true
+      lastWrongCode = value
       TO = setTimeout(() => {
         codeIsWrong = false
-      }, 2000)
+      }, errorTO)
     } else {
+      toast.success(`${data.toaster_msg} ${task?.reward} ${data.boost_cig}!`)
       codeIsWrong = false
+      codeIsRight = true
+      if (task?.id) {
+        setTask(task.id, taskStatus.done)
+      }
+      await w8(840)
+      codeIsRight = false
+      inputValue = ''
       closeModal()
     }
   }
@@ -53,7 +79,9 @@
       placeholder={data.insert_code}
       class="roboto {codeIsWrong
         ? 'border-cinputred'
-        : 'border-cdarkblue'} mb-7 w-full rounded-xl border-2 py-2 pl-4 pr-8 text-sm text-black outline-0 transition-all" />
+        : codeIsRight
+          ? 'border-clightgreen'
+          : 'border-cdarkblue'} mb-7 w-full rounded-xl border-2 py-2 pl-4 pr-8 text-sm text-black outline-0 transition-all" />
     <InputClear
       show={codeIsWrong}
       class="absolute right-3.5 top-2.5 cursor-pointer"
@@ -61,16 +89,27 @@
         inputValue = ''
         codeIsWrong = false
       }} />
+    {#if codeIsWrong || codeIsRight}
+      <span
+        transition:scale={{ duration: 240, easing: cubicOut }}
+        class="absolute bottom-2 left-0 text-xs {codeIsWrong ? 'text-cinputred' : 'text-clightgreen'} ">
+        {codeIsWrong ? data.wrong_code : data.correct_code}
+      </span>
+    {/if}
   </div>
   <button
     class="self-center outline-none transition-transform will-change-transform active:scale-95"
     onclick={handleCodeCheck}>
     <WalletBtn
       height={40}
-      fill={task?.code && inputValue.length >= task.code.length ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'}
-      stroke={task?.code && inputValue.length >= task.code.length ? 'var(--dark-green)' : 'black'} />
+      fill={inputValue.length > 3 ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'}
+      stroke={inputValue.length > 3 ? 'var(--dark-green)' : 'black'} />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center text-sm">
-      {data.take}!
+      {#if isFetchingCode}
+        <Spinner />
+      {:else}
+        {data.take}!
+      {/if}
     </span>
   </button>
 </Dialog.Content>
