@@ -6,7 +6,10 @@ function mapRange(val: number, inMin: number, inMax: number, outMin: number, out
   return Number.isFinite(result) ? result : 0
 }
 
-export default function useRipple(node: HTMLElement, { color = 'currentColor' }) {
+/** @type {import('svelte/action').Action} */
+export default function useRipple(node: HTMLElement, data?: { color: string }) {
+  const color = data?.color || 'currentColor'
+
   function handleClick(e: PointerEvent | MouseEvent) {
     if ((e.clientX !== 0 && e.clientY !== 0) || (<PointerEvent>e).pointerType !== '') (<HTMLElement>e.target).blur()
   }
@@ -43,7 +46,7 @@ export default function useRipple(node: HTMLElement, { color = 'currentColor' })
     el.prepend(rip)
     rip.animate(
       {
-        opacity: ['0.03', '0.2'],
+        opacity: ['0.03', '0.25'],
         transform: ['scale(0)', 'scale(1)'],
       },
       { duration: 280, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', fill: 'forwards' },
@@ -114,15 +117,11 @@ export default function useRipple(node: HTMLElement, { color = 'currentColor' })
     node.removeEventListener('contextmenu', handleContextMenu)
   }
 
-  addEvents()
-
-  return {
-    update() {
+  $effect(() => {
+    removeEvents()
+    addEvents()
+    return () => {
       removeEvents()
-      addEvents()
-    },
-    destroy() {
-      removeEvents()
-    },
-  }
+    }
+  })
 }

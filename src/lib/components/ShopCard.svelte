@@ -37,7 +37,7 @@
     {/if}
   </div>
   <button class="relative outline-none transition-transform will-change-transform active:scale-95" {onclick}>
-    <WalletBtn width={165} height={37} fill="rgb(var(--c-yellow))" stroke="var(--darkyellow)" />
+    <WalletBtn width={165} height={37} fill="rgb(var(--c-yellow))" stroke="var(--dark-yellow)" />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center">
       {data.shop_upgrade}
     </span>

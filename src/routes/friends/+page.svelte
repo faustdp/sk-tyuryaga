@@ -84,7 +84,7 @@
 
 {#snippet btn({ text, onclick, classes = '' }: { text: string; onclick: () => void; classes?: string })}
   <button class="{classes} outline-none transition-transform will-change-transform active:scale-95" {onclick}>
-    <WalletBtn fill="rgb(var(--c-yellow))" stroke="var(--darkyellow)" />
+    <WalletBtn fill="rgb(var(--c-yellow))" stroke="var(--dark-yellow)" />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">{text}</span>
   </button>
 {/snippet}

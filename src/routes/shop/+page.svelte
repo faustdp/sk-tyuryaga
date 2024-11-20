@@ -6,7 +6,7 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
   import { BOOST, cubicOut, type ShopTabs } from '@utils/const'
-  import useRipple from '@utils/useRipple'
+  import useRipple from '@utils/useRipple.svelte'
   import { sineOut } from 'svelte/easing'
   import { fly } from 'svelte/transition'
 
@@ -145,7 +145,7 @@
     <button class="outline-none transition-transform will-change-transform active:scale-95">
       <WalletBtn
         fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
-        stroke={isTaskAllowed ? 'var(--darkyellow)' : undefined} />
+        stroke={isTaskAllowed ? 'var(--dark-yellow)' : undefined} />
       <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
         {data.shop_upgrade}
         <Cigarette class="mr-1" width="38" height="23" />

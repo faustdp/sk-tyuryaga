@@ -1,8 +1,15 @@
 <script lang="ts">
-  const { fill = 'rgb(var(--c-blue))', stroke = '#2D5F86', width = 343, height = 60 } = $props()
+  const { fill = 'rgb(var(--c-blue))', stroke = '#2D5F86', width = 343, height = 60, classes = '' } = $props()
 </script>
 
-<svg {width} {height} viewBox="0 0 343 60" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg
+  {width}
+  {height}
+  class={classes}
+  viewBox="0 0 343 60"
+  preserveAspectRatio="none"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg">
   <g filter="url(#filter0_b_1059_2735)">
     <mask
       id="path-1-outside-1_1059_2735"

@@ -1,19 +1,19 @@
 <script lang="ts">
   import CheckLink from '@icons/checkLink.svg?component'
   import InputClear from '@icons/InputClear.svelte'
+  import Spinner from '@icons/Spinner.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import Spider from '@images/Spider.svelte'
   import { closeModal } from '@state/app.svelte'
-  import { onDestroy } from 'svelte'
-  import Spinner from '@icons/Spinner.svelte'
-  import { scale } from 'svelte/transition'
+  import { w8 } from '@utils'
   import { taskStatus } from '@utils/const'
+  import { onDestroy } from 'svelte'
+  import { cubicOut } from 'svelte/easing'
+  import { scale } from 'svelte/transition'
+  import toast from 'svelte-hot-french-toast'
 
   import data from '@/messages.json'
   import * as Dialog from '$lib/components/dialog/'
-  import { w8 } from '@utils'
-  import { cubicOut } from 'svelte/easing'
-  import toast from 'svelte-hot-french-toast'
 
   let { task, setTask }: { task: SocialItem | null; setTask: (id: number, status: Status) => void } = $props()
 
@@ -56,10 +56,11 @@
 
   onDestroy(() => {
     clearTimeout(TO)
+    closeModal()
   })
 </script>
 
-<Dialog.Content class="card-shadow flex flex-col overflow-hidden bg-ccard sm:max-w-[425px]">
+<Dialog.Content isAbsolute class="card-shadow flex flex-col overflow-hidden bg-ccard sm:max-w-[425px]">
   <Spider withTransform classes="absolute -left-8 -top-2" />
   <Dialog.Header class="mx-auto mb-4 w-full max-w-[344px]">
     <Dialog.Title class="shadow-heading !mb-3.5 !mt-0 text-center text-xl">{data.code_phrase}</Dialog.Title>

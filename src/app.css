@@ -35,7 +35,6 @@
 html {
   height: 100dvh;
   overflow: hidden;
-  touch-action: none;
   -webkit-tap-highlight-color: transparent;
 }
 

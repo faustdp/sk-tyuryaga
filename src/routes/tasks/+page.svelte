@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ModalTasks from '@components/ModalTasks.svelte'
   import Chain from '@icons/Chain.svelte'
   import Cigarette from '@icons/cigarette.svg?component'
   import Done from '@icons/done.svg?component'
@@ -10,7 +11,6 @@
   import { getContext } from 'svelte'
   import { flip } from 'svelte/animate'
 
-  import ModalTasks from '@components/ModalTasks.svelte'
   import data from '@/messages.json'
 
   let tasks: SocialItem[] = getContext(TASK_CTX)
