@@ -1,13 +1,10 @@
 <script lang="ts">
-  // import lottie from 'lottie-web'
   import { app } from '@state/app.svelte'
   import { CLAIMED, FARMED, FARMING } from '@utils/const'
   import { onMount } from 'svelte'
 
-  // import steam from './steam.json'
   import { keyframes } from './steamKeyframes'
 
-  // let element: Element
   const animations: Animation[] = []
 
   const applyAnimations = () => {
@@ -30,13 +27,6 @@
 
   onMount(() => {
     applyAnimations()
-    // const anim = lottie.loadAnimation({
-    //   container: element,
-    //   renderer: 'svg',
-    //   loop: true,
-    //   autoplay: true,
-    //   animationData: steam,
-    // })
   })
 
   function changeAnimSpeed(faster = false) {
@@ -83,7 +73,6 @@
   })
 </script>
 
-<!-- <div bind:this={element} class="fixed left-[calc(50%_+_50px)] top-[calc(50%_-_86px)] h-[120px] w-[120px]"></div> -->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1000 1000"

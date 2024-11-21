@@ -3,9 +3,9 @@
   import cigarette from '@icons/cigarette.svg?url'
   import FarmBtn from '@icons/FarmBtn.svelte'
   import { app, setEndTime, setFarm } from '@state/app.svelte'
-  import { setCigs } from '@state/user.svelte'
+  import { setCigs, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
-  import { CLAIMED, FARM_TIME, FARMED, FARMING, SECOND } from '@utils/const'
+  import { CLAIMED, FARMED, FARMING, LEVELS, MINUTE, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
   import { tweened } from 'svelte/motion'
@@ -13,7 +13,9 @@
 
   import data from '@/messages.json'
 
-  const CIGS_NUM = 100
+  let CIGS_NUM = $derived(LEVELS[user.level].time * LEVELS[user.level].amount)
+
+  let FARM_TIME = $derived(LEVELS[user.level].time * MINUTE)
 
   function getProgress(time: number) {
     const now = Date.now()
@@ -60,7 +62,7 @@
   let cigs = $derived.by(() => {
     const val = $progress
     if (wasFarming && val === 1) return CIGS_NUM
-    return Math.round((1 - val) * CIGS_NUM)
+    return Math.trunc((1 - val) * CIGS_NUM)
   })
 
   $effect(() => {
@@ -133,7 +135,7 @@
     onmouseup={removeActive}
     onmouseleave={removeActive}>
     {#if app.farm === FARMED}
-      {data.take} 100 <Cigarette class="mb-1" />
+      {data.take} {CIGS_NUM} <Cigarette class="mb-1" />
     {:else if app.farm === FARMING}
       {data.farming}
       <span>{cigs}</span>

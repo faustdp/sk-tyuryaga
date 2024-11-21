@@ -13,9 +13,9 @@ export async function w8(ms: number) {
 export const noop = () => {}
 
 export function formatTime(ms: number) {
-  const seconds = Math.floor(ms / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
+  const seconds = Math.trunc(ms / 1000)
+  const minutes = Math.trunc(seconds / 60)
+  const hours = Math.trunc(minutes / 60)
 
   const remainingSeconds = seconds % 60
   const remainingMinutes = minutes % 60

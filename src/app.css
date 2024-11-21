@@ -114,7 +114,7 @@ button:focus:not(:focus-visible) {
   top: -10%;
   filter: blur(30px);
   border-radius: 50%;
-  background-color: #bf9e49e3;
+  background-color: rgba(var(--c-brown) / 0.89);
 }
 
 .bg-nav {

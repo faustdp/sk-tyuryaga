@@ -51,6 +51,7 @@ export default tseslint.config(
       'no-case-declarations': 0,
       'no-console': 0,
       'no-dupe-keys': 0,
+      'no-duplicate-imports': ['error', { includeExports: true }],
       'no-unused-vars': 0,
       'no-param-reassign': [2, { props: false }],
       'no-empty': ['error', { allowEmptyCatch: true }],

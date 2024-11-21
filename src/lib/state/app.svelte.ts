@@ -4,7 +4,6 @@ type Farm = 'farming' | 'farmed' | 'claimed'
 
 interface State {
   farm: Farm
-  // isMounted: boolean
   isLoading: boolean
   isWalletOpened: boolean
   isWalletConnected: boolean
@@ -17,7 +16,6 @@ interface State {
 function appStore() {
   const state = $state<State>({
     farm: CLAIMED,
-    // isMounted: false,
     isLoading: true,
     isWalletOpened: false,
     isWalletConnected: false,
@@ -30,10 +28,6 @@ function appStore() {
   function setFarm(farming: Farm) {
     state.farm = farming
   }
-
-  // function setIsMounted() {
-  //   state.isMounted = true
-  // }
 
   function setIsLoaded() {
     state.isLoading = false
@@ -83,7 +77,6 @@ function appStore() {
       return state
     },
     setFarm,
-    // setIsMounted,
     setIsLoaded,
     setError,
     setEndTime,
@@ -100,7 +93,6 @@ function appStore() {
 export const {
   app,
   setFarm,
-  // setIsMounted,
   setIsLoaded,
   setError,
   setEndTime,

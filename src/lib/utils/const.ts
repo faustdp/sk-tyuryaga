@@ -1,4 +1,3 @@
-export const FARM_TIME = 4000
 export const TEST_ADDRESS = 'EQChHpu8-rFBQyVCXJtT1aTwODTBc1dFUAEatbYy11ZLcBST'
 export const TON_KEY = 'TON_CONNECT'
 export const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
@@ -7,12 +6,14 @@ export const FARMING = 'farming'
 export const FARMED = 'farmed'
 export const CLAIMED = 'claimed'
 export const meUrl = '/api/me'
-export const coefAmount = 0.434
-export const coefTime = 0.219
-export const coefAmountTime = 0.347
+
+export const COEF = {
+  amount: 0.434,
+  time: 0.219,
+  combo: 0.347,
+} as const
 
 interface Images {
-  // url: string
   name: string[]
   boost: { time?: number; cig?: number }[]
 }
@@ -170,94 +171,94 @@ export const imgs: Images[] = [
   },
 ]
 
-export const levels = [
+export const LEVELS = [
   {
     time: 2,
     amount: 1,
     next: 69,
-    bonusT: 10,
-    bonusA: 8,
-    bonusAT: 5,
+    priceTime: 10,
+    priceAmount: 8,
+    priceAmountTime: 5,
   },
   {
     time: 4,
     amount: 10,
     next: 690,
-    bonusT: 100,
-    bonusA: 80,
-    bonusAT: 50,
+    priceTime: 100,
+    priceAmount: 80,
+    priceAmountTime: 50,
   },
   {
     time: 8,
     amount: 19,
     next: 3450,
-    bonusT: 500,
-    bonusA: 400,
-    bonusAT: 250,
+    priceTime: 500,
+    priceAmount: 400,
+    priceAmountTime: 250,
   },
   {
     time: 15,
     amount: 28,
     next: 10350,
-    bonusT: 1500,
-    bonusA: 1200,
-    bonusAT: 750,
+    priceTime: 1500,
+    priceAmount: 1200,
+    priceAmountTime: 750,
   },
   {
     time: 30,
     amount: 37,
     next: 31050,
-    bonusT: 4500,
-    bonusA: 3600,
-    bonusAT: 2250,
+    priceTime: 4500,
+    priceAmount: 3600,
+    priceAmountTime: 2250,
   },
   {
     time: 60,
     amount: 46,
     next: 93150,
-    bonusT: 13500,
-    bonusA: 10800,
-    bonusAT: 6750,
+    priceTime: 13500,
+    priceAmount: 10800,
+    priceAmountTime: 6750,
   },
   {
     time: 120,
     amount: 55,
     next: 279450,
-    bonusT: 40500,
-    bonusA: 32400,
-    bonusAT: 20250,
+    priceTime: 40500,
+    priceAmount: 32400,
+    priceAmountTime: 20250,
   },
   {
     time: 240,
     amount: 64,
     next: 838350,
-    bonusT: 121500,
-    bonusA: 97200,
-    bonusAT: 60750,
+    priceTime: 121500,
+    priceAmount: 97200,
+    priceAmountTime: 60750,
   },
   {
     time: 480,
     amount: 73,
     next: 1676700,
-    bonusT: 243000,
-    bonusA: 194400,
-    bonusAT: 121500,
+    priceTime: 243000,
+    priceAmount: 194400,
+    priceAmountTime: 121500,
   },
   {
     time: 960,
     amount: 82,
     next: 2850390,
-    bonusT: 413100,
-    bonusA: 330480,
-    bonusAT: 206550,
+    priceTime: 413100,
+    priceAmount: 330480,
+    priceAmountTime: 206550,
   },
   {
     time: 1440,
     amount: 91,
     next: 4275585,
-    bonusT: 619650,
-    bonusA: 495720,
-    bonusAT: 309825,
+    priceTime: 619650,
+    priceAmount: 495720,
+    priceAmountTime: 309825,
   },
 ] as const
 
@@ -270,9 +271,8 @@ export const taskStatus = {
 } as const
 
 export const TASK_CTX = 'task'
-
 export const BOOST = ['time', 'income', 'combo'] as const
+export const SECOND = 1000
+export const MINUTE = SECOND * 60
 
 export type ShopTabs = 0 | 1 | 2
-
-export const SECOND = 1000

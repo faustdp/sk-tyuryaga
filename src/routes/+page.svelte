@@ -1,13 +1,10 @@
 <script lang="ts">
   // let {data} = $props() $effect(() => {console.log('+page12', data)})
-  // import Box from '@images/Box.svelte'
-  // import Portrait from '@images/Portrait.svelte'
   import Steam from '@images/Steam.svelte'
   import Tv from '@images/Tv.svelte'
   import { user } from '@state/user.svelte'
-  import { getImgUrl } from '@utils'
+  import { cn, getImgUrl } from '@utils'
   import { imgs } from '@utils/const'
-  import { cn } from '@utils'
 
   import Farming from '@/Farming.svelte'
   import Header from '@/Header.svelte'
@@ -26,12 +23,7 @@
        overflow-hidden bg-[url('@images/bg.webp')] bg-half bg-center bg-no-repeat">
   <Header />
   <Stats />
-
-  <!-- <Trash class="absolute left-[calc(50%_-_157px)] top-[calc(50%_-_59px)] w-14" /> -->
-  <!-- <Cigarette class="absolute left-[calc(50%_-_152px)] top-[calc(50%_-_172px)] w-14 rotate-[33deg]" /> -->
-  <!-- <Box /> -->
   <Tv />
-  <!-- <Portrait /> -->
   <img
     src={getImgUrl(0, user.level + 3)}
     alt={imgs[0].name[user.level]}

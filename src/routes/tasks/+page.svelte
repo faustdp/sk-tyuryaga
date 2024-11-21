@@ -4,12 +4,12 @@
   import Cigarette from '@icons/cigarette.svg?component'
   import Done from '@icons/done.svg?component'
   import Spinner from '@icons/Spinner.svelte'
-  import { openModal } from '@state/app.svelte'
-  import { app } from '@state/app.svelte'
+  import { app, openModal } from '@state/app.svelte'
   import { sortTasks, w8 } from '@utils'
   import { TASK_CTX, taskStatus } from '@utils/const'
   import { getContext } from 'svelte'
   import { flip } from 'svelte/animate'
+  import toast from 'svelte-hot-french-toast'
 
   import data from '@/messages.json'
 
@@ -20,6 +20,7 @@
     if (item.status === taskStatus.done || item.status === taskStatus.loading) return
     if (item.status === taskStatus.claim) {
       item.status = taskStatus.done
+      toast.success(`${data.toaster_msg} ${item.reward} ${data.boost_cig}!`)
       sortTasks(tasks)
     } else if (item.status === taskStatus.start) {
       item.status = taskStatus.loading

@@ -5,8 +5,8 @@
 
   let { progress }: { progress: Tweened<number> } = $props()
 
-  const green = '#0E8367'
-  const brown = '#BF9E49'
+  const green = 'rgb(var(--c-green))'
+  const brown = 'rgb(var(--c-brown))'
 
   let fill = $state(app.farm === FARMED ? green : brown)
   let path: SVGPathElement

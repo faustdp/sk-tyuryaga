@@ -4,12 +4,12 @@
   import '@fontsource/arbutus/400.css'
   import '@fontsource/roboto/400.css'
 
+  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import Ig from '@icons/socials/ig.svg?component'
   import Tg from '@icons/socials/tg.svg?component'
   import Tt from '@icons/socials/tt.svg?component'
   import Vk from '@icons/socials/vk.svg?component'
   import Yt from '@icons/socials/yt.svg?component'
-  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import { app, setIsLoaded } from '@state/app.svelte' //setError
   import {} from '@sveltejs/kit'
   import { init, isTMA, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //closeMiniApp
