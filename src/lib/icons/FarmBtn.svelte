@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { app } from '@state/app.svelte'
+  import { user } from '@state/user.svelte'
   import { FARMED } from '@utils/const'
   import { type Tweened } from 'svelte/motion'
 
@@ -8,12 +8,12 @@
   const green = 'rgb(var(--c-green))'
   const brown = 'rgb(var(--c-brown))'
 
-  let fill = $state(app.farm === FARMED ? green : brown)
+  let fill = $state(user.farm === FARMED ? green : brown)
   let path: SVGPathElement
   let isMounted = false
 
   $effect(() => {
-    const farm = app.farm
+    const farm = user.farm
     if (!isMounted) {
       isMounted = true
     } else {

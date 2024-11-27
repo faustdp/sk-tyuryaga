@@ -25,7 +25,7 @@
   <Stats />
   <Tv />
   <img
-    src={getImgUrl(0, user.level + 3)}
+    src={getImgUrl(0, user.level)}
     alt={imgs[0].name[user.level]}
     width="90"
     class="absolute left-[calc(50%_-_185px)] top-[calc(50%_+_5px)]" />
@@ -53,7 +53,7 @@
       user.level === 1 ? 'top-[calc(50%_-_160px)]' : 'top-[calc(50%_-_180px)]',
     )} />
   <img src={getImgUrl(5, user.level)} alt={imgs[5].name[user.level]} width="100" class="right-wall-img absolute" />
-  <img src={getImgUrl(6, user.level)} alt={imgs[6].name[user.level]} width="80" class="left-wallet-img absolute" />
+  <img src={getImgUrl(6, user.level)} alt={imgs[6].name[user.level]} width="90" class="left-wall-img absolute" />
   <img
     src={getImgUrl(7, user.level)}
     alt={imgs[7].name[user.level]}

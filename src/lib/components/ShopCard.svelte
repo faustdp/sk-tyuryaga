@@ -4,15 +4,15 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import Spider from '@images/Spider.svelte'
   import { noop } from '@utils'
-  import { BOOST } from '@utils/const'
+  import { AMOUNT, COMBO } from '@utils/const'
 
   import dudka from '@/images/dudka.webp'
   import data from '@/messages.json'
 
   let {
     title = 'Советское шампанское',
-    level = 1,
-    boostType = BOOST[1],
+    level = 0,
+    boostType = AMOUNT,
     onclick,
   }: { title?: string; level?: number; boostType?: BoostValue; onclick: typeof noop } = $props()
 </script>
@@ -32,7 +32,7 @@
   <h2 class="relative mb-3 max-w-44 text-base leading-5 tracking-wider">{title}</h2>
   <div class="relative mb-2 flex min-h-[52px] flex-col items-start gap-y-1">
     <BoostTag boost={boostType} />
-    {#if boostType === BOOST[2]}
+    {#if boostType === COMBO}
       <BoostTag boost={boostType} />
     {/if}
   </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import CheckLink from '@icons/checkLink.svg?component'
+  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import InputClear from '@icons/InputClear.svelte'
   import Spinner from '@icons/Spinner.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
@@ -24,24 +25,28 @@
   let codeIsRight = $state(false)
   let inputValue = $state('')
   let lastWrongCode = $state('')
-  let TO: NodeJS.Timeout
+  let wrongTO: NodeJS.Timeout
 
   async function handleCodeCheck() {
     const value = inputValue.trim()
-    if (value.length < 4 || isFetchingCode || value === lastWrongCode) return
-    clearTimeout(TO)
+    if (value.length < 4 || isFetchingCode || codeIsRight || value === lastWrongCode) return
+    clearTimeout(wrongTO)
     isFetchingCode = true
+    //TODO: Replace
     await w8(500)
     const x = Math.random()
     isFetchingCode = false
     if (x > 0.5) {
       codeIsWrong = true
       lastWrongCode = value
-      TO = setTimeout(() => {
+      wrongTO = setTimeout(() => {
         codeIsWrong = false
       }, errorTO)
     } else {
-      toast.success(`${data.toaster_msg} ${task?.reward} ${data.boost_cig}!`)
+      toast.success(`${data.toaster_msg} ${task?.reward} ${data.boost_cig}!`, {
+        class: 'toast-success',
+        icon: CheckSuccess,
+      })
       codeIsWrong = false
       codeIsRight = true
       if (task?.id) {
@@ -55,7 +60,7 @@
   }
 
   onDestroy(() => {
-    clearTimeout(TO)
+    clearTimeout(wrongTO)
     closeModal()
   })
 </script>

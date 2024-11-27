@@ -1,33 +1,21 @@
-import { CLAIMED, type ShopTabs } from '@utils/const'
-
-type Farm = 'farming' | 'farmed' | 'claimed'
-
 interface State {
-  farm: Farm
   isLoading: boolean
   isWalletOpened: boolean
   isWalletConnected: boolean
   isModalOpened: boolean
   activeShopTab: ShopTabs
   error: null | string
-  endTime: number
 }
 
 function appStore() {
   const state = $state<State>({
-    farm: CLAIMED,
     isLoading: true,
     isWalletOpened: false,
     isWalletConnected: false,
     isModalOpened: false,
     activeShopTab: 0,
     error: null,
-    endTime: 0,
   })
-
-  function setFarm(farming: Farm) {
-    state.farm = farming
-  }
 
   function setIsLoaded() {
     state.isLoading = false
@@ -35,13 +23,6 @@ function appStore() {
 
   function setError(error: string) {
     state.error = error
-  }
-
-  function setEndTime(time: number) {
-    if (time < Date.now()) {
-      throw new Error('Internal Error')
-    }
-    state.endTime = time
   }
 
   function openWallet() {
@@ -76,10 +57,8 @@ function appStore() {
     get app() {
       return state
     },
-    setFarm,
     setIsLoaded,
     setError,
-    setEndTime,
     openWallet,
     closeWallet,
     connectWallet,
@@ -92,10 +71,8 @@ function appStore() {
 
 export const {
   app,
-  setFarm,
   setIsLoaded,
   setError,
-  setEndTime,
   openWallet,
   closeWallet,
   connectWallet,

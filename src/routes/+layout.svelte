@@ -4,20 +4,20 @@
   import '@fontsource/arbutus/400.css'
   import '@fontsource/roboto/400.css'
 
-  import CheckSuccess from '@icons/checkSuccess.svg?component'
+  // import CheckError from '@icons/checkError.svg?component'
+  // toast.error(`${data.toaster_msg} Ошибка ${data.boost_cig}!`, { class: 'toast-error', icon: CheckError })
   import Ig from '@icons/socials/ig.svg?component'
   import Tg from '@icons/socials/tg.svg?component'
   import Tt from '@icons/socials/tt.svg?component'
   import Vk from '@icons/socials/vk.svg?component'
   import Yt from '@icons/socials/yt.svg?component'
-  import { app, setIsLoaded } from '@state/app.svelte' //setError
-  import {} from '@sveltejs/kit'
-  import { init, isTMA, miniAppReady, mountMiniApp } from '@telegram-apps/sdk' //closeMiniApp
+  import { app } from '@state/app.svelte'
+  import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
   import { noop, sortTasks } from '@utils'
   import { TASK_CTX, taskStatus } from '@utils/const'
   import { fixTouch } from '@utils/fixTouch'
+  import { initTgApp } from '@utils/intTgApp'
   import { useTonConnect } from '@utils/useTonConnect'
-  import { validate } from '@utils/verifyUser'
   import { onMount, setContext } from 'svelte'
   import { Toaster } from 'svelte-hot-french-toast'
 
@@ -28,30 +28,7 @@
 
   console.clear()
 
-  async function initApp() {
-    const isTG = await isTMA()
-    if (!isTG) {
-      // setError('Tg app')
-    }
-    try {
-      await validate()
-    } catch (_err) {
-      // if (err instanceof Error) {
-      //   if (err.message === 'Data is outdated') {
-      //     closeMiniApp()
-      //   }
-      //   setError(err.message)
-      // } else if (typeof err === 'string') {
-      //   setError(err)
-      // } else {
-      //   setError('Unexpected Error')
-      // }
-    } finally {
-      setIsLoaded()
-    }
-  }
-
-  initApp()
+  initTgApp()
   useTonConnect()
 
   let tasks: SocialItem[] = $state(
@@ -145,8 +122,4 @@
   </Dialog.Root>
 </div>
 
-<Toaster
-  toastOptions={{
-    duration: 3000,
-    icon: CheckSuccess,
-  }} />
+<Toaster />

@@ -5,7 +5,7 @@
   import Pack from '@icons/Pack.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
-  import { BOOST, cubicOut, type ShopTabs } from '@utils/const'
+  import { AMOUNT, COMBO, cubicOut, TIME } from '@utils/const'
   import useRipple from '@utils/useRipple.svelte'
   import { sineOut } from 'svelte/easing'
   import { fly } from 'svelte/transition'
@@ -30,13 +30,12 @@
 
   function openDrawer() {
     isDrawerOpened = true
-    selectedItem = 20
   }
 
   const tabs: Map<ShopTabs, string> = new Map([
-    [0, data[BOOST[0]]],
-    [1, data[BOOST[1]]],
-    [2, data[BOOST[2]]],
+    [0, data[TIME]],
+    [1, data[AMOUNT]],
+    [2, data[COMBO]],
   ])
 
   function handleTab(tab: ShopTabs) {
@@ -114,7 +113,7 @@
     <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
       Описание предмета описание предмета nbnjkkkgедмета описание предмета описание премета описание предмета qwertyui
     </p>
-    <div class="mb-4 flex gap-x-6"><BoostTag boost={BOOST[0]} /> <BoostTag boost={BOOST[2]} /></div>
+    <div class="mb-4 flex gap-x-6"><BoostTag boost={TIME} /> <BoostTag boost={COMBO} /></div>
     <h3 class="shadow-heading mb-2 text-base text-cyellow">{data.shop_requirements}</h3>
     <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
       Чтобы прокачать элемент для следующего уровня необходимо выполнить следующие условия:

@@ -308,10 +308,10 @@ button:focus:not(:focus-visible) {
   transform: translateZ(-40px);
 }
 
-.left-wallet-img {
-  transform: rotateY(57deg) rotateZ(-15deg) rotateX(-10deg);
-  transform-origin: left;
-  left: calc(50% - 200px);
+.left-wall-img {
+  /* transform: rotateY(57deg) rotateZ(-15deg) rotateX(-10deg);
+  transform-origin: left; */
+  left: calc(50% - 228px);
   top: calc(50% - 310px);
 }
 
@@ -354,9 +354,9 @@ button:focus:not(:focus-visible) {
     top: calc(50% - 279px);
     transform: rotateY(18deg);
   }
-  .left-wallet-img {
-    transform: rotateY(23deg) rotateZ(-5deg) rotateX(-10deg);
-    left: calc(50% - 177px);
+  .left-wall-img {
+    transform: rotateY(6deg) rotateZ(6deg);
+    left: calc(50% - 182px);
   }
 }
 
@@ -382,13 +382,19 @@ button:focus:not(:focus-visible) {
 }
 
 .toaster .base {
-  background-color: rgb(var(--c-green)) !important;
-  color: white !important;
   font-size: 14px;
   width: 90%;
   padding: 6px;
   justify-content: center;
   max-width: 320px;
+}
+.toaster .toast-success {
+  background-color: rgb(var(--c-green)) !important;
+  color: white !important;
+}
+.toaster .toast-error {
+  background-color: rgb(var(--c-tabs)) !important;
+  color: rgb(var(--white)) !important;
 }
 .toaster .message {
   flex: none !important;

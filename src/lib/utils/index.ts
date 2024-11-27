@@ -12,7 +12,7 @@ export async function w8(ms: number) {
 
 export const noop = () => {}
 
-export function formatTime(ms: number) {
+export function formatTime(ms: number, withoutSeconds = false) {
   const seconds = Math.trunc(ms / 1000)
   const minutes = Math.trunc(seconds / 60)
   const hours = Math.trunc(minutes / 60)
@@ -22,10 +22,13 @@ export function formatTime(ms: number) {
 
   const padZero = (num: number) => num.toString().padStart(2, '0')
 
-  const language = navigator.language || navigator.languages[0] // Change to PARAGLIDE
+  const language = navigator.language || navigator.languages[0] //TODO Change to PARAGLIDE
   const isEnglish = language.startsWith('en')
+  const result = `${padZero(hours)}${isEnglish ? 'h' : 'ч'} ${padZero(remainingMinutes)}${isEnglish ? 'm' : 'м'}`
 
-  return `${padZero(hours)}${isEnglish ? 'h' : 'ч'} ${padZero(remainingMinutes)}${isEnglish ? 'm' : 'м'} ${padZero(remainingSeconds)}${isEnglish ? 's' : 'с'}`
+  if (withoutSeconds) return result
+
+  return `${result} ${padZero(remainingSeconds)}${isEnglish ? 's' : 'с'}`
 }
 
 export function shortenAddress(addr: string) {
@@ -46,3 +49,8 @@ export function sortTasks(tasks: SocialItem[]) {
 }
 
 export const getImgUrl = (img: number, level: number) => `/imgs/${img}/${level + 1}.webp`
+
+export function getFirstLetter(name: string): string {
+  const firstLetterMatch = name.match(/[a-zA-Z]/)
+  return firstLetterMatch ? firstLetterMatch[0].toUpperCase() : '?'
+}

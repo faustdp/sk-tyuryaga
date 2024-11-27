@@ -1,6 +1,7 @@
 <script lang="ts">
   import ModalTasks from '@components/ModalTasks.svelte'
   import Chain from '@icons/Chain.svelte'
+  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import Cigarette from '@icons/cigarette.svg?component'
   import Done from '@icons/done.svg?component'
   import Spinner from '@icons/Spinner.svelte'
@@ -20,7 +21,10 @@
     if (item.status === taskStatus.done || item.status === taskStatus.loading) return
     if (item.status === taskStatus.claim) {
       item.status = taskStatus.done
-      toast.success(`${data.toaster_msg} ${item.reward} ${data.boost_cig}!`)
+      toast.success(`${data.toaster_msg} ${item.reward} ${data.boost_cig}!`, {
+        class: 'toast-success',
+        icon: CheckSuccess,
+      })
       sortTasks(tasks)
     } else if (item.status === taskStatus.start) {
       item.status = taskStatus.loading

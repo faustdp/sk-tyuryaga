@@ -1,10 +1,11 @@
 import cors from 'cors'
 import express, { Router } from 'express'
 
-import { apiPath, checkPath, mePath, sitePort, siteUrl } from './server/config'
 // import { handler } from './build/handler.js'
 // import path from 'path'
 // import { fileURLToPath } from 'url'
+import botHandler from './server/bot'
+import { apiPath, botPath, healthPath, mePath, setupBot, sitePort, siteUrl } from './server/config'
 import meHandler from './server/me'
 
 // const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -50,7 +51,11 @@ router.post(mePath, (req, res) => {
   meHandler(req, res)
 })
 
-router.get(checkPath, (req, res) => {
+router.post(botPath, (req, res) => {
+  botHandler(req, res)
+})
+
+router.get(healthPath, (req, res) => {
   res.status(200).send('OK')
 })
 
@@ -60,6 +65,8 @@ router.post('/test', (req) => {
 
 app.use(apiPath, router)
 
+setupBot()
+// app.use(webhookCallback(bot, "express")) webhookcb from grammy
 // app.use(handler)
 
 async function shutdown() {

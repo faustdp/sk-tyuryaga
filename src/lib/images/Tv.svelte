@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { app } from '@state/app.svelte'
+  import { user } from '@state/user.svelte'
   import { w8 } from '@utils'
-  import { quadInOut } from '@utils/const'
-  import { CLAIMED, FARMING } from '@utils/const'
+  import { CLAIMED, FARMING, quadInOut } from '@utils/const'
 
   const { classes = '' } = $props()
 
@@ -29,11 +28,11 @@
   }
 
   $effect(() => {
-    if (app.farm === FARMING) {
+    if (user.farm === FARMING) {
       createAnimation()
       return
     }
-    if (app.farm === CLAIMED || !animation) return
+    if (user.farm === CLAIMED || !animation) return
 
     const isReversed = animation.playbackRate < 0
     if (Number(animation.currentTime) === 0) {

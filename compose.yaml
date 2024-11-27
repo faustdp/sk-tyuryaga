@@ -1,36 +1,36 @@
 services:
-  directus:
-    image: directus/directus:11.1.0
-    ports:
-      - 8055:8055
-    volumes:
-      - ./database:/directus/database
-      - ./uploads:/directus/uploads
-      - ./extensions:/directus/extensions
-    environment:
-      DB_CLIENT: "pg"
-      DB_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
-      ADMIN_EMAIL: "${ADMIN_EMAIL}"
-      ADMIN_PASSWORD: "${ADMIN_PW}"
-      SECRET: "${SECRET}"
-      WEBSOCKETS_ENABLED: "true"
-      WEBSOCKETS_GRAPHQL_ENABLED: "false"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - general
+  # directus:
+  #   image: directus/directus:11.1.0
+  #   ports:
+  #     - 8055:8055
+  #   volumes:
+  #     - ./database:/directus/database
+  #     - ./uploads:/directus/uploads
+  #     - ./extensions:/directus/extensions
+  #   environment:
+  #     DB_CLIENT: "pg"
+  #     DB_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+  #     ADMIN_EMAIL: "${ADMIN_EMAIL}"
+  #     ADMIN_PASSWORD: "${ADMIN_PW}"
+  #     SECRET: "${SECRET}"
+  #     WEBSOCKETS_ENABLED: "true"
+  #     WEBSOCKETS_GRAPHQL_ENABLED: "false"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - general
 
-  postgres:
-    image: postgres:16.4
+  postgresdb:
+    image: postgres:17.1
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}  
     ports:
-      - "5432:5432"
+      - "6432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata2:/var/lib/postgresql/data
     networks:
       - general
     restart: always
@@ -41,7 +41,7 @@ services:
       retries: 5
 
 volumes:
-  pgdata:
+  pgdata2:
 
 networks:
   general:
@@ -93,3 +93,55 @@ networks:
   #     interval: 50s
   #     timeout: 10s
   #     retries: 5
+
+# FROM node:18-alpine AS base
+# FROM base AS deps.
+# RUN apk add --no-cache libc6-compat
+# WORKDIR /app
+# COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+# RUN npm ci
+
+# FROM base AS builder
+# WORKDIR /app
+# COPY --from=deps /app/node_modules ./node_modules
+# COPY . .
+# ENV NEXT_TELEMETRY_DISABLED 1
+# RUN npm run build
+
+# FROM base AS runner
+# WORKDIR /app
+# ENV NODE_ENV production
+# ENV NEXT_TELEMETRY_DISABLED 1
+# RUN addgroup --system --gid 1001 nodejs
+# RUN adduser --system --uid 1001 nextjs
+# COPY --from=builder /app/public ./public
+# RUN mkdir .next
+# RUN chown nextjs:nodejs .next
+# COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# USER nextjs
+# EXPOSE 3000
+# ENV PORT 3000
+# CMD HOSTNAME="0.0.0.0" node server.js
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# FROM node:20-alpine AS builder
+# WORKDIR /app
+
+# COPY pnpm-lock.yaml package.json ./
+# RUN npm install -g pnpm
+# RUN pnpm install --prod --frozen-lockfile
+
+# COPY . .
+# RUN pnpm run build
+# RUN pnpm run build:server
+
+# FROM node:20-alpine
+# WORKDIR /app
+
+# COPY --from=builder /app/dist ./dist
+# COPY --from=builder /app/index.mjs ./
+
+# EXPOSE 8888
+
+# CMD ["node", "index.mjs"]

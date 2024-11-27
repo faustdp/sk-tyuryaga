@@ -78,6 +78,6 @@
     </span>
   {/if}
   {#if isBlue}
-    <svg class="absolute -top-2.5 right-3 h-5 w-5"><use href="#ton"></use></svg>
+    <svg class="absolute -right-2 -top-2.5 h-5 w-5"><use href="#ton"></use></svg>
   {/if}
 </svelte:element>

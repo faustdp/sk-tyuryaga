@@ -2,10 +2,18 @@
   import Cigarette from '@icons/cigarette.svg?component'
   import cigarette from '@icons/cigarette.svg?url'
   import FarmBtn from '@icons/FarmBtn.svelte'
-  import { app, setEndTime, setFarm } from '@state/app.svelte'
-  import { setCigs, user } from '@state/user.svelte'
+  import {
+    addBonus,
+    setCigs,
+    setCurrentFarmAmount,
+    setCurrentFarmTime,
+    setEndTime,
+    setFarm,
+    upLevel,
+    user,
+  } from '@state/user.svelte'
   import { formatTime } from '@utils'
-  import { CLAIMED, FARMED, FARMING, LEVELS, MINUTE, SECOND } from '@utils/const'
+  import { CLAIMED, FARMED, FARMING, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
   import { tweened } from 'svelte/motion'
@@ -13,23 +21,19 @@
 
   import data from '@/messages.json'
 
-  let CIGS_NUM = $derived(LEVELS[user.level].time * LEVELS[user.level].amount)
-
-  let FARM_TIME = $derived(LEVELS[user.level].time * MINUTE)
-
   function getProgress(time: number) {
+    if (time === 0) return 1
     const now = Date.now()
     if (now > time) {
-      if (app.farm === FARMING) setFarm(FARMED)
+      if (user.farm === FARMING) setFarm(FARMED)
       return 1
     }
-    return Math.max(0, (time - now) / FARM_TIME)
+    return Math.max(0, (time - now) / user.currentFarmTime)
   }
 
-  const prevProgress = app.endTime === 0 ? 1 : getProgress(app.endTime)
-  let wasFarming = app.endTime !== 0 && prevProgress !== 0
+  const prevProgress = getProgress(user.endTime)
+  let wasFarming = user.endTime !== 0 && prevProgress !== 0
 
-  let isActive = $state(false)
   let showConfetti = $state(false)
   let time = $state('')
 
@@ -37,9 +41,21 @@
   let isMounted = false
 
   const progress = tweened(prevProgress, {
-    duration: () => (app.farm !== FARMING ? 200 : wasFarming ? prevProgress * FARM_TIME : FARM_TIME),
-    easing: (t) => (app.farm === FARMING ? linear(t) : sineOut(t)),
+    duration: () =>
+      user.farm !== FARMING ? 200 : wasFarming ? prevProgress * user.currentFarmTime : user.currentFarmTime,
+    easing: (t) => (user.farm === FARMING ? linear(t) : sineOut(t)),
   })
+
+  function startInterval() {
+    time = formatTime($progress * user.currentFarmTime)
+    timeInterval = setInterval(() => {
+      time = formatTime($progress * user.currentFarmTime)
+    }, SECOND)
+  }
+
+  function stopInterval() {
+    clearInterval(timeInterval)
+  }
 
   $effect(() => {
     if ($progress === 0) {
@@ -61,12 +77,12 @@
 
   let cigs = $derived.by(() => {
     const val = $progress
-    if (wasFarming && val === 1) return CIGS_NUM
-    return Math.trunc((1 - val) * CIGS_NUM)
+    if (wasFarming && val === 1) return user.currentFarmAmount
+    return Math.trunc((1 - val) * user.currentFarmAmount)
   })
 
   $effect(() => {
-    const farm = app.farm
+    const farm = user.farm
     if (!isMounted) {
       isMounted = true
       return
@@ -78,13 +94,26 @@
     }
   })
 
-  function setActive() {
-    isActive = true
+  async function handleClick() {
+    if (user.farm === FARMING) return
+    if (user.farm === CLAIMED) {
+      const now = Date.now()
+      setEndTime(now + user.farmTime)
+      setCurrentFarmTime()
+      setCurrentFarmAmount()
+      setFarm(FARMING)
+      startInterval()
+      $progress = 0
+    } else if (user.farm === FARMED) {
+      setFarm(CLAIMED)
+      setCigs(user.currentFarmAmount)
+    }
   }
 
-  function removeActive() {
-    isActive = false
-  }
+  let isActive = $state(false)
+
+  const setActive = () => (isActive = true)
+  const removeActive = () => (isActive = false)
 
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') setActive()
@@ -93,36 +122,15 @@
   function handleKeyUp(event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') removeActive()
   }
-
-  async function handleClick() {
-    if (app.farm === FARMING) return
-    if (app.farm === CLAIMED) {
-      setFarm(FARMING)
-      setEndTime(Date.now() + FARM_TIME)
-      startInterval()
-      $progress = 0
-    } else if (app.farm === FARMED) {
-      setFarm(CLAIMED)
-      setCigs(CIGS_NUM)
-    }
-  }
-
-  function startInterval() {
-    time = formatTime($progress * FARM_TIME)
-    timeInterval = setInterval(() => {
-      time = formatTime($progress * FARM_TIME)
-    }, SECOND)
-  }
-
-  function stopInterval() {
-    clearInterval(timeInterval)
-  }
 </script>
 
 <section
   class="farming-btn fixed left-1/2 z-30
     mx-auto flex h-14 w-full max-w-xs -translate-x-1/2 {isActive ? 'scale-95' : 'scale-100'} items-center
     justify-center gap-x-4 rounded-xl transition-transform">
+  <button class="absolute top-0 -mt-40 ml-5" onclick={() => addBonus(5)}>+time bonus</button>
+  <button class="absolute top-10 -mt-40 ml-5" onclick={() => addBonus(1)}>+amount bonus</button>
+  <button class="absolute top-20 -mt-40 ml-5" onclick={() => upLevel()}>levelUp</button>
   <FarmBtn {progress} />
   <button
     class="flex size-full items-center justify-center gap-x-2 text-xl outline-none"
@@ -134,9 +142,9 @@
     onmousedown={setActive}
     onmouseup={removeActive}
     onmouseleave={removeActive}>
-    {#if app.farm === FARMED}
-      {data.take} {CIGS_NUM} <Cigarette class="mb-1" />
-    {:else if app.farm === FARMING}
+    {#if user.farm === FARMED}
+      {data.take} {user.currentFarmAmount} <Cigarette class="mb-1" />
+    {:else if user.farm === FARMING}
       {data.farming}
       <span>{cigs}</span>
       <span class="mb-[-3px] text-xs">{time}</span>

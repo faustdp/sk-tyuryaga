@@ -42,7 +42,7 @@
   withMargin
   class="card-shadow flex w-[calc(100%_-_20px)] flex-col items-center overflow-hidden bg-ccard sm:max-w-[425px]">
   <Carousel.Root class="relative w-full max-w-[344px]" setApi={(emblaApi) => (carouselApi = emblaApi)}>
-    <div class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f2f2f2] blur-2xl">
+    <div class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-textlight blur-2xl">
     </div>
     <Carousel.Content>
       <div class="absolute right-0 top-0"><Cross isChoice /></div>

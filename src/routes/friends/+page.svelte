@@ -1,26 +1,35 @@
 <script lang="ts">
   import Cigarette from '@icons/cigarette.svg?component'
+  import cigarette from '@icons/cigarette.svg?url'
   import FriendsAmount from '@icons/friendsAmount.svg?component'
   import Inmates from '@icons/inmates.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import { app } from '@state/app.svelte'
-  import { FARMED } from '@utils/const'
+  import { setClaimFriends, user } from '@state/user.svelte'
+  import { formatTime } from '@utils'
+  import { DAY, SECOND } from '@utils/const'
+  import { onDestroy } from 'svelte'
+  import { SvelteDate } from 'svelte/reactivity'
+  import { Confetti } from 'svelte-confetti'
 
   import Drawer from '@/Drawer.svelte'
   import data from '@/messages.json'
+
+  let confettiTO: NodeJS.Timeout
+  let date = new SvelteDate()
+  let isDrawerOpened = $state(false)
+  let showConfetti = $state(false)
+
+  const friendsClaim = 0 //TODO: idk
+
+  function closeDrawer() {
+    isDrawerOpened = false
+  }
 
   interface FriendStat {
     name: string
     invites: number
     cigs: number
   }
-
-  let isDrawerOpened = $state(false)
-
-  function closeDrawer() {
-    isDrawerOpened = false
-  }
-
   const friends: FriendStat[] = [
     {
       name: 'Имя',
@@ -58,6 +67,31 @@
       cigs: 1231,
     },
   ]
+
+  $effect(() => {
+    const interval = setInterval(() => {
+      date.setTime(Date.now())
+    }, SECOND)
+
+    return () => {
+      clearInterval(interval)
+    }
+  })
+
+  function handleClick() {
+    if (!isReady) return
+    showConfetti = true
+    setClaimFriends(DAY + date.getTime()) //+ db
+    confettiTO = setTimeout(() => {
+      showConfetti = false
+    }, SECOND * 10)
+  }
+
+  onDestroy(() => {
+    clearTimeout(confettiTO)
+  })
+
+  let isReady = $derived(user.claimFriends - date.getTime() < 0)
 </script>
 
 <svelte:head>
@@ -67,7 +101,7 @@
 
 {#snippet frens({ name, invites, cigs }: FriendStat)}
   <div class="flex flex-1 items-center gap-x-3 py-2">
-    <div class="flex size-8 select-none items-center justify-center rounded-full bg-[#0088cc] pt-0.5">
+    <div class="flex size-8 select-none items-center justify-center rounded-full bg-cblue pt-0.5">
       {name[0].toUpperCase()}
     </div>
     <!-- <img src="" alt=""> -->
@@ -99,22 +133,29 @@
     <p class="absolute left-0 top-0 flex size-full flex-col items-center justify-center gap-y-3 py-4">
       <span class="arbutus flex items-center text-xl">
         <Cigarette class="mr-1" width="38" height="23" />
-        0
+        {friendsClaim}
       </span>
-      <button class="relative outline-none transition-transform will-change-transform active:scale-95">
+      <button
+        onclick={handleClick}
+        class="relative h-[37px] min-w-[165px] px-3 outline-none transition-transform will-change-transform active:scale-95">
         <WalletBtn
-          width={165}
           height={37}
-          stroke={app.farm === FARMED ? 'var(--dark-green)' : 'black'}
-          fill={app.farm === FARMED ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'} />
-        <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xs">
-          {#if app.farm === FARMED}
+          stroke={isReady ? 'var(--dark-green)' : 'black'}
+          fill={isReady ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'}
+          classes={'absolute left-0 top-0 w-full'} />
+        <span class="relative z-20 flex items-center justify-center text-xs">
+          {#if isReady}
             {data.take}
           {:else}
-            {data.friends_take} 01ч 01м
+            {data.friends_take} {formatTime(user.claimFriends - date.getTime(), true)}
           {/if}
         </span>
       </button>
+      {#if showConfetti}
+        <span class="absolute left-1/2 top-0">
+          <Confetti y={[0.2, 0.5]} x={[-0.7, 0.7]} amount={25} size={25} colorArray={[`url(${cigarette})`]} />
+        </span>
+      {/if}
     </p>
   </section>
   <p class="roboto mb-3.5 max-w-[344px] text-center text-xs tracking-wide text-textgrey">

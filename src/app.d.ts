@@ -1,7 +1,7 @@
 import '@poppanator/sveltekit-svg/dist/svg'
 
 import { type TonConnectUI } from '@tonconnect/ui'
-import { BOOST } from '@utils/const'
+import { AMOUNT, COMBO, TIME } from '@utils/const'
 import type { Snippet } from 'svelte'
 
 declare global {
@@ -16,20 +16,17 @@ declare global {
 
   type TonUI = TonConnectUI
 
-  interface User {
-    address: string
-    id: number | null
-    first_name: string | null
-    direct_invites: number
-    indirect_invites: number
-    cigs: number
-    level: number
-    username?: string | null
+  interface TypedError extends Error {
+    type: string
+    code?: number
+    details?: any
   }
 
   type Status = 0 | 1 | 2 | 3 | 4
 
-  type BoostValue = (typeof BOOST)[number]
+  type BoostValue = typeof TIME | typeof AMOUNT | typeof COMBO
+
+  type BonusIndexes = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
 
   interface SocialItem {
     id: number
@@ -40,6 +37,8 @@ declare global {
     link: string
     delay?: number
   }
+
+  type ShopTabs = 0 | 1 | 2
 
   interface Window {
     _tonConnectUI?: TonConnectUI

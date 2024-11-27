@@ -9,7 +9,6 @@
   import data from '@/messages.json'
 </script>
 
-<!-- max(0px,_calc((var(--screen)_-_var(--height-limit))_/_2)) -->
 <footer
   class="bg-nav fixed bottom-0 z-30 flex
    w-full justify-center maxheight:!left-0 maxheight:!-z-10">
