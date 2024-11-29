@@ -16,7 +16,7 @@
   let carouselApi = $state<CarouselAPI>()
   let current = $state(0)
   let isLocked = $derived(current > user.level + 1)
-  const items = Array.from({ length: 5 }, () => ({ src: 'src/lib/images/dudka.webp', level: 1 }))
+  const items = Array.from({ length: 5 }, () => ({ src: '/imgs/1/9.webp', level: 1 }))
 
   function handleCodeCheck() {
     closeModal()

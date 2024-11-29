@@ -4,7 +4,7 @@
   import Tv from '@images/Tv.svelte'
   import { user } from '@state/user.svelte'
   import { cn, getImgUrl } from '@utils'
-  import { imgs } from '@utils/const'
+  import { IMG_NAMES } from '@utils/const'
 
   import Farming from '@/Farming.svelte'
   import Header from '@/Header.svelte'
@@ -26,42 +26,42 @@
   <Tv />
   <img
     src={getImgUrl(0, user.level)}
-    alt={imgs[0].name[user.level]}
+    alt={IMG_NAMES[0].name[user.level]}
     width="90"
     class="absolute left-[calc(50%_-_185px)] top-[calc(50%_+_5px)]" />
   <img
     src={getImgUrl(1, user.level)}
-    alt={imgs[1].name[user.level]}
+    alt={IMG_NAMES[1].name[user.level]}
     width="85"
     class="absolute left-[calc(50%_-_180px)] top-[calc(50%_+_88px)]" />
   <img
     src={getImgUrl(2, user.level)}
-    alt={imgs[2].name[user.level]}
+    alt={IMG_NAMES[2].name[user.level]}
     width="80"
     class="trans-z-40 absolute left-[calc(50%_+_109px)] top-[calc(50%_+_96px)]" />
   <img
     src={getImgUrl(3, user.level)}
-    alt={imgs[3].name[user.level]}
-    width="130"
-    class="absolute left-[calc(50%_+_79px)] top-[calc(50%_-_39px)]" />
+    alt={IMG_NAMES[3].name[user.level]}
+    width="110"
+    class="absolute left-[calc(50%_+_95px)] top-[calc(50%_-_29px)]" />
   <img
     src={getImgUrl(4, user.level)}
-    alt={imgs[4].name[user.level]}
+    alt={IMG_NAMES[4].name[user.level]}
     width="100"
     class={cn(
-      'absolute left-[calc(50%_+_71px)]',
-      user.level === 1 ? 'top-[calc(50%_-_160px)]' : 'top-[calc(50%_-_180px)]',
+      'absolute left-[calc(50%_+_76px)]',
+      user.level === 1 ? 'top-[calc(50%_-_160px)]' : 'top-[calc(50%_-_192px)]',
     )} />
-  <img src={getImgUrl(5, user.level)} alt={imgs[5].name[user.level]} width="100" class="right-wall-img absolute" />
-  <img src={getImgUrl(6, user.level)} alt={imgs[6].name[user.level]} width="90" class="left-wall-img absolute" />
+  <img src={getImgUrl(5, user.level)} alt={IMG_NAMES[5].name[user.level]} width="100" class="right-wall-img absolute" />
+  <img src={getImgUrl(6, user.level)} alt={IMG_NAMES[6].name[user.level]} width="90" class="left-wall-img absolute" />
   <img
     src={getImgUrl(7, user.level)}
-    alt={imgs[7].name[user.level]}
+    alt={IMG_NAMES[7].name[user.level]}
     width="60"
     class="absolute left-[calc(50%_-_164px)] top-[calc(50%_-_142px)]" />
   <img
     src={getImgUrl(8, user.level)}
-    alt={imgs[8].name[user.level]}
+    alt={IMG_NAMES[8].name[user.level]}
     width="60"
     class="trans-z-40 absolute left-[calc(50%_-_170px)] top-[calc(50%_-_57px)]" />
 

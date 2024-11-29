@@ -1,25 +1,31 @@
 <script lang="ts">
   import CheckLink from '@icons/checkLink.svg?component'
-  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import InputClear from '@icons/InputClear.svelte'
   import Spinner from '@icons/Spinner.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import Spider from '@images/Spider.svelte'
   import { closeModal } from '@state/app.svelte'
   import { w8 } from '@utils'
-  import { taskStatus } from '@utils/const'
-  import { onDestroy } from 'svelte'
+  import { SECOND } from '@utils/const'
+  import { onDestroy, tick } from 'svelte'
   import { cubicOut } from 'svelte/easing'
   import { scale } from 'svelte/transition'
-  import toast from 'svelte-hot-french-toast'
 
   import data from '@/messages.json'
   import * as Dialog from '$lib/components/dialog/'
 
-  let { task, setTask }: { task: SocialItem | null; setTask: (id: number, status: Status) => void } = $props()
+  let {
+    task,
+    setDoneTask,
+  }: {
+    task: SocialItem | null
+    setDoneTask: (item: SocialItem) => void
+  } = $props()
 
   const errorTO = 2400
+  const minCodeLength = 1
 
+  let inputEl = $state<HTMLInputElement>()
   let isFetchingCode = $state(false)
   let codeIsWrong = $state(false)
   let codeIsRight = $state(false)
@@ -29,7 +35,7 @@
 
   async function handleCodeCheck() {
     const value = inputValue.trim()
-    if (value.length < 4 || isFetchingCode || codeIsRight || value === lastWrongCode) return
+    if (value.length < minCodeLength || isFetchingCode || codeIsRight || value === lastWrongCode || !task) return
     clearTimeout(wrongTO)
     isFetchingCode = true
     //TODO: Replace
@@ -43,21 +49,23 @@
         codeIsWrong = false
       }, errorTO)
     } else {
-      toast.success(`${data.toaster_msg} ${task?.reward} ${data.boost_cig}!`, {
-        class: 'toast-success',
-        icon: CheckSuccess,
-      })
       codeIsWrong = false
       codeIsRight = true
-      if (task?.id) {
-        setTask(task.id, taskStatus.done)
-      }
-      await w8(840)
+      setDoneTask(task)
+      await w8(SECOND)
       codeIsRight = false
       inputValue = ''
       closeModal()
     }
   }
+
+  $effect(() => {
+    if (inputEl) {
+      tick().then(() => {
+        inputEl?.focus()
+      })
+    }
+  })
 
   onDestroy(() => {
     clearTimeout(wrongTO)
@@ -82,6 +90,7 @@
     <input
       type="text"
       bind:value={inputValue}
+      bind:this={inputEl}
       placeholder={data.insert_code}
       class="roboto {codeIsWrong
         ? 'border-cinputred'
@@ -108,8 +117,8 @@
     onclick={handleCodeCheck}>
     <WalletBtn
       height={40}
-      fill={inputValue.length > 3 ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'}
-      stroke={inputValue.length > 3 ? 'var(--dark-green)' : 'black'} />
+      fill={inputValue.length >= minCodeLength ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'}
+      stroke={inputValue.length >= minCodeLength ? 'var(--dark-green)' : 'black'} />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center text-sm">
       {#if isFetchingCode}
         <Spinner />

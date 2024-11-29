@@ -2,9 +2,9 @@
   import CardLevel from '@icons/cardLevel.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { openModal } from '@state/app.svelte'
+  import { getImgUrl } from '@utils'
   import useRipple from '@utils/useRipple.svelte'
 
-  import dudka from '@/images/dudka.webp'
   import data from '@/messages.json'
 
   const level = 1
@@ -25,7 +25,7 @@
     <picture
       class="card-shadow relative mb-2 flex flex-wrap justify-center overflow-hidden rounded-md
         pb-5 pt-6 before:absolute before:left-0 before:top-0 before:size-full before:bg-slate-300 before:blur-2xl before:content-empty">
-      <img src={dudka} width="100" alt="Text" class="relative z-10 h-full" />
+      <img src={getImgUrl(1, 8)} width="100" alt="Text" class="relative z-10 h-full" />
     </picture>
   </div>
 

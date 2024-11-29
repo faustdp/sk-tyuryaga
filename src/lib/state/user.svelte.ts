@@ -1,4 +1,4 @@
-import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, imgs, LEVELS, MINUTE, TIME } from '@utils/const'
+import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, IMG_NAMES, LEVELS, MINUTE, SIXTY, TIME } from '@utils/const'
 
 import data from '@/messages.json'
 
@@ -6,7 +6,7 @@ type Farm = 'farming' | 'farmed' | 'claimed'
 
 interface User {
   tg_id: number | null
-  first_name: string | null
+  first_name: string
   address: string
   farm: Farm
   direct_invites: number
@@ -21,6 +21,7 @@ interface User {
   currentFarmAmount: number
   bonuses: BonusIndexes[]
   username?: string | null
+  //TODO TAsk statuses: {}
 }
 
 function userStore() {
@@ -94,7 +95,7 @@ function userStore() {
   function getBonuses(bonuses: BonusIndexes[]): [number, number] {
     const result: [number, number] = [0, 0]
     bonuses.forEach((bonusNumber) => {
-      const bonusType = imgs[bonusNumber].type
+      const bonusType = IMG_NAMES[bonusNumber].type
       const isCombo = bonusType === COMBO
       if (isCombo) {
         const bonus = BONUSES[COMBO]
@@ -112,7 +113,7 @@ function userStore() {
 
   function setFarmMetrics() {
     const [timeBonus, amountBonus] = getBonuses(state.bonuses)
-    const farmTime = LEVELS[state.level].baseTime + Math.round((timeBonus / 60) * 100) / 100
+    const farmTime = LEVELS[state.level].baseTime + Math.round((timeBonus / SIXTY) * 100) / 100
     state.farmTime = farmTime * MINUTE
     state.farmAmount = calcFarmAmount(amountBonus, farmTime)
   }
@@ -140,7 +141,6 @@ function userStore() {
     upLevel,
     setClaimFriends,
     setCurrentFarmAmount,
-    setFarmMetrics,
     addBonus,
     removeBonuses,
   }
@@ -157,7 +157,6 @@ export const {
   upLevel,
   setClaimFriends,
   setCurrentFarmAmount,
-  setFarmMetrics,
   addBonus,
   removeBonuses,
 } = userStore()

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InviteFriends from '@components/InviteFriends.svelte'
   import Cigarette from '@icons/cigarette.svg?component'
   import cigarette from '@icons/cigarette.svg?url'
   import FriendsAmount from '@icons/friendsAmount.svg?component'
@@ -11,7 +12,6 @@
   import { SvelteDate } from 'svelte/reactivity'
   import { Confetti } from 'svelte-confetti'
 
-  import Drawer from '@/Drawer.svelte'
   import data from '@/messages.json'
 
   let confettiTO: NodeJS.Timeout
@@ -95,7 +95,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.friends_title}</title>
+  <title>{data.nav_frens}</title>
   <meta name="description" content={data.friends_content} />
 </svelte:head>
 
@@ -114,13 +114,6 @@
       <Cigarette class="-mt-0.5 ml-1" width="36" height="19" />
     </p>
   </div>
-{/snippet}
-
-{#snippet btn({ text, onclick, classes = '' }: { text: string; onclick: () => void; classes?: string })}
-  <button class="{classes} outline-none transition-transform will-change-transform active:scale-95" {onclick}>
-    <WalletBtn fill="rgb(var(--c-yellow))" stroke="var(--dark-yellow)" />
-    <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">{text}</span>
-  </button>
 {/snippet}
 
 <div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-4">
@@ -167,10 +160,12 @@
       {@render frens(friend)}
     {/each}
   </section>
-  {@render btn({ text: data.friends_call, onclick: () => (isDrawerOpened = true), classes: 'sticky -bottom-px' })}
+  <button
+    class="sticky -bottom-px outline-none transition-transform will-change-transform active:scale-95"
+    onclick={() => (isDrawerOpened = true)}>
+    <WalletBtn fill="rgb(var(--c-yellow))" stroke="var(--dark-yellow)" />
+    <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">{data.friends_call}</span>
+  </button>
 </div>
 
-<Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
-  {@render btn({ text: data.send_tg, onclick: () => null, classes: 'mb-0.5 mt-4' })}
-  {@render btn({ text: data.copy_link, onclick: () => null, classes: 'mt-4' })}
-</Drawer>
+<InviteFriends isOpened={isDrawerOpened} {closeDrawer} />

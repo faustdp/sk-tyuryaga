@@ -14,7 +14,7 @@
   import { app } from '@state/app.svelte'
   import { init, miniAppReady, mountMiniApp } from '@telegram-apps/sdk'
   import { noop, sortTasks } from '@utils'
-  import { TASK_CTX, taskStatus } from '@utils/const'
+  import { TASK_CODE, TASK_CTX, TASK_INVITE, TASK_SUBSCRIBE, taskStatus } from '@utils/const'
   import { fixTouch } from '@utils/fixTouch'
   import { initTgApp } from '@utils/intTgApp'
   import { useTonConnect } from '@utils/useTonConnect'
@@ -40,23 +40,36 @@
         reward: '200 USDT',
         status: taskStatus.check,
         link: 'https://google.com',
+        type: TASK_CODE,
+      },
+      {
+        id: 7,
+        Icon: Ig,
+        task: 'Посмотри видео и впиши код',
+        reward: '200 USDT',
+        status: taskStatus.start,
+        link: 'https://google.com',
+        type: TASK_CODE,
       },
       {
         id: 6,
         Icon: Tg,
-        task: 'Позови 100 корешей',
+        task: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.start,
         link: 'https://x.com/intent/follow?screen_name=NASA',
+        type: TASK_SUBSCRIBE,
         delay: 5000,
       },
       {
         id: 5,
         Icon: Tt,
-        task: 'Посмотри видео и впиши код',
+        task: 'Позови 100 корешей',
         reward: '200 USDT',
-        status: taskStatus.done,
+        status: taskStatus.start,
         link: 'https://google.com',
+        type: TASK_INVITE,
+        invites: 10,
       },
       {
         id: 3,
@@ -65,6 +78,7 @@
         reward: '200 USDT',
         status: taskStatus.check,
         link: 'https://google.com',
+        type: TASK_CODE,
       },
       {
         id: 2,
@@ -73,6 +87,7 @@
         reward: '200 USDT',
         status: taskStatus.claim,
         link: 'https://google.com',
+        type: TASK_CODE,
       },
       {
         id: 4,
@@ -81,6 +96,7 @@
         reward: '200 USDT',
         status: taskStatus.loading,
         link: 'https://google.com',
+        type: TASK_CODE,
       },
     ]),
   )
@@ -109,9 +125,9 @@
 </script>
 
 <div
-  class="relative w-full overflow-x-hidden {$page.url.pathname === '/'
+  class="relative w-full overflow-y-auto overflow-x-hidden {$page.url.pathname === '/'
     ? 'h-full'
-    : 'h-[calc(100%_-_var(--nav-height))]'} overflow-y-auto bg-cdarkblue">
+    : 'h-[calc(100%_-_var(--nav-height))]'} bg-cdarkblue">
   <Dialog.Root bind:open={app.isModalOpened}>
     {#if app.error}
       {data.error_msg} {app.error}

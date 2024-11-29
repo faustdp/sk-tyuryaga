@@ -1,4 +1,4 @@
-import { taskStatus } from '@utils/const'
+import { SIXTY, taskStatus } from '@utils/const'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -14,11 +14,11 @@ export const noop = () => {}
 
 export function formatTime(ms: number, withoutSeconds = false) {
   const seconds = Math.trunc(ms / 1000)
-  const minutes = Math.trunc(seconds / 60)
-  const hours = Math.trunc(minutes / 60)
+  const minutes = Math.trunc(seconds / SIXTY)
+  const hours = Math.trunc(minutes / SIXTY)
 
-  const remainingSeconds = seconds % 60
-  const remainingMinutes = minutes % 60
+  const remainingSeconds = seconds % SIXTY
+  const remainingMinutes = minutes % SIXTY
 
   const padZero = (num: number) => num.toString().padStart(2, '0')
 

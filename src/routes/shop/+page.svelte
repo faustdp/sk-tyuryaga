@@ -5,7 +5,8 @@
   import Pack from '@icons/Pack.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
-  import { AMOUNT, COMBO, cubicOut, TIME } from '@utils/const'
+  import { user } from '@state/user.svelte'
+  import { AMOUNT, BONUSES, COMBO, cubicOut, IMG_INDEXES, IMG_NAMES, LEVELS, TIME } from '@utils/const'
   import useRipple from '@utils/useRipple.svelte'
   import { sineOut } from 'svelte/easing'
   import { fly } from 'svelte/transition'
@@ -21,30 +22,33 @@
   let isMounted = false
 
   let isDrawerOpened = $state(false)
-  let selectedItem = $state(100)
-  let isTaskAllowed = $state(false)
+  let selectedItem = $state<Images | null>(null)
+  let isTaskAllowed = $state(false) //TODO
 
   function closeDrawer() {
     isDrawerOpened = false
+    selectedItem = null
   }
 
-  function openDrawer() {
+  function openDrawer(img: Images) {
     isDrawerOpened = true
+    selectedItem = img
   }
 
-  const tabs: Map<ShopTabs, string> = new Map([
-    [0, data[TIME]],
-    [1, data[AMOUNT]],
-    [2, data[COMBO]],
-  ])
+  const tabs: [BoostValue, string][] = [
+    [TIME, data[TIME]],
+    [AMOUNT, data[AMOUNT]],
+    [COMBO, data[COMBO]],
+  ]
 
-  function handleTab(tab: ShopTabs) {
+  function handleTab(tab: BoostValue) {
     if (app.activeShopTab === tab) return
     setActiveTab(tab)
   }
 
   $effect(() => {
-    const index = app.activeShopTab
+    const currTab = app.activeShopTab
+    const index = tabs.findIndex((el) => el[0] === currTab)
     const tab = tabCont.children[index + 1] as HTMLButtonElement
     const left = tab.getBoundingClientRect().left - tabCont.getBoundingClientRect().left
     activeTab.animate(
@@ -56,6 +60,12 @@
     if (!isMounted) {
       isMounted = true
     }
+  })
+
+  let tabItems = $derived.by(() => {
+    if (!app.activeShopTab) return []
+    const imgs = IMG_INDEXES[app.activeShopTab].filter((ind) => !user.bonuses.includes(ind))
+    return IMG_NAMES.filter((el, i) => imgs.includes(i as BonusIndexes))
   })
 
   function handleOutroStart(event: any) {
@@ -98,58 +108,82 @@
         in:fly={{ duration: 220, x: -200, easing: sineOut }}
         onoutrostart={handleOutroStart}
         class="flex w-full flex-col">
-        <ShopCard onclick={openDrawer} />
-        <ShopCard onclick={openDrawer} />
+        {#each tabItems as item}
+          <ShopCard
+            onclick={() => openDrawer(item)}
+            level={user.level}
+            title={item.name[user.level]}
+            index={item.idx}
+            boostType={item.type} />
+        {/each}
       </div>
     {/key}
   </div>
   <Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
-    <div class="mb-2 mt-3 flex items-center gap-x-2">
-      <LevelCard />
-      <ArrowRight class="mt-[22px]" />
-      <LevelCard level={2} />
-    </div>
-    <h2 class="shadow-heading mb-2 text-base">{data.cig_1}</h2>
-    <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
-      Описание предмета описание предмета nbnjkkkgедмета описание предмета описание премета описание предмета qwertyui
-    </p>
-    <div class="mb-4 flex gap-x-6"><BoostTag boost={TIME} /> <BoostTag boost={COMBO} /></div>
-    <h3 class="shadow-heading mb-2 text-base text-cyellow">{data.shop_requirements}</h3>
-    <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
-      Чтобы прокачать элемент для следующего уровня необходимо выполнить следующие условия:
-    </p>
-    <ul class="mb-3 flex flex-col gap-y-3">
-      <li class="flex w-full items-center gap-x-2.5">
-        {#if true}
-          <CheckDone />
-        {:else}
-          <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+    {#if selectedItem}
+      <div class="mb-2 mt-3 flex items-center gap-x-2">
+        {#if user.level > 0 && user.level < 10}
+          <LevelCard level={user.level - 1} index={selectedItem.idx} />
+          <ArrowRight class="mt-[22px]" />
         {/if}
-        <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
-          Прокачать все эелементы до 1 уровня
-        </span>
-      </li>
-      <li class="flex w-full items-center gap-x-2.5">
-        {#if false}
-          <CheckDone />
-        {:else}
-          <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+        <LevelCard level={user.level} index={selectedItem.idx} />
+      </div>
+      <h2 class="shadow-heading mb-2 text-base">{selectedItem.name[user.level]}</h2>
+      <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
+        Описание предмета описание предмета nbnjkkkgедмета описание предмета описание премета описание предмета qwertyui
+      </p>
+      <div class="mb-4 flex gap-x-6">
+        <BoostTag
+          boost={selectedItem.type}
+          amount={selectedItem.type === COMBO
+            ? BONUSES[COMBO][AMOUNT]
+            : selectedItem.type === AMOUNT
+              ? BONUSES[AMOUNT]
+              : BONUSES[TIME][user.level]} />
+        {#if selectedItem.type === COMBO}
+          <BoostTag boost={TIME} amount={BONUSES[COMBO][TIME][user.level]} />
         {/if}
-        <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
-          Прокачать все эелементы до 1 уровня Прокачать все эелементы до 1 уровня
+      </div>
+      <h3 class="shadow-heading mb-2 text-base text-cyellow">{data.shop_requirements}</h3>
+      <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
+        {data.shop_requirements_desc}
+      </p>
+      <ul class="mb-3 flex flex-col gap-y-3">
+        <li class="flex w-full items-center gap-x-2.5">
+          {#if true}
+            <CheckDone />
+          {:else}
+            <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+          {/if}
+          <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+            Прокачать все эелементы до 1 уровня
+          </span>
+        </li>
+        <li class="flex w-full items-center gap-x-2.5">
+          {#if false}
+            <CheckDone />
+          {:else}
+            <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+          {/if}
+          <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+            Прокачать все эелементы до 1 уровня Прокачать все эелементы до 1 уровня
+          </span>
+        </li>
+      </ul>
+      <button class="outline-none transition-transform will-change-transform active:scale-95">
+        <WalletBtn
+          fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
+          stroke={isTaskAllowed ? 'var(--dark-yellow)' : undefined} />
+        <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
+          {#if isTaskAllowed && user.cigs < LEVELS[user.level][selectedItem.type]}
+            {data.not_enough}
+          {:else}
+            {data.shop_upgrade}
+            <Cigarette class="mr-1" width="38" height="23" />
+            {LEVELS[user.level][selectedItem.type].toLocaleString()}
+          {/if}
         </span>
-      </li>
-    </ul>
-
-    <button class="outline-none transition-transform will-change-transform active:scale-95">
-      <WalletBtn
-        fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
-        stroke={isTaskAllowed ? 'var(--dark-yellow)' : undefined} />
-      <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
-        {data.shop_upgrade}
-        <Cigarette class="mr-1" width="38" height="23" />
-        {selectedItem}
-      </span>
-    </button>
+      </button>
+    {/if}
   </Drawer>
 </div>

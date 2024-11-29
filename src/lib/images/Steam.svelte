@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { app } from '@state/app.svelte'
+  import { user } from '@state/user.svelte'
   import { CLAIMED, FARMED, FARMING } from '@utils/const'
   import { onMount } from 'svelte'
 
@@ -59,7 +59,7 @@
   }
 
   $effect(() => {
-    const farm = app.farm
+    const farm = user.farm
     if (farm === CLAIMED || animations.length === 0) return
     let interval: NodeJS.Timeout
     if (farm === FARMING) {

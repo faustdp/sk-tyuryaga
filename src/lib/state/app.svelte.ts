@@ -1,9 +1,11 @@
+import { TIME } from '@utils/const'
+
 interface State {
   isLoading: boolean
   isWalletOpened: boolean
   isWalletConnected: boolean
   isModalOpened: boolean
-  activeShopTab: ShopTabs
+  activeShopTab: BoostValue
   error: null | string
 }
 
@@ -13,7 +15,7 @@ function appStore() {
     isWalletOpened: false,
     isWalletConnected: false,
     isModalOpened: false,
-    activeShopTab: 0,
+    activeShopTab: TIME,
     error: null,
   })
 
@@ -41,7 +43,7 @@ function appStore() {
     state.isWalletConnected = false
   }
 
-  function setActiveTab(tab: ShopTabs) {
+  function setActiveTab(tab: BoostValue) {
     state.activeShopTab = tab
   }
 

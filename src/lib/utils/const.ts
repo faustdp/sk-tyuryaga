@@ -1,3 +1,5 @@
+import data from '@/messages.json'
+
 export const TEST_ADDRESS = 'EQChHpu8-rFBQyVCXJtT1aTwODTBc1dFUAEatbYy11ZLcBST'
 export const TON_KEY = 'TON_CONNECT'
 export const cubicOut = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
@@ -17,140 +19,151 @@ export const BONUSES = {
     [TIME]: [13, 26, 47, 100, 200, 400, 800, 1600, 3200, 3200],
     [AMOUNT]: 1,
   },
-}
+} as const
 
-interface Images {
-  name: string[]
-  type: BoostValue
-}
+export const IMG_INDEXES: Record<BoostValue, BonusIndexes[]> = {
+  [TIME]: [5, 6, 7],
+  [AMOUNT]: [1, 3, 4],
+  [COMBO]: [0, 2, 8],
+} as const
 
-export const imgs: Images[] = [
+export const IMG_NAMES: Images[] = [
   {
     type: COMBO,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_1,
+    idx: 0,
   },
   {
     type: AMOUNT,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_2,
+    idx: 1,
   },
   {
     type: COMBO,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_3,
+    idx: 2,
   },
   {
     type: AMOUNT,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_4,
+    idx: 3,
   },
   {
     type: AMOUNT,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_5,
+    idx: 4,
   },
   {
     type: TIME,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_6,
+    idx: 5,
   },
   {
     type: TIME,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_7,
+    idx: 6,
   },
   {
     type: TIME,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_8,
+    idx: 7,
   },
   {
     type: COMBO,
-    name: ['Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест', 'Тест'],
+    name: data.images_9,
+    idx: 8,
   },
-]
+] as const
 
 export const LEVELS = [
+  //TODO CONDITIONS?!
   {
     baseTime: 2,
     baseAmount: 1,
     next: 69,
-    priceTime: 10,
-    priceAmount: 8,
-    priceAmountTime: 5,
+    [AMOUNT]: 10,
+    [COMBO]: 8,
+    [TIME]: 5,
   },
   {
     baseTime: 4,
     baseAmount: 10,
     next: 690,
-    priceTime: 100,
-    priceAmount: 80,
-    priceAmountTime: 50,
+    [AMOUNT]: 100,
+    [COMBO]: 80,
+    [TIME]: 50,
   },
   {
     baseTime: 8,
     baseAmount: 19,
     next: 3450,
-    priceTime: 500,
-    priceAmount: 400,
-    priceAmountTime: 250,
+    [AMOUNT]: 500,
+    [COMBO]: 400,
+    [TIME]: 250,
   },
   {
     baseTime: 15,
     baseAmount: 28,
     next: 10350,
-    priceTime: 1500,
-    priceAmount: 1200,
-    priceAmountTime: 750,
+    [AMOUNT]: 1500,
+    [COMBO]: 1200,
+    [TIME]: 750,
   },
   {
     baseTime: 30,
     baseAmount: 37,
     next: 31050,
-    priceTime: 4500,
-    priceAmount: 3600,
-    priceAmountTime: 2250,
+    [AMOUNT]: 4500,
+    [COMBO]: 3600,
+    [TIME]: 2250,
   },
   {
     baseTime: 60,
     baseAmount: 46,
     next: 93150,
-    priceTime: 13500,
-    priceAmount: 10800,
-    priceAmountTime: 6750,
+    [AMOUNT]: 13500,
+    [COMBO]: 10800,
+    [TIME]: 6750,
   },
   {
     baseTime: 120,
     baseAmount: 55,
     next: 279450,
-    priceTime: 40500,
-    priceAmount: 32400,
-    priceAmountTime: 20250,
+    [AMOUNT]: 40500,
+    [COMBO]: 32400,
+    [TIME]: 20250,
   },
   {
     baseTime: 240,
     baseAmount: 64,
     next: 838350,
-    priceTime: 121500,
-    priceAmount: 97200,
-    priceAmountTime: 60750,
+    [AMOUNT]: 121500,
+    [COMBO]: 97200,
+    [TIME]: 60750,
   },
   {
     baseTime: 480,
     baseAmount: 73,
     next: 1676700,
-    priceTime: 243000,
-    priceAmount: 194400,
-    priceAmountTime: 121500,
+    [AMOUNT]: 243000,
+    [COMBO]: 194400,
+    [TIME]: 121500,
   },
   {
     baseTime: 960,
     baseAmount: 82,
     next: 2850390,
-    priceTime: 413100,
-    priceAmount: 330480,
-    priceAmountTime: 206550,
+    [AMOUNT]: 413100,
+    [COMBO]: 330480,
+    [TIME]: 206550,
   },
   {
     baseTime: 1440,
     baseAmount: 91,
     next: 4275585,
-    priceTime: 619650,
-    priceAmount: 495720,
-    priceAmountTime: 309825,
+    [AMOUNT]: 619650,
+    [COMBO]: 495720,
+    [TIME]: 309825,
   },
 ] as const
 
@@ -162,8 +175,12 @@ export const taskStatus = {
   done: 4,
 } as const
 
+export const TASK_INVITE = 'invite'
+export const TASK_CODE = 'code'
+export const TASK_SUBSCRIBE = 'subscribe'
 export const TASK_CTX = 'task'
 export const SECOND = 1000
-export const MINUTE = SECOND * 60
-export const HOUR = MINUTE * 60
+export const SIXTY = 60
+export const MINUTE = SECOND * SIXTY
+export const HOUR = MINUTE * SIXTY
 export const DAY = HOUR * 24

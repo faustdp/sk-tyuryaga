@@ -309,10 +309,10 @@ button:focus:not(:focus-visible) {
 }
 
 .left-wall-img {
-  /* transform: rotateY(57deg) rotateZ(-15deg) rotateX(-10deg);
-  transform-origin: left; */
-  left: calc(50% - 228px);
-  top: calc(50% - 310px);
+  transform: rotateY(50deg) rotateZ(5deg) rotateZ(-10deg);
+  transform-origin: left;
+  left: calc(50% - 221px);
+  top: calc(50% - 335px);
 }
 
 .right-wall-img {

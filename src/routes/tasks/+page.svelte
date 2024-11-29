@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InviteFriends from '@components/InviteFriends.svelte'
   import ModalTasks from '@components/ModalTasks.svelte'
   import Chain from '@icons/Chain.svelte'
   import CheckSuccess from '@icons/checkSuccess.svg?component'
@@ -6,38 +7,23 @@
   import Done from '@icons/done.svg?component'
   import Spinner from '@icons/Spinner.svelte'
   import { app, openModal } from '@state/app.svelte'
+  import { user } from '@state/user.svelte'
   import { sortTasks, w8 } from '@utils'
-  import { TASK_CTX, taskStatus } from '@utils/const'
+  import { TASK_CODE, TASK_CTX, TASK_INVITE, taskStatus } from '@utils/const'
   import { getContext } from 'svelte'
   import { flip } from 'svelte/animate'
   import toast from 'svelte-hot-french-toast'
 
   import data from '@/messages.json'
 
-  let tasks: SocialItem[] = getContext(TASK_CTX)
-  let selectedTaskCheck: SocialItem | null = $state(null)
+  let isDrawerOpened = $state(false)
 
-  async function handleClick(item: SocialItem) {
-    if (item.status === taskStatus.done || item.status === taskStatus.loading) return
-    if (item.status === taskStatus.claim) {
-      item.status = taskStatus.done
-      toast.success(`${data.toaster_msg} ${item.reward} ${data.boost_cig}!`, {
-        class: 'toast-success',
-        icon: CheckSuccess,
-      })
-      sortTasks(tasks)
-    } else if (item.status === taskStatus.start) {
-      item.status = taskStatus.loading
-      window.open(item.link, '_blank')
-      if (item.delay) {
-        await w8(item.delay)
-        item.status = taskStatus.claim
-      }
-    } else if (item.status === taskStatus.check) {
-      selectedTaskCheck = item
-      openModal()
-    }
+  function closeDrawer() {
+    isDrawerOpened = false
   }
+
+  let tasks: (SocialItemCode | SocialItemInvite | SocialItemSubscribe)[] = getContext(TASK_CTX)
+  let selectedTaskCheck: SocialItem | null = $state(null)
 
   $effect(() => {
     const isModalOpened = app.isModalOpened
@@ -46,12 +32,38 @@
     }
   })
 
-  function setTask(id: number, status: Status) {
-    const task = tasks.find((el) => el.id === id)
-    if (task) {
-      task.status = status
-      sortTasks(tasks)
+  async function handleTaskClick(item: SocialItemCode | SocialItemInvite | SocialItemSubscribe) {
+    if (item.status === taskStatus.done || item.status === taskStatus.loading) return
+    if (item.status === taskStatus.claim) {
+      setDoneTask(item)
+    } else if (item.status === taskStatus.start) {
+      if (item.type === TASK_INVITE) {
+        if (item.invites > user.direct_invites) {
+          isDrawerOpened = true
+        } else {
+          setDoneTask(item)
+        }
+      } else {
+        item.status = item.type === TASK_CODE ? taskStatus.check : taskStatus.loading
+        window.open(item.link, '_blank')
+        if (item.delay) {
+          await w8(item.delay) //TODO CHECK TG
+          item.status = taskStatus.claim
+        }
+      }
+    } else if (item.status === taskStatus.check) {
+      selectedTaskCheck = item
+      openModal()
     }
+  }
+
+  function setDoneTask(item: SocialItem) {
+    item.status = taskStatus.done
+    toast.success(`${data.toaster_msg} ${item.reward} ${data.boost_cig}!`, {
+      class: 'toast-success',
+      icon: CheckSuccess,
+    })
+    sortTasks(tasks)
   }
 </script>
 
@@ -81,25 +93,30 @@
         <Icon />
         <span class="flex flex-1 flex-col gap-y-2.5 text-sm {isDone ? 'text-cborder' : ''}">
           {socialItem.task}
-          <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">{socialItem.reward}</span>
+          <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">
+            {#if socialItem.type === TASK_INVITE}
+              {user.direct_invites}/{socialItem.invites} {data.task_friends},
+            {/if}
+            {socialItem.reward}
+          </span>
         </span>
         <button
-          onclick={() => handleClick(socialItem)}
+          onclick={() => handleTaskClick(socialItem)}
           class="relative ml-auto flex h-[40px] w-[68px] items-center justify-center overflow-hidden rounded-lg outline-none transition-transform active:scale-90">
           <svg class="absolute left-0 top-0 will-change-transform">
             <use
               href="#social-chain"
-              color={socialItem.status === taskStatus.start || socialItem.status === taskStatus.loading
-                ? 'rgb(var(--c-yellow))'
+              color={socialItem.status === taskStatus.done
+                ? 'rgb(var(--c-text-grey))'
                 : socialItem.status === taskStatus.claim
                   ? 'rgb(var(--c-green))'
                   : socialItem.status === taskStatus.check
                     ? 'rgb(var(--c-brown))'
-                    : 'rgb(var(--c-text-grey))'}>
+                    : 'rgb(var(--c-yellow))'}>
             </use>
           </svg>
           <span class="relative text-sm">
-            {#if socialItem.status === 0}
+            {#if socialItem.status === taskStatus.start}
               {data.start}
             {:else if socialItem.status === taskStatus.claim}
               {data.take}
@@ -117,4 +134,5 @@
   </ul>
 </div>
 
-<ModalTasks task={selectedTaskCheck} {setTask} />
+<ModalTasks task={selectedTaskCheck} {setDoneTask} />
+<InviteFriends isOpened={isDrawerOpened} {closeDrawer} />
