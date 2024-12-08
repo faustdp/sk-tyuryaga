@@ -27,6 +27,7 @@ app.use(
 )
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.enable('trust proxy')
 
 // if (process.env.NODE_ENV === 'production') {
 //   app.get(['*.js', '*.css', '*.html', '*.svg'], (req, res, next) => {
@@ -44,7 +45,6 @@ app.use(express.urlencoded({ extended: true }))
 //   })
 // }
 
-app.enable('trust proxy')
 const router = Router()
 
 router.post(mePath, (req, res) => {

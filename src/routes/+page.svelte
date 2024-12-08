@@ -3,7 +3,7 @@
   import Steam from '@images/Steam.svelte'
   import Tv from '@images/Tv.svelte'
   import { user } from '@state/user.svelte'
-  import { cn, getImgUrl } from '@utils'
+  import { getImgUrl } from '@utils'
   import { IMG_NAMES } from '@utils/const'
 
   import Farming from '@/Farming.svelte'
@@ -24,47 +24,16 @@
   <Header />
   <Stats />
   <Tv />
-  <img
-    src={getImgUrl(0, user.level)}
-    alt={IMG_NAMES[0].name[user.level]}
-    width="90"
-    class="absolute left-[calc(50%_-_185px)] top-[calc(50%_+_5px)]" />
-  <img
-    src={getImgUrl(1, user.level)}
-    alt={IMG_NAMES[1].name[user.level]}
-    width="85"
-    class="absolute left-[calc(50%_-_180px)] top-[calc(50%_+_88px)]" />
-  <img
-    src={getImgUrl(2, user.level)}
-    alt={IMG_NAMES[2].name[user.level]}
-    width="80"
-    class="trans-z-40 absolute left-[calc(50%_+_109px)] top-[calc(50%_+_96px)]" />
-  <img
-    src={getImgUrl(3, user.level)}
-    alt={IMG_NAMES[3].name[user.level]}
-    width="110"
-    class="absolute left-[calc(50%_+_95px)] top-[calc(50%_-_29px)]" />
-  <img
-    src={getImgUrl(4, user.level)}
-    alt={IMG_NAMES[4].name[user.level]}
-    width="100"
-    class={cn(
-      'absolute left-[calc(50%_+_76px)]',
-      user.level === 1 ? 'top-[calc(50%_-_160px)]' : 'top-[calc(50%_-_192px)]',
-    )} />
-  <img src={getImgUrl(5, user.level)} alt={IMG_NAMES[5].name[user.level]} width="100" class="right-wall-img absolute" />
-  <img src={getImgUrl(6, user.level)} alt={IMG_NAMES[6].name[user.level]} width="90" class="left-wall-img absolute" />
-  <img
-    src={getImgUrl(7, user.level)}
-    alt={IMG_NAMES[7].name[user.level]}
-    width="60"
-    class="absolute left-[calc(50%_-_164px)] top-[calc(50%_-_142px)]" />
-  <img
-    src={getImgUrl(8, user.level)}
-    alt={IMG_NAMES[8].name[user.level]}
-    width="60"
-    class="trans-z-40 absolute left-[calc(50%_-_170px)] top-[calc(50%_-_57px)]" />
-
+  {#each IMG_NAMES as img}
+    {@const currImg = user.bonuses.includes(img.idx)}
+    {#if currImg || user.level > 0}
+      <img
+        src={getImgUrl(img.idx, currImg ? user.level : user.level - 1)}
+        alt={IMG_NAMES[img.idx].name[currImg ? user.level : user.level - 1]}
+        width={IMG_NAMES[img.idx].width}
+        class="absolute {IMG_NAMES[img.idx].class}" />
+    {/if}
+  {/each}
   <Farming />
   <Steam />
 </main>

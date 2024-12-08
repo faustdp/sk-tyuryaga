@@ -5,7 +5,7 @@
   import Pack from '@icons/Pack.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
-  import { user } from '@state/user.svelte'
+  import { addBonus, setCigs, user } from '@state/user.svelte'
   import { AMOUNT, BONUSES, COMBO, cubicOut, IMG_INDEXES, IMG_NAMES, LEVELS, TIME } from '@utils/const'
   import useRipple from '@utils/useRipple.svelte'
   import { sineOut } from 'svelte/easing'
@@ -23,7 +23,6 @@
 
   let isDrawerOpened = $state(false)
   let selectedItem = $state<Images | null>(null)
-  let isTaskAllowed = $state(false) //TODO
 
   function closeDrawer() {
     isDrawerOpened = false
@@ -64,13 +63,18 @@
 
   let tabItems = $derived.by(() => {
     if (!app.activeShopTab) return []
-    const imgs = IMG_INDEXES[app.activeShopTab].filter((ind) => !user.bonuses.includes(ind))
-    return IMG_NAMES.filter((el, i) => imgs.includes(i as BonusIndexes))
+    return IMG_NAMES.filter((el, i) => IMG_INDEXES[app.activeShopTab].includes(i as BonusIndexes))
   })
 
   function handleOutroStart(event: any) {
     if (!event.target) return
     event.target.style.position = 'absolute'
+  }
+
+  function buyBoost(price: number, isAllowed: boolean) {
+    if (user.cigs < price || !selectedItem || !isAllowed) return
+    addBonus(selectedItem.idx)
+    setCigs(-price)
   }
 </script>
 
@@ -79,7 +83,7 @@
   <meta name="description" content={data.shop_content} />
 </svelte:head>
 
-<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pb-2 pt-4">
+<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-4">
   <div class="page-circle relative mb-5">
     <Pack class="size-11" />
   </div>
@@ -109,10 +113,12 @@
         onoutrostart={handleOutroStart}
         class="flex w-full flex-col">
         {#each tabItems as item}
+          {@const level =
+            user.bonuses.includes(item.idx) && user.level < LEVELS.length - 1 ? user.level + 1 : user.level}
           <ShopCard
             onclick={() => openDrawer(item)}
-            level={user.level}
-            title={item.name[user.level]}
+            {level}
+            title={item.name[level]}
             index={item.idx}
             boostType={item.type} />
         {/each}
@@ -121,16 +127,27 @@
   </div>
   <Drawer isOpened={isDrawerOpened} handleClose={closeDrawer}>
     {#if selectedItem}
+      {@const hasBonus = user.bonuses.includes(selectedItem.idx)}
+      {@const hasPrevItem =
+        (user.level === 0 && hasBonus) ||
+        (user.level > 0 && user.level < LEVELS.length - 1) ||
+        (!hasBonus && user.level === LEVELS.length - 1)}
+      {@const currLevel = hasBonus && user.level < LEVELS.length - 1 ? user.level + 1 : user.level}
+      {@const prevLevel = hasBonus ? user.level : user.level - 1}
+      {@const isEnoughCigs = user.cigs >= LEVELS[currLevel][selectedItem.type]}
+      {@const isTasksCompleted = LEVELS[currLevel].tasks ? LEVELS[currLevel].tasks <= user.tasks_completed : true}
+      {@const isTaskAllowed = isEnoughCigs && !hasBonus && isTasksCompleted}
+      {@const isLastItem = hasBonus && user.level === LEVELS.length - 1}
       <div class="mb-2 mt-3 flex items-center gap-x-2">
-        {#if user.level > 0 && user.level < 10}
-          <LevelCard level={user.level - 1} index={selectedItem.idx} />
+        {#if hasPrevItem}
+          <LevelCard level={prevLevel} index={selectedItem.idx} />
           <ArrowRight class="mt-[22px]" />
         {/if}
-        <LevelCard level={user.level} index={selectedItem.idx} />
+        <LevelCard level={currLevel} index={selectedItem.idx} />
       </div>
-      <h2 class="shadow-heading mb-2 text-base">{selectedItem.name[user.level]}</h2>
+      <h2 class="shadow-heading mb-2 text-base">{selectedItem.name[currLevel]}</h2>
       <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
-        Описание предмета описание предмета nbnjkkkgедмета описание предмета описание премета описание предмета qwertyui
+        {selectedItem.desc}
       </p>
       <div class="mb-4 flex gap-x-6">
         <BoostTag
@@ -139,51 +156,75 @@
             ? BONUSES[COMBO][AMOUNT]
             : selectedItem.type === AMOUNT
               ? BONUSES[AMOUNT]
-              : BONUSES[TIME][user.level]} />
+              : BONUSES[TIME][currLevel]} />
         {#if selectedItem.type === COMBO}
-          <BoostTag boost={TIME} amount={BONUSES[COMBO][TIME][user.level]} />
+          <BoostTag boost={TIME} amount={BONUSES[COMBO][TIME][currLevel]} />
         {/if}
       </div>
-      <h3 class="shadow-heading mb-2 text-base text-cyellow">{data.shop_requirements}</h3>
-      <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
-        {data.shop_requirements_desc}
-      </p>
-      <ul class="mb-3 flex flex-col gap-y-3">
-        <li class="flex w-full items-center gap-x-2.5">
-          {#if true}
-            <CheckDone />
-          {:else}
-            <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+      {#if !isLastItem}
+        <h3 class="shadow-heading mb-2 text-base text-cyellow">{data.shop_requirements}</h3>
+        <p class="roboto mb-4 max-w-sm text-xs leading-5 tracking-wide text-textgrey">
+          {data.shop_requirements_desc}
+        </p>
+        <ul class="mb-3 flex flex-col gap-y-3">
+          {#if currLevel > 0}
+            <li class="flex w-full items-center gap-x-2.5">
+              {#if !hasBonus}
+                <CheckDone />
+              {:else}
+                <div class="ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+              {/if}
+              <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+                {data.requirement_level}
+                {currLevel}
+                {data.requirement_level_name}
+              </span>
+            </li>
           {/if}
-          <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
-            Прокачать все эелементы до 1 уровня
+          {#if LEVELS[currLevel].tasks}
+            <li class="flex w-full items-center gap-x-2.5">
+              {#if LEVELS[currLevel].tasks <= user.tasks_completed}
+                <CheckDone />
+              {:else}
+                <div class="ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+              {/if}
+              <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+                {data.requirement_tasks}
+                {LEVELS[currLevel].tasks}
+                {data.tasks_title.toLowerCase()}
+              </span>
+            </li>
+          {/if}
+          <li class="flex w-full items-center gap-x-2.5">
+            {#if isEnoughCigs}
+              <CheckDone />
+            {:else}
+              <div class="ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+            {/if}
+            <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+              {data.requirement_cigs}
+              <Cigarette class="mr-1" width="38" height="23" />
+              ({LEVELS[currLevel][selectedItem.type].toLocaleString()})
+            </span>
+          </li>
+        </ul>
+        <button
+          onclick={() => buyBoost(LEVELS[currLevel][selectedItem!.type], isTaskAllowed)}
+          class="outline-none transition-transform will-change-transform active:scale-95">
+          <WalletBtn
+            fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
+            stroke={isTaskAllowed ? 'var(--dark-yellow)' : undefined} />
+          <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
+            {#if !isEnoughCigs}
+              {data.not_enough}
+            {:else}
+              {data.shop_upgrade}
+              <Cigarette class="mr-1" width="38" height="23" />
+              {LEVELS[currLevel][selectedItem.type].toLocaleString()}
+            {/if}
           </span>
-        </li>
-        <li class="flex w-full items-center gap-x-2.5">
-          {#if false}
-            <CheckDone />
-          {:else}
-            <div class=" ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
-          {/if}
-          <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
-            Прокачать все эелементы до 1 уровня Прокачать все эелементы до 1 уровня
-          </span>
-        </li>
-      </ul>
-      <button class="outline-none transition-transform will-change-transform active:scale-95">
-        <WalletBtn
-          fill={isTaskAllowed ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
-          stroke={isTaskAllowed ? 'var(--dark-yellow)' : undefined} />
-        <span class="absolute left-0 top-0 flex size-full items-center justify-center text-xl">
-          {#if isTaskAllowed && user.cigs < LEVELS[user.level][selectedItem.type]}
-            {data.not_enough}
-          {:else}
-            {data.shop_upgrade}
-            <Cigarette class="mr-1" width="38" height="23" />
-            {LEVELS[user.level][selectedItem.type].toLocaleString()}
-          {/if}
-        </span>
-      </button>
+        </button>
+      {/if}
     {/if}
   </Drawer>
 </div>

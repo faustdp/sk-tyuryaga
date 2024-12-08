@@ -2,18 +2,9 @@
   import Cigarette from '@icons/cigarette.svg?component'
   import cigarette from '@icons/cigarette.svg?url'
   import FarmBtn from '@icons/FarmBtn.svelte'
-  import {
-    addBonus,
-    setCigs,
-    setCurrentFarmAmount,
-    setCurrentFarmTime,
-    setEndTime,
-    setFarm,
-    upLevel,
-    user,
-  } from '@state/user.svelte'
+  import { addBonus, setCigs, setEndTime, setFarm, upLevel, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
-  import { CLAIMED, FARMED, FARMING, SECOND } from '@utils/const'
+  import { CLAIMED, FARMED, FARMING, MINUTE, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
   import { tweened } from 'svelte/motion'
@@ -28,11 +19,11 @@
       if (user.farm === FARMING) setFarm(FARMED)
       return 1
     }
-    return Math.max(0, (time - now) / user.currentFarmTime)
+    return Math.max(0, (time - now) / user.current_farm_time)
   }
 
-  const prevProgress = getProgress(user.endTime)
-  let wasFarming = user.endTime !== 0 && prevProgress !== 0
+  const prevProgress = getProgress(user.end_time)
+  let wasFarming = user.end_time !== 0 && prevProgress !== 0
 
   let showConfetti = $state(false)
   let time = $state('')
@@ -42,14 +33,14 @@
 
   const progress = tweened(prevProgress, {
     duration: () =>
-      user.farm !== FARMING ? 200 : wasFarming ? prevProgress * user.currentFarmTime : user.currentFarmTime,
+      user.farm !== FARMING ? 200 : wasFarming ? prevProgress * user.current_farm_time : user.current_farm_time,
     easing: (t) => (user.farm === FARMING ? linear(t) : sineOut(t)),
   })
 
   function startInterval() {
-    time = formatTime($progress * user.currentFarmTime)
+    time = formatTime($progress * user.current_farm_time)
     timeInterval = setInterval(() => {
-      time = formatTime($progress * user.currentFarmTime)
+      time = formatTime($progress * user.current_farm_time)
     }, SECOND)
   }
 
@@ -77,8 +68,8 @@
 
   let cigs = $derived.by(() => {
     const val = $progress
-    if (wasFarming && val === 1) return user.currentFarmAmount
-    return Math.trunc((1 - val) * user.currentFarmAmount)
+    if (wasFarming && val === 1) return user.current_farm_amount
+    return Math.trunc((1 - val) * user.current_farm_amount)
   })
 
   $effect(() => {
@@ -98,15 +89,13 @@
     if (user.farm === FARMING) return
     if (user.farm === CLAIMED) {
       const now = Date.now()
-      setEndTime(now + user.farmTime)
-      setCurrentFarmTime()
-      setCurrentFarmAmount()
+      setEndTime(now + user.farm_time * MINUTE)
       setFarm(FARMING)
       startInterval()
       $progress = 0
     } else if (user.farm === FARMED) {
       setFarm(CLAIMED)
-      setCigs(user.currentFarmAmount)
+      setCigs(user.current_farm_amount)
     }
   }
 
@@ -131,6 +120,15 @@
   <button class="absolute top-0 -mt-40 ml-5" onclick={() => addBonus(5)}>+time bonus</button>
   <button class="absolute top-10 -mt-40 ml-5" onclick={() => addBonus(1)}>+amount bonus</button>
   <button class="absolute top-20 -mt-40 ml-5" onclick={() => upLevel()}>levelUp</button>
+  <button
+    class="absolute top-28 -mt-40 ml-5"
+    onclick={() => {
+      for (let i = 0; i < 9; i++) {
+        addBonus(i as BonusIndexes)
+      }
+    }}>
+    +all bonuses
+  </button>
   <FarmBtn {progress} />
   <button
     class="flex size-full items-center justify-center gap-x-2 text-xl outline-none"
@@ -143,7 +141,7 @@
     onmouseup={removeActive}
     onmouseleave={removeActive}>
     {#if user.farm === FARMED}
-      {data.take} {user.currentFarmAmount} <Cigarette class="mb-1" />
+      {data.take} {user.current_farm_amount} <Cigarette class="mb-1" />
     {:else if user.farm === FARMING}
       {data.farming}
       <span>{cigs}</span>

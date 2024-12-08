@@ -17,7 +17,7 @@
   }: { title?: string; level?: number; boostType?: BoostValue; index: number; onclick: typeof noop } = $props()
 </script>
 
-<section class="card-shadow relative w-full overflow-hidden rounded-md pb-4 pl-4 pr-2 pt-3 [&:not(:last-of-type)]:mb-4">
+<section class="card-shadow relative mb-4 w-full overflow-hidden rounded-md pb-4 pl-4 pr-2 pt-3">
   <Spider classes="absolute left-1/2 top-0 -translate-x-1/3" />
   <p class="card-level-clip absolute right-0.5 top-0.5 z-20">
     <CardLevel />
@@ -29,7 +29,7 @@
     class="absolute right-3 top-[10%] h-[82%] w-auto py-1.5 before:absolute before:left-0 before:top-0 before:size-full before:bg-slate-300 before:blur-2xl before:content-empty">
     <img src={getImgUrl(index, level)} alt="Text" class="relative z-10 h-full" />
   </picture>
-  <h2 class="relative mb-3 max-w-44 text-base leading-5 tracking-wider">{title}</h2>
+  <h2 class="relative mb-3 max-w-52 text-base leading-5 tracking-wider">{title}</h2>
   <div class="relative mb-2 flex min-h-[52px] flex-col items-start gap-y-1">
     <BoostTag
       boost={boostType}

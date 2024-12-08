@@ -6,7 +6,7 @@
   import { tweened } from 'svelte/motion'
 
   let cigs = tweened(user.cigs, {
-    duration: 500,
+    duration: 450,
     easing: sineOut,
   })
 

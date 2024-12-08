@@ -1,7 +1,18 @@
 import '@poppanator/sveltekit-svg/dist/svg'
 
 import { type TonConnectUI } from '@tonconnect/ui'
-import { AMOUNT, COMBO, TASK_CODE, TASK_INVITE, TASK_SUBSCRIBE, TIME } from '@utils/const'
+import {
+  AMOUNT,
+  CLAIMED,
+  COMBO,
+  FARMED,
+  FARMING,
+  TASK_CODE,
+  TASK_INVITE,
+  TASK_SUBSCRIBE,
+  taskStatus,
+  TIME,
+} from '@utils/const'
 import type { Snippet } from 'svelte'
 
 declare global {
@@ -10,6 +21,12 @@ declare global {
     // interface PageData {}
     // interface PageState {}
     // interface Platform {}
+  }
+
+  interface ValidationResponse {
+    valid: boolean
+    userData?: any
+    error?: string
   }
 
   type Children = Snippet
@@ -22,17 +39,24 @@ declare global {
     details?: any
   }
 
-  interface Images {
-    name: string[]
-    type: BoostValue
-    idx: number
-  }
-
-  type BoostValue = typeof TIME | typeof AMOUNT | typeof COMBO
   type BonusIndexes = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
 
-  type TaskStatus = 0 | 1 | 2 | 3 | 4
+  type BoostValue = typeof TIME | typeof AMOUNT | typeof COMBO
+
+  interface Images {
+    type: BoostValue
+    idx: BonusIndexes
+    name: string[]
+    desc: string
+    class: string
+    width?: string
+  }
+
+  type Farm = typeof FARMING | typeof FARMED | typeof CLAIMED
+
   type TaskType = typeof TASK_INVITE | typeof TASK_CODE | typeof TASK_SUBSCRIBE
+
+  type TaskStatus = (typeof taskStatus)[keyof typeof taskStatus]
 
   interface SocialItem {
     id: number

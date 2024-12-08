@@ -125,4 +125,5 @@ export default {
   },
 
   plugins: [tailwindcssAnimate],
+  from: undefined,
 } as Config

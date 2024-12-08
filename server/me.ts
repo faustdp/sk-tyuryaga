@@ -62,7 +62,6 @@ function validateTgWebAppData(params: URLSearchParams) {
 }
 
 export default async function (req: Request, res: Response) {
-  console.log('me4', req.body)
   try {
     const initData: string | undefined = req.body.initData
 

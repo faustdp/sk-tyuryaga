@@ -81,7 +81,7 @@
   function handleClick() {
     if (!isReady) return
     showConfetti = true
-    setClaimFriends(DAY + date.getTime()) //+ db
+    setClaimFriends(DAY + date.getTime()) //TODO+ db
     confettiTO = setTimeout(() => {
       showConfetti = false
     }, SECOND * 10)
@@ -91,7 +91,7 @@
     clearTimeout(confettiTO)
   })
 
-  let isReady = $derived(user.claimFriends - date.getTime() < 0)
+  let isReady = $derived(user.claim_friends - date.getTime() < 0)
 </script>
 
 <svelte:head>
@@ -140,7 +140,7 @@
           {#if isReady}
             {data.take}
           {:else}
-            {data.friends_take} {formatTime(user.claimFriends - date.getTime(), true)}
+            {data.friends_take} {formatTime(user.claim_friends - date.getTime(), true)}
           {/if}
         </span>
       </button>

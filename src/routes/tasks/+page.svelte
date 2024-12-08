@@ -47,7 +47,7 @@
         item.status = item.type === TASK_CODE ? taskStatus.check : taskStatus.loading
         window.open(item.link, '_blank')
         if (item.delay) {
-          await w8(item.delay) //TODO CHECK TG
+          await w8(item.delay) //TODO CHECK TG Дополнительно нужно реализовать трекинг подписки на ТГ канал
           item.status = taskStatus.claim
         }
       }

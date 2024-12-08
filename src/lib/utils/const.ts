@@ -30,141 +30,179 @@ export const IMG_INDEXES: Record<BoostValue, BonusIndexes[]> = {
 export const IMG_NAMES: Images[] = [
   {
     type: COMBO,
-    name: data.images_1,
     idx: 0,
+    name: data.images_1,
+    desc: data.images_desc,
+    class: 'img-1',
+    width: '90',
   },
   {
     type: AMOUNT,
-    name: data.images_2,
     idx: 1,
+    name: data.images_2,
+    desc: data.images_desc,
+    class: 'img-2',
+    width: '85',
   },
   {
     type: COMBO,
-    name: data.images_3,
     idx: 2,
+    name: data.images_3,
+    desc: data.images_desc,
+    class: 'img-3 trans-z-40',
+    width: '80',
   },
   {
     type: AMOUNT,
-    name: data.images_4,
     idx: 3,
+    name: data.images_4,
+    desc: data.images_desc,
+    class: 'img-4',
+    width: '110',
   },
   {
     type: AMOUNT,
-    name: data.images_5,
     idx: 4,
+    name: data.images_5,
+    desc: data.images_desc,
+    class: 'img-5 z-20',
+    width: '100',
   },
   {
     type: TIME,
-    name: data.images_6,
     idx: 5,
+    name: data.images_6,
+    desc: data.images_desc,
+    class: 'img-6',
+    width: '100',
   },
   {
     type: TIME,
-    name: data.images_7,
     idx: 6,
+    name: data.images_7,
+    desc: data.images_desc,
+    class: 'img-7',
+    width: '90',
   },
   {
     type: TIME,
-    name: data.images_8,
     idx: 7,
+    name: data.images_8,
+    desc: data.images_desc,
+    class: 'img-8',
+    width: '60',
   },
   {
     type: COMBO,
-    name: data.images_9,
     idx: 8,
+    name: data.images_9,
+    desc: data.images_desc,
+    class: 'img-9 trans-z-40',
+    width: '60',
   },
 ] as const
 
-export const LEVELS = [
+export const baseTime = 2
+export const baseAmount = 1
+
+interface LevelsType {
+  [AMOUNT]: number
+  [COMBO]: number
+  [TIME]: number
+  tasks?: number
+}
+
+export const LEVELS: LevelsType[] = [
   //TODO CONDITIONS?!
   {
-    baseTime: 2,
-    baseAmount: 1,
-    next: 69,
+    // baseTime: 2,
+    // baseAmount: 1,
+    // next: 69,
     [AMOUNT]: 10,
     [COMBO]: 8,
     [TIME]: 5,
   },
   {
-    baseTime: 4,
-    baseAmount: 10,
-    next: 690,
+    // baseTime: 4,
+    // baseAmount: 10,
+    // next: 690,
     [AMOUNT]: 100,
     [COMBO]: 80,
     [TIME]: 50,
+    tasks: 3,
   },
   {
-    baseTime: 8,
-    baseAmount: 19,
-    next: 3450,
+    // baseTime: 8,
+    // baseAmount: 19,
+    // next: 3450,
     [AMOUNT]: 500,
     [COMBO]: 400,
     [TIME]: 250,
   },
   {
-    baseTime: 15,
-    baseAmount: 28,
-    next: 10350,
+    // baseTime: 15,
+    // baseAmount: 28,
+    // next: 10350,
     [AMOUNT]: 1500,
     [COMBO]: 1200,
     [TIME]: 750,
   },
   {
-    baseTime: 30,
-    baseAmount: 37,
-    next: 31050,
+    // baseTime: 30,
+    // baseAmount: 37,
+    // next: 31050,
     [AMOUNT]: 4500,
     [COMBO]: 3600,
     [TIME]: 2250,
   },
   {
-    baseTime: 60,
-    baseAmount: 46,
-    next: 93150,
+    // baseTime: 60,
+    // baseAmount: 46,
+    // next: 93150,
     [AMOUNT]: 13500,
     [COMBO]: 10800,
     [TIME]: 6750,
   },
   {
-    baseTime: 120,
-    baseAmount: 55,
-    next: 279450,
+    // baseTime: 120,
+    // baseAmount: 55,
+    // next: 279450,
     [AMOUNT]: 40500,
     [COMBO]: 32400,
     [TIME]: 20250,
   },
   {
-    baseTime: 240,
-    baseAmount: 64,
-    next: 838350,
+    // baseTime: 240,
+    // baseAmount: 64,
+    // next: 838350,
     [AMOUNT]: 121500,
     [COMBO]: 97200,
     [TIME]: 60750,
   },
   {
-    baseTime: 480,
-    baseAmount: 73,
-    next: 1676700,
+    // baseTime: 480,
+    // baseAmount: 73,
+    // next: 1676700,
     [AMOUNT]: 243000,
     [COMBO]: 194400,
     [TIME]: 121500,
   },
   {
-    baseTime: 960,
-    baseAmount: 82,
-    next: 2850390,
+    // baseTime: 960,
+    // baseAmount: 82,
+    // next: 2850390,
     [AMOUNT]: 413100,
     [COMBO]: 330480,
     [TIME]: 206550,
   },
-  {
-    baseTime: 1440,
-    baseAmount: 91,
-    next: 4275585,
-    [AMOUNT]: 619650,
-    [COMBO]: 495720,
-    [TIME]: 309825,
-  },
+  // {
+  //   baseTime: 1440,
+  //   baseAmount: 91,
+  //   next: 4275585,
+  //   [AMOUNT]: 619650,
+  //   [COMBO]: 495720,
+  //   [TIME]: 309825,
+  // },
 ] as const
 
 export const taskStatus = {
@@ -178,7 +216,7 @@ export const taskStatus = {
 export const TASK_INVITE = 'invite'
 export const TASK_CODE = 'code'
 export const TASK_SUBSCRIBE = 'subscribe'
-export const TASK_CTX = 'task'
+export const TASK_CTX = 'task_ctx'
 export const SECOND = 1000
 export const SIXTY = 60
 export const MINUTE = SECOND * SIXTY

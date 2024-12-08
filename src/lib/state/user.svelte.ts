@@ -1,8 +1,19 @@
-import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, IMG_NAMES, LEVELS, MINUTE, SIXTY, TIME } from '@utils/const'
+import {
+  AMOUNT,
+  baseAmount,
+  baseTime,
+  BONUSES,
+  CLAIMED,
+  COMBO,
+  DAY,
+  IMG_NAMES,
+  LEVELS,
+  MINUTE,
+  SIXTY,
+  TIME,
+} from '@utils/const'
 
 import data from '@/messages.json'
-
-type Farm = 'farming' | 'farmed' | 'claimed'
 
 interface User {
   tg_id: number | null
@@ -12,16 +23,18 @@ interface User {
   direct_invites: number
   indirect_invites: number
   cigs: number
+  farm_cigs: number
+  ref_cigs: number
   level: number
-  claimFriends: number
-  endTime: number
-  farmTime: number
-  farmAmount: number
-  currentFarmTime: number
-  currentFarmAmount: number
+  claim_friends: number
+  end_time: number
+  farm_time: number
+  farm_amount: number
+  current_farm_time: number
+  current_farm_amount: number
+  tasks_completed: number //TODO TAsk statuses: {} AND CHANGE
   bonuses: BonusIndexes[]
   username?: string | null
-  //TODO TAsk statuses: {}
 }
 
 function userStore() {
@@ -33,13 +46,16 @@ function userStore() {
     direct_invites: 0,
     indirect_invites: 0,
     cigs: 0,
+    farm_cigs: 0,
+    ref_cigs: 0,
     level: 0,
-    claimFriends: Date.now() + DAY,
-    endTime: 0,
-    farmTime: LEVELS[0].baseTime * MINUTE,
-    farmAmount: LEVELS[0].baseTime * LEVELS[0].baseAmount,
-    currentFarmTime: LEVELS[0].baseTime * MINUTE,
-    currentFarmAmount: LEVELS[0].baseTime * LEVELS[0].baseAmount,
+    claim_friends: Date.now() + DAY,
+    end_time: 0,
+    farm_time: baseTime,
+    farm_amount: baseAmount,
+    current_farm_time: baseTime * MINUTE,
+    current_farm_amount: baseTime * baseAmount,
+    tasks_completed: 0,
     bonuses: [],
     username: null,
   })
@@ -57,8 +73,18 @@ function userStore() {
     })
   }
 
+  function sumCigs() {
+    state.cigs = state.farm_cigs + state.ref_cigs
+  }
+
   function setCigs(cigs: number) {
-    state.cigs += cigs
+    state.farm_cigs += cigs
+    sumCigs()
+  }
+
+  function setRefCigs(cigs: number) {
+    state.ref_cigs += cigs
+    sumCigs()
   }
 
   function setFarm(farming: Farm) {
@@ -69,63 +95,38 @@ function userStore() {
     if (time < Date.now()) {
       throw new Error(data.inner_error)
     }
-    state.endTime = time
+    state.current_farm_time = state.farm_time * MINUTE
+    state.current_farm_amount = Math.round(state.farm_time * state.farm_amount)
+    state.end_time = time
   }
 
   function upLevel() {
-    if (state.level >= LEVELS.length - 2) return
+    if (state.level >= LEVELS.length - 1) return
     state.level += 1
-    removeBonuses()
-    state.farmTime = LEVELS[state.level].baseTime * MINUTE
-    state.farmAmount = calcFarmAmount(0)
+    state.bonuses = []
   }
 
   function setClaimFriends(time: number) {
-    state.claimFriends = time
-  }
-
-  function setCurrentFarmTime() {
-    state.currentFarmTime = state.farmTime
-  }
-
-  function setCurrentFarmAmount() {
-    state.currentFarmAmount = state.farmAmount
-  }
-
-  function getBonuses(bonuses: BonusIndexes[]): [number, number] {
-    const result: [number, number] = [0, 0]
-    bonuses.forEach((bonusNumber) => {
-      const bonusType = IMG_NAMES[bonusNumber].type
-      const isCombo = bonusType === COMBO
-      if (isCombo) {
-        const bonus = BONUSES[COMBO]
-        result[0] += bonus[TIME][user.level]
-        result[1] += bonus[AMOUNT]
-      } else {
-        result[bonusType === TIME ? 0 : 1] += bonusType === TIME ? BONUSES[TIME][user.level] : BONUSES[AMOUNT]
-      }
-    })
-    return result
-  }
-
-  const calcFarmAmount = (bonus: number, time?: number) =>
-    Math.ceil((LEVELS[state.level].baseAmount + bonus) * (time ? time : LEVELS[state.level].baseTime))
-
-  function setFarmMetrics() {
-    const [timeBonus, amountBonus] = getBonuses(state.bonuses)
-    const farmTime = LEVELS[state.level].baseTime + Math.round((timeBonus / SIXTY) * 100) / 100
-    state.farmTime = farmTime * MINUTE
-    state.farmAmount = calcFarmAmount(amountBonus, farmTime)
+    state.claim_friends = time
   }
 
   function addBonus(idx: BonusIndexes) {
     if (state.bonuses.includes(idx)) return
     state.bonuses = [...state.bonuses, idx]
-    setFarmMetrics()
-  }
-
-  function removeBonuses() {
-    state.bonuses = []
+    const bonusType = IMG_NAMES[idx].type
+    const isCombo = bonusType === COMBO
+    const isTime = bonusType === TIME
+    if (isCombo || isTime) {
+      const timeBonus = isCombo ? BONUSES[COMBO][TIME][user.level] : BONUSES[TIME][user.level]
+      state.farm_time = Math.round((state.farm_time + Math.round((timeBonus / SIXTY) * 1000) / 1000) * 1000) / 1000
+    }
+    if (!isTime) {
+      const amountBonus = isCombo ? BONUSES[COMBO][AMOUNT] : BONUSES[AMOUNT]
+      state.farm_amount = state.farm_amount + amountBonus
+    }
+    if (state.bonuses.length === IMG_NAMES.length) {
+      upLevel()
+    }
   }
 
   return {
@@ -135,14 +136,12 @@ function userStore() {
     setAddress,
     setUser,
     setCigs,
+    setRefCigs,
     setFarm,
     setEndTime,
-    setCurrentFarmTime,
     upLevel,
     setClaimFriends,
-    setCurrentFarmAmount,
     addBonus,
-    removeBonuses,
   }
 }
 
@@ -151,12 +150,10 @@ export const {
   setAddress,
   setUser,
   setCigs,
+  setRefCigs,
   setFarm,
   setEndTime,
-  setCurrentFarmTime,
   upLevel,
   setClaimFriends,
-  setCurrentFarmAmount,
   addBonus,
-  removeBonuses,
 } = userStore()
