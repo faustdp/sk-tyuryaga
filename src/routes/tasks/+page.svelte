@@ -92,7 +92,7 @@
         class="flex flex-1 items-center gap-x-3 border-b border-solid border-cborder py-2">
         <Icon />
         <span class="flex flex-1 flex-col gap-y-2.5 text-sm {isDone ? 'text-cborder' : ''}">
-          {socialItem.task}
+          {socialItem.name}
           <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">
             {#if socialItem.type === TASK_INVITE}
               {user.direct_invites}/{socialItem.invites} {data.task_friends},

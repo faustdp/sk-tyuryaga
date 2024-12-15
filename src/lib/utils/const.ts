@@ -105,15 +105,18 @@ export const IMG_NAMES: Images[] = [
 export const baseTime = 2
 export const baseAmount = 1
 
+// export const russianLanguages = ['ru', 'be', 'uk', 'kk', 'ky', 'uz', 'tg', 'tk', 'hy', 'az', 'ka', 'lv', 'lt', 'et']
+
 interface LevelsType {
   [AMOUNT]: number
   [COMBO]: number
   [TIME]: number
   tasks?: number
+  invites?: number
+  streak?: number
 }
 
 export const LEVELS: LevelsType[] = [
-  //TODO CONDITIONS?!
   {
     // baseTime: 2,
     // baseAmount: 1,
@@ -121,6 +124,7 @@ export const LEVELS: LevelsType[] = [
     [AMOUNT]: 10,
     [COMBO]: 8,
     [TIME]: 5,
+    streak: 10,
   },
   {
     // baseTime: 4,
@@ -130,6 +134,7 @@ export const LEVELS: LevelsType[] = [
     [COMBO]: 80,
     [TIME]: 50,
     tasks: 3,
+    invites: 2,
   },
   {
     // baseTime: 8,

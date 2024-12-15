@@ -15,9 +15,8 @@
 {#if isOpened}
   <section
     transition:fly={{ y: 200, opacity: 0, duration: 250, easing: quartOut }}
-    class="fixed bottom-0 left-1/2 z-50
-   mx-auto flex max-h-[90vh] w-full -translate-x-1/2
-     bg-cdarkblue pb-10 pt-12 shadow-wallet maxheight:!left-0">
+    class="fixed bottom-0 left-1/2 z-50 mx-auto flex max-h-[90vh] w-full -translate-x-1/2
+     bg-cdarkblue pb-8 pt-12 shadow-wallet maxheight:!left-0">
     <Chain />
     <div class="flex w-full justify-center overflow-y-auto">
       <div class="flex w-full max-w-[360px] flex-col items-center px-2">

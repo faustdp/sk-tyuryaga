@@ -54,3 +54,5 @@ export function getFirstLetter(name: string): string {
   const firstLetterMatch = name.match(/[a-zA-Z]/)
   return firstLetterMatch ? firstLetterMatch[0].toUpperCase() : '?'
 }
+
+export const isEnglish = (word: string): boolean => /[a-zA-Z]/.test(word)

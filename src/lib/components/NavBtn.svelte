@@ -39,7 +39,7 @@
   }
 
   let rootClasses = $derived(
-    `${isActive ? '!scale-95' : 'scale-100'} flex select-none flex-col gap-y-[2px]
+    `${isActive ? '!scale-95' : 'scale-100'} flex select-none flex-col gap-y-0.5
      items-center outline-none transition will-change-transform relative`,
   )
 

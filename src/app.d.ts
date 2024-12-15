@@ -61,7 +61,7 @@ declare global {
   interface SocialItem {
     id: number
     Icon: Component
-    task: string
+    name: string
     reward: string
     status: TaskStatus
     type: TaskType

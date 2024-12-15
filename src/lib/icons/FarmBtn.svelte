@@ -1,9 +1,8 @@
 <script lang="ts">
   import { user } from '@state/user.svelte'
   import { FARMED } from '@utils/const'
-  import { type Tweened } from 'svelte/motion'
 
-  let { progress }: { progress: Tweened<number> } = $props()
+  let { progress }: { progress: number } = $props()
 
   const green = 'rgb(var(--c-green))'
   const brown = 'rgb(var(--c-brown))'
@@ -119,7 +118,7 @@
     <clipPath id="clip-path">
       <path
         d="M325.778 35.4575C325.73 33.8859 325.778 32.3026 325.706 30.7311C325.634 29.1004 325.346 27.4816 324.795 25.8628C324.34 24.5512 324.004 23.216 324.004 21.8808C324.004 20.5692 324.364 19.2695 324.867 17.9815C325.155 17.2489 325.418 16.5399 325.37 15.7955C325.322 15.122 325.083 14.4485 324.747 13.7868C323.956 12.2507 322.686 10.7619 321.847 9.23761C319.57 8.12689 316.718 7.24069 313.531 6.63807 H0 V56 H317 C325.812 48.99 324.316 46.541 324.651 46.0329C324.963 45.5366 325.155 45.0285 325.514 44.5441C325.85 44.095 326.377 43.6815 327 43.3152C326.832 42.299 326.617 41.2828 326.425 40.2666C326.113 38.6833 325.826 37.0999 325.778 35.5047Z"
-        transform="translate({310 * $progress - 310}, 0)" />
+        transform="translate({310 * progress - 310}, 0)" />
     </clipPath>
   </defs>
   <g clip-path="url(#clip-path)">

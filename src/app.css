@@ -11,6 +11,7 @@
   --c-green: 14 131 103;
   --c-brown: 191 158 73;
   --c-yellow: 245 193 54;
+  --c-medium-yellow: 255 185 1;
   --c-lightgrey: 89 108 118;
   --c-grey: 123 123 123;
   --c-wallet: 126 118 86;
@@ -256,21 +257,21 @@ button:focus:not(:focus-visible) {
       0.5em 0 0 rgba(0, 0, 0, 0);
   }
   40% {
-    color: #ffb901;
+    color: var(--c-medium-yellow);
     text-shadow:
       0.25em 0 0 rgba(0, 0, 0, 0),
       0.5em 0 0 rgba(0, 0, 0, 0);
   }
   60% {
     text-shadow:
-      0.25em 0 0 #ffb901,
+      0.25em 0 0 var(--c-medium-yellow),
       0.5em 0 0 rgba(0, 0, 0, 0);
   }
   80%,
   100% {
     text-shadow:
-      0.25em 0 0 #ffb901,
-      0.5em 0 0 #ffb901;
+      0.25em 0 0 var(--c-medium-yellow),
+      0.5em 0 0 var(--c-medium-yellow);
   }
 }
 

@@ -15,6 +15,7 @@ export default {
         cgreen: 'rgb(var(--c-green) / <alpha-value>)',
         cbrown: 'rgb(var(--c-brown) / <alpha-value>)',
         cyellow: 'rgb(var(--c-yellow) / <alpha-value>)',
+        cmediumyellow: 'rgb(var(--c-medium-yellow) / <alpha-value>)',
         clightgrey: 'rgb(var(--c-lightgrey) / <alpha-value>)',
         cgrey: 'rgb(var(--c-grey) / <alpha-value>)',
         cwallet: 'rgb(var(--c-wallet) / <alpha-value>)',
@@ -125,5 +126,4 @@ export default {
   },
 
   plugins: [tailwindcssAnimate],
-  from: undefined,
 } as Config

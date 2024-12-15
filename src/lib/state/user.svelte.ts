@@ -19,6 +19,7 @@ interface User {
   tg_id: number | null
   first_name: string
   address: string
+  language: string
   farm: Farm
   direct_invites: number
   indirect_invites: number
@@ -33,6 +34,7 @@ interface User {
   current_farm_time: number
   current_farm_amount: number
   tasks_completed: number //TODO TAsk statuses: {} AND CHANGE
+  activity_days: number
   bonuses: BonusIndexes[]
   username?: string | null
 }
@@ -42,6 +44,7 @@ function userStore() {
     tg_id: null,
     first_name: '',
     address: '',
+    language: 'ru',
     farm: CLAIMED,
     direct_invites: 0,
     indirect_invites: 0,
@@ -56,6 +59,7 @@ function userStore() {
     current_farm_time: baseTime * MINUTE,
     current_farm_amount: baseTime * baseAmount,
     tasks_completed: 0,
+    activity_days: 0,
     bonuses: [],
     username: null,
   })
@@ -93,7 +97,7 @@ function userStore() {
 
   function setEndTime(time: number) {
     if (time < Date.now()) {
-      throw new Error(data.inner_error)
+      throw new Error(data.errors.inner_error)
     }
     state.current_farm_time = state.farm_time * MINUTE
     state.current_farm_amount = Math.round(state.farm_time * state.farm_amount)

@@ -6,6 +6,7 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
   import { addBonus, setCigs, user } from '@state/user.svelte'
+  import { isEnglish } from '@utils'
   import { AMOUNT, BONUSES, COMBO, cubicOut, IMG_INDEXES, IMG_NAMES, LEVELS, TIME } from '@utils/const'
   import useRipple from '@utils/useRipple.svelte'
   import { sineOut } from 'svelte/easing'
@@ -136,7 +137,9 @@
       {@const prevLevel = hasBonus ? user.level : user.level - 1}
       {@const isEnoughCigs = user.cigs >= LEVELS[currLevel][selectedItem.type]}
       {@const isTasksCompleted = LEVELS[currLevel].tasks ? LEVELS[currLevel].tasks <= user.tasks_completed : true}
-      {@const isTaskAllowed = isEnoughCigs && !hasBonus && isTasksCompleted}
+      {@const isInvitesCompleted = LEVELS[currLevel].invites ? LEVELS[currLevel].invites <= user.direct_invites : true}
+      {@const isStreakCompleted = LEVELS[currLevel].streak ? LEVELS[currLevel].streak <= user.activity_days : true}
+      {@const isTaskAllowed = isEnoughCigs && !hasBonus && isTasksCompleted && isInvitesCompleted && isStreakCompleted}
       {@const isLastItem = hasBonus && user.level === LEVELS.length - 1}
       <div class="mb-2 mt-3 flex items-center gap-x-2">
         {#if hasPrevItem}
@@ -183,7 +186,7 @@
           {/if}
           {#if LEVELS[currLevel].tasks}
             <li class="flex w-full items-center gap-x-2.5">
-              {#if LEVELS[currLevel].tasks <= user.tasks_completed}
+              {#if isTasksCompleted}
                 <CheckDone />
               {:else}
                 <div class="ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
@@ -192,6 +195,40 @@
                 {data.requirement_tasks}
                 {LEVELS[currLevel].tasks}
                 {data.tasks_title.toLowerCase()}
+              </span>
+            </li>
+          {/if}
+          {#if LEVELS[currLevel].invites}
+            <li class="flex w-full items-center gap-x-2.5">
+              {#if isInvitesCompleted}
+                <CheckDone />
+              {:else}
+                <div class="ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+              {/if}
+              <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+                {data.requirement_invites}
+                {LEVELS[currLevel].invites}
+                {isEnglish(data.task_friends)
+                  ? LEVELS[currLevel].invites > 1
+                    ? data.task_friends
+                    : data.task_friends.slice(0, -1)
+                  : LEVELS[currLevel].invites > 4
+                    ? data.task_friends
+                    : data.task_friends.replace('ов', 'а')}
+              </span>
+            </li>
+          {/if}
+          {#if LEVELS[currLevel].streak}
+            <li class="flex w-full items-center gap-x-2.5">
+              {#if isStreakCompleted}
+                <CheckDone />
+              {:else}
+                <div class="ml-0.5 size-[20px] rounded border-2 border-solid border-textgrey"></div>
+              {/if}
+              <span class="roboto flex h-full flex-1 items-center text-xs tracking-wider">
+                {data.requirement_streak}
+                {LEVELS[currLevel].streak}
+                {data.requirement_streak_date}
               </span>
             </li>
           {/if}

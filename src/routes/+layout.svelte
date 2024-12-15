@@ -17,6 +17,7 @@
   import { setUser } from '@state/user.svelte'
   import {
     closeMiniApp,
+    ERR_RETRIEVE_LP_FAILED,
     init,
     isTMA,
     miniAppReady,
@@ -30,7 +31,7 @@
   import { useTonConnect } from '@utils/useTonConnect'
   import { onMount, setContext } from 'svelte'
   import { sineInOut } from 'svelte/easing'
-  import { tweened } from 'svelte/motion'
+  import { Tween } from 'svelte/motion'
   import { fade } from 'svelte/transition'
   import { Toaster } from 'svelte-hot-french-toast'
 
@@ -46,7 +47,7 @@
       {
         id: 1,
         Icon: Yt,
-        task: 'Посмотри видео и впиши код',
+        name: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.check,
         link: 'https://google.com',
@@ -55,7 +56,7 @@
       {
         id: 7,
         Icon: Ig,
-        task: 'Посмотри видео и впиши код',
+        name: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.start,
         link: 'https://google.com',
@@ -64,7 +65,7 @@
       {
         id: 6,
         Icon: Tg,
-        task: 'Посмотри видео и впиши код',
+        name: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.start,
         link: 'https://x.com/intent/follow?screen_name=NASA',
@@ -74,17 +75,16 @@
       {
         id: 5,
         Icon: Tt,
-        task: 'Позови 100 корешей',
+        name: 'Позови 100 корешей',
         reward: '200 USDT',
         status: taskStatus.start,
-        link: 'https://google.com',
         type: TASK_INVITE,
         invites: 10,
       },
       {
         id: 3,
         Icon: Yt,
-        task: 'Посмотри видео и впиши код',
+        name: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.check,
         link: 'https://google.com',
@@ -93,7 +93,7 @@
       {
         id: 2,
         Icon: Ig,
-        task: 'Посмотри видео и впиши код',
+        name: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.claim,
         link: 'https://google.com',
@@ -102,7 +102,7 @@
       {
         id: 4,
         Icon: Vk,
-        task: 'Посмотри видео и впиши код',
+        name: 'Посмотри видео и впиши код',
         reward: '200 USDT',
         status: taskStatus.loading,
         link: 'https://google.com',
@@ -115,7 +115,7 @@
 
   let progressDefDur = 1400
   const progressShortDur = 130
-  let progress = tweened(0, {
+  let progress = new Tween(0, {
     duration: progressShortDur,
     easing: sineInOut,
   })
@@ -134,20 +134,19 @@
     const treshholds = [20, 50, 70, 86, 95, 98.5, 99.99]
     const values = [4, 2, 1.1, 0.5, 0.15, 0.025, 0.006]
     interval = window.setInterval(() => {
-      const ind = treshholds.findIndex((numb) => $progress < numb)
-      const nextProgress = ind >= 0 ? $progress + values[ind] : $progress < 100 ? $progress : 100
+      const ind = treshholds.findIndex((numb) => progress.current < numb)
+      const nextProgress = ind >= 0 ? progress.current + values[ind] : progress.current < 100 ? progress.current : 100
       progress.set(nextProgress, { duration: nextProgress === 100 ? progressDefDur : progressShortDur })
-      if ($progress === 100) stopProgress()
+      if (progress.current === 100) stopProgress()
     }, 80)
   }
 
   async function initTgApp() {
     const isTG = await isTMA()
-
     const initData =
-      'user=%7B%22id%22%3A883729040%2C%22first_name%22%3A%22Denis%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22paskodenis%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=8084724315231179358&chat_type=private&auth_date=1728214924&hash=34ed36bf7e67585d9d78c6d07bae62c8d59902d22cd24cb119c180cda909ff5d'
+      'query_id=AAGQoqw0AAAAAJCirDTR49X6&user=%7B%22id%22%3A883729040%2C%22first_name%22%3A%22Denis%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22paskodenis%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPZp_j8q1EwiqyrZYJ_D1D9aqUwujRQ5FHKWz4i20l6M.svg%22%7D&auth_date=1733681189&signature=VJ959-6RmChdCsoTU7qwutF-rIEvClKvwV4amcdYeTbgSseO_CAsLbKmZVKrOArFwhYP0aUlfZoU6Rl_V_kWAA&hash=c57aaccbc063e5f40364e362ba27129ab0043015b9f0b7431a66a6abb3cd8559'
     if (!isTG) {
-      // return setError('tg_app')
+      // return setError(data.errors.telegram_error)
       const user = parseInitData(initData).user
       if (!user) return
       const { id: tg_id, username, firstName: first_name } = user
@@ -158,7 +157,6 @@
         direct_invites: 0,
         indirect_invites: 0,
       })
-      // return setIsLoaded()
     }
 
     try {
@@ -179,11 +177,8 @@
 
       if (!result.valid) {
         const error = result.error
-        if (error === undefined) throw new Error(data.data_error)
-
-        const errorMsg =
-          error === undefined ? data.data_error : error in data ? (data[error as keyof typeof data] as string) : error
-
+        if (error === undefined) throw new Error(data.errors.data_error)
+        const errorMsg = error in data.errors ? (data.errors[error as keyof typeof data.errors] as string) : error
         throw new Error(errorMsg)
       }
 
@@ -199,14 +194,14 @@
     } catch (err) {
       if (err instanceof Error) {
         const error = err as TypedError
-        if (error.type === 'ERR_RETRIEVE_LP_FAILED' || err.message === 'Data is outdated') {
+        if (error.type === ERR_RETRIEVE_LP_FAILED || err.message === data.errors.outdated_error) {
           closeMiniApp()
         }
         setError(err.message)
       } else if (typeof err === 'string') {
         setError(err)
       } else {
-        setError(data.error_msg)
+        setError(data.errors.error_msg)
       }
     } finally {
       await w8(progressDefDur + 25)
@@ -252,8 +247,9 @@
     : 'h-[calc(100%_-_var(--nav-height))]'} ">
   <Dialog.Root bind:open={app.isModalOpened}>
     {#if app.error}
-      <div class="flex h-full flex-col items-center justify-center gap-y-5">
-        {data.error_msg}
+      <div class="flex h-full flex-col items-center justify-center gap-y-5 px-2 text-center">
+        {data.errors.error_msg}
+        <span>{app.error.split('. ')[0]}</span>
         <button
           onclick={() => window.location.reload()}
           class="relative outline-none transition-transform will-change-transform active:scale-95">
@@ -264,17 +260,20 @@
         </button>
       </div>
     {:else if app.isLoading}
-      <div out:fade={{ duration: 250, easing: sineInOut }} class="fixed z-50 size-full">
+      <div
+        in:fade={{ delay: 100, duration: 0 }}
+        out:fade={{ duration: app.error ? 0 : 250, easing: sineInOut }}
+        class="fixed z-50 size-full">
         <img
           height="100vh"
           alt="Prison loading"
           class="aspect-[2/3] size-full max-h-full lg:object-contain"
           src="/load.webp" />
         <div class="absolute bottom-[5%] left-0 flex w-full flex-col items-center justify-center gap-y-1">
-          <span class="after:dots order-2 block text-2xl font-semibold text-[#ffb901] after:content-['.']">
+          <span class="after:dots order-2 block text-2xl font-semibold text-cmediumyellow after:content-['.']">
             {data.loading}
           </span>
-          <ProgressBar progress={$progress} />
+          <ProgressBar progress={progress.current} />
         </div>
       </div>
     {:else}

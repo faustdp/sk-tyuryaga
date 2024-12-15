@@ -4,7 +4,7 @@
   import Cross from '@icons/Cross.svelte'
   import Lock from '@icons/lock.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import { closeModal } from '@state/app.svelte'
+  import { app, closeModal } from '@state/app.svelte'
   import { user } from '@state/user.svelte'
   import { onDestroy } from 'svelte'
   import { sineInOut } from 'svelte/easing'
@@ -15,10 +15,11 @@
 
   let carouselApi = $state<CarouselAPI>()
   let current = $state(0)
+  let prev = $state(-1)
   let isLocked = $derived(current > user.level + 1)
   const items = Array.from({ length: 5 }, () => ({ src: '/imgs/1/9.webp', level: 1 }))
 
-  function handleCodeCheck() {
+  function handleSelect() {
     closeModal()
   }
 
@@ -28,8 +29,15 @@
     if (carouselApi) {
       current = carouselApi.selectedScrollSnap()
       carouselApi.on('select', () => {
+        prev = current
         current = carouselApi!.selectedScrollSnap()
       })
+    }
+  })
+
+  $effect(() => {
+    if (!app.isModalOpened) {
+      prev = -1
     }
   })
 
@@ -40,7 +48,7 @@
 
 <Dialog.Content
   withMargin
-  class="card-shadow flex w-[calc(100%_-_20px)] flex-col items-center overflow-hidden bg-ccard sm:max-w-[425px]">
+  class="card-shadow flex w-[calc(100%_-_20px)] max-w-[344px] flex-col items-center overflow-hidden bg-ccard">
   <Carousel.Root class="relative w-full max-w-[344px]" setApi={(emblaApi) => (carouselApi = emblaApi)}>
     <div class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-textlight blur-2xl">
     </div>
@@ -50,7 +58,6 @@
         <Carousel.Item class="relative  ">
           <figure class="relative mb-2 flex flex-col items-center p-4 text-center">
             <img class="relative z-10 mb-9" src={item.src} width="180" alt="Alt text" />
-            {#if isLocked}{/if}
             <figcaption>{data.level} {item.level + i}</figcaption>
           </figure>
         </Carousel.Item>
@@ -58,12 +65,12 @@
     </Carousel.Content>
     {#if isLocked}
       <div
-        transition:fade={{ duration: 240, easing: sineInOut }}
-        class="pointer-events-none fixed left-0 top-0 z-30 size-full select-none bg-black opacity-30">
+        transition:fade={{ duration: prev >= 0 ? 240 : 0, easing: sineInOut }}
+        class="pointer-events-none fixed left-0 top-0 z-30 size-full select-none rounded-xl bg-black opacity-30">
       </div>
       <div
-        in:fade={{ duration: 240, easing: sineInOut }}
-        out:fly={{ duration: 240, x: '150', easing: sineInOut }}
+        in:fade={{ duration: prev >= 0 ? 240 : 0, easing: sineInOut }}
+        out:fly={{ duration: prev >= 0 ? 240 : 0, x: '150', easing: sineInOut }}
         class="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 select-none">
         <Lock />
       </div>
@@ -78,7 +85,7 @@
   </div>
   <button
     class="absolute -bottom-32 self-center outline-none transition-transform will-change-transform active:scale-95"
-    onclick={handleCodeCheck}>
+    onclick={handleSelect}>
     <WalletBtn
       classes="w-full"
       height={54}

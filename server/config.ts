@@ -153,7 +153,7 @@ export async function handleBotStart(chatId: string | number, _firstName?: strin
   //     reply_markup: { inline_keyboard: inlineKeyboard },
   //     parse_mode: 'MarkdownV2',
   //   })
-  return bot.api.sendMessage(chatId, 'Hi')
+  return bot.api.sendMessage(chatId, 'Hi') //5416188878
 }
 
 // export async function handleLevelUp(chatId: number, level: number) {

@@ -4,13 +4,17 @@ import {
   isSwipeBehaviorSupported,
   isViewportExpanded,
   mountSwipeBehavior,
+  mountViewport,
   on,
   postEvent,
+  requestFullscreen,
 } from '@telegram-apps/sdk'
-import { noop } from '@utils'
+import { logServer, noop } from '@utils'
 
-export function fixTouch(): () => void {
+export async function fixTouch(): Promise<() => void> {
   mountSwipeBehavior()
+  await mountViewport()
+
   if (!isSwipeBehaviorSupported) return noop
 
   let shouldExpand = false
@@ -71,8 +75,20 @@ export function fixTouch(): () => void {
     }
   }
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+  const ua = navigator.userAgent
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !('MSStream' in window)
+  const isSafari = /^((?!chrome|android).)*safari/i.test(ua)
+  const isTablet = () =>
+    window.innerWidth >= 768 &&
+    window.innerWidth <= 1024 &&
+    (navigator.maxTouchPoints > 1 || /iPad|Tablet/i.test(navigator.userAgent))
+
+  const isMobile = () =>
+    window.innerWidth < 1024 &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
+    navigator.maxTouchPoints > 0
+
+  const isDesktop = () => !isTablet() && !isMobile()
 
   function handleDoubleTapIOS(e: TouchEvent) {
     const now = new Date().getTime()
@@ -90,9 +106,14 @@ export function fixTouch(): () => void {
       shouldExpand = false
     }
   }
+  logServer(`${isTablet()}, ${isMobile()}, ${isDesktop()}, ${ua}, ${window.innerWidth}`)
+  if (requestFullscreen.isAvailable() && !isDesktop() && !isTablet()) {
+    await requestFullscreen()
+  } else {
+    postEvent('web_app_expand')
+    expandViewport()
+  }
 
-  postEvent('web_app_expand')
-  expandViewport()
   postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false })
   disableVerticalSwipes()
   const removeListener = on('viewport_changed', handleViewportChange)

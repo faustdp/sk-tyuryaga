@@ -1,7 +1,8 @@
 import svg from '@poppanator/sveltekit-svg'
 import { sveltekit } from '@sveltejs/kit/vite'
+// import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
-import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [
@@ -20,9 +21,9 @@ export default defineConfig({
       },
     },
   },
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}'],
-  },
+  // test: {
+  //   include: ['src/**/*.{test,spec}.{js,ts}'],
+  // },
   build: {
     // sourcemap: true,
     terserOptions: {

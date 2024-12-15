@@ -30,7 +30,7 @@
     <img src={getImgUrl(index, level)} alt="Text" class="relative z-10 h-full" />
   </picture>
   <h2 class="relative mb-3 max-w-52 text-base leading-5 tracking-wider">{title}</h2>
-  <div class="relative mb-2 flex min-h-[52px] flex-col items-start gap-y-1">
+  <div class="relative mb-2 flex min-h-[54px] flex-col items-start gap-y-1">
     <BoostTag
       boost={boostType}
       amount={boostType === COMBO

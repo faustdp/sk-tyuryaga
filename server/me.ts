@@ -70,17 +70,17 @@ export default async function (req: Request, res: Response) {
     }
 
     const params = new URLSearchParams(initData)
-    /* const isValid = validateTgWebAppData(params)
+    // const isValid = validateTgWebAppData(params)
 
-    if (!isValid) return res.status(200).json({ valid: false, error: 'data_error' })
+    // if (!isValid) return res.status(200).json({ valid: false, error: 'data_error' })
 
-    const authDate = params.get('auth_date')
-    const currentTimestamp = Math.floor(Date.now() / 1000)
-    const MAX_AGE = 3600
+    // const authDate = params.get('auth_date')
+    // const currentTimestamp = Math.floor(Date.now() / 1000)
+    // const MAX_AGE = 3600
 
-    if (authDate && currentTimestamp - parseInt(authDate) > MAX_AGE) {
-      return res.status(200).json({ valid: false, error: 'outdated_error' })
-    } */
+    // if (authDate && currentTimestamp - parseInt(authDate) > MAX_AGE) {
+    //   return res.status(200).json({ valid: false, error: 'outdated_error' })
+    // }
 
     const userData: TGUser = JSON.parse(params.get('user') || '{}')
 

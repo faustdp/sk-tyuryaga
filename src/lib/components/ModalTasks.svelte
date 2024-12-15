@@ -38,8 +38,7 @@
     if (value.length < minCodeLength || isFetchingCode || codeIsRight || value === lastWrongCode || !task) return
     clearTimeout(wrongTO)
     isFetchingCode = true
-    //TODO: Replace
-    await w8(500)
+    await w8(500) //TODO: Replace
     const x = Math.random()
     isFetchingCode = false
     if (x > 0.5) {
@@ -117,8 +116,12 @@
     onclick={handleCodeCheck}>
     <WalletBtn
       height={40}
-      fill={inputValue.length >= minCodeLength ? 'rgb(var(--c-green))' : 'rgb(var(--c-darkblue))'}
-      stroke={inputValue.length >= minCodeLength ? 'var(--dark-green)' : 'black'} />
+      fill={inputValue.length < minCodeLength || (lastWrongCode && lastWrongCode === inputValue)
+        ? 'rgb(var(--c-darkblue))'
+        : 'rgb(var(--c-green))'}
+      stroke={inputValue.length < minCodeLength || (lastWrongCode && lastWrongCode === inputValue)
+        ? 'black'
+        : 'var(--dark-green)'} />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center text-sm">
       {#if isFetchingCode}
         <Spinner />

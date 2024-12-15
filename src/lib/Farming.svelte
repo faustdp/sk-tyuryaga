@@ -7,7 +7,7 @@
   import { CLAIMED, FARMED, FARMING, MINUTE, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
-  import { tweened } from 'svelte/motion'
+  import { Tween } from 'svelte/motion'
   import { Confetti } from 'svelte-confetti'
 
   import data from '@/messages.json'
@@ -31,16 +31,16 @@
   let timeInterval: NodeJS.Timeout
   let isMounted = false
 
-  const progress = tweened(prevProgress, {
+  const progress = new Tween(prevProgress, {
     duration: () =>
       user.farm !== FARMING ? 200 : wasFarming ? prevProgress * user.current_farm_time : user.current_farm_time,
     easing: (t) => (user.farm === FARMING ? linear(t) : sineOut(t)),
   })
 
   function startInterval() {
-    time = formatTime($progress * user.current_farm_time)
+    time = formatTime(progress.current * user.current_farm_time)
     timeInterval = setInterval(() => {
-      time = formatTime($progress * user.current_farm_time)
+      time = formatTime(progress.current * user.current_farm_time)
     }, SECOND)
   }
 
@@ -49,17 +49,17 @@
   }
 
   $effect(() => {
-    if ($progress === 0) {
+    if (progress.current === 0) {
       setFarm(FARMED)
       stopInterval()
-      $progress = 1
+      progress.target = 1
       wasFarming = false
     }
   })
 
   onMount(() => {
     if (prevProgress !== 1) {
-      $progress = 0
+      progress.target = 0
       startInterval()
     }
   })
@@ -67,7 +67,7 @@
   onDestroy(() => stopInterval())
 
   let cigs = $derived.by(() => {
-    const val = $progress
+    const val = progress.current
     if (wasFarming && val === 1) return user.current_farm_amount
     return Math.trunc((1 - val) * user.current_farm_amount)
   })
@@ -92,7 +92,7 @@
       setEndTime(now + user.farm_time * MINUTE)
       setFarm(FARMING)
       startInterval()
-      $progress = 0
+      progress.target = 0
     } else if (user.farm === FARMED) {
       setFarm(CLAIMED)
       setCigs(user.current_farm_amount)
@@ -129,7 +129,7 @@
     }}>
     +all bonuses
   </button>
-  <FarmBtn {progress} />
+  <FarmBtn progress={progress.current} />
   <button
     class="flex size-full items-center justify-center gap-x-2 text-xl outline-none"
     onclick={handleClick}
