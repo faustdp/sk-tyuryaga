@@ -154,8 +154,7 @@
         tg_id,
         first_name,
         username,
-        direct_invites: 0,
-        indirect_invites: 0,
+        invites: 0,
       })
     }
 
@@ -182,14 +181,13 @@
         throw new Error(errorMsg)
       }
 
-      const { tg_id, first_name, username, direct_invites, indirect_invites } = result.userData
+      const { tg_id, first_name, username, invites } = result.userData
 
       setUser({
         tg_id,
         first_name,
         username,
-        direct_invites,
-        indirect_invites,
+        invites,
       })
     } catch (err) {
       if (err instanceof Error) {
@@ -213,21 +211,23 @@
   useTonConnect()
 
   onMount(() => {
-    let removeListeners = noop
+    let removeListeners: null | typeof noop = null
     startProgress()
 
     try {
       init()
       mountMiniApp()
       miniAppReady()
-      removeListeners = fixTouch()
+      fixTouch().then((listener: typeof noop) => {
+        removeListeners = listener
+      })
       // setIsMounted()
       // mountBackButton()
       // showBackButton()
     } catch (_err) {}
 
     return () => {
-      removeListeners()
+      if (removeListeners) removeListeners()
       stopProgress()
     }
   })

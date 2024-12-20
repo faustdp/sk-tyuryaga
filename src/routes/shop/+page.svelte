@@ -137,7 +137,7 @@
       {@const prevLevel = hasBonus ? user.level : user.level - 1}
       {@const isEnoughCigs = user.cigs >= LEVELS[currLevel][selectedItem.type]}
       {@const isTasksCompleted = LEVELS[currLevel].tasks ? LEVELS[currLevel].tasks <= user.tasks_completed : true}
-      {@const isInvitesCompleted = LEVELS[currLevel].invites ? LEVELS[currLevel].invites <= user.direct_invites : true}
+      {@const isInvitesCompleted = LEVELS[currLevel].invites ? LEVELS[currLevel].invites <= user.invites : true}
       {@const isStreakCompleted = LEVELS[currLevel].streak ? LEVELS[currLevel].streak <= user.activity_days : true}
       {@const isTaskAllowed = isEnoughCigs && !hasBonus && isTasksCompleted && isInvitesCompleted && isStreakCompleted}
       {@const isLastItem = hasBonus && user.level === LEVELS.length - 1}

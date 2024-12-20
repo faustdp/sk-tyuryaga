@@ -2,7 +2,7 @@
   import Cigarette from '@icons/cigarette.svg?component'
   import cigarette from '@icons/cigarette.svg?url'
   import FarmBtn from '@icons/FarmBtn.svelte'
-  import { addBonus, setCigs, setEndTime, setFarm, upLevel, user } from '@state/user.svelte'
+  import { addBonus, setCigs, setEndTime, setFarm, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
   import { CLAIMED, FARMED, FARMING, MINUTE, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
@@ -119,9 +119,8 @@
     justify-center gap-x-4 rounded-xl transition-transform">
   <button class="absolute top-0 -mt-40 ml-5" onclick={() => addBonus(5)}>+time bonus</button>
   <button class="absolute top-10 -mt-40 ml-5" onclick={() => addBonus(1)}>+amount bonus</button>
-  <button class="absolute top-20 -mt-40 ml-5" onclick={() => upLevel()}>levelUp</button>
   <button
-    class="absolute top-28 -mt-40 ml-5"
+    class="absolute top-20 -mt-40 ml-5"
     onclick={() => {
       for (let i = 0; i < 9; i++) {
         addBonus(i as BonusIndexes)

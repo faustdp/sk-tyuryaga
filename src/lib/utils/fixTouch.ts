@@ -9,7 +9,7 @@ import {
   postEvent,
   requestFullscreen,
 } from '@telegram-apps/sdk'
-import { logServer, noop } from '@utils'
+import { noop } from '@utils'
 
 export async function fixTouch(): Promise<() => void> {
   mountSwipeBehavior()
@@ -106,7 +106,7 @@ export async function fixTouch(): Promise<() => void> {
       shouldExpand = false
     }
   }
-  logServer(`${isTablet()}, ${isMobile()}, ${isDesktop()}, ${ua}, ${window.innerWidth}`)
+
   if (requestFullscreen.isAvailable() && !isDesktop() && !isTablet()) {
     await requestFullscreen()
   } else {

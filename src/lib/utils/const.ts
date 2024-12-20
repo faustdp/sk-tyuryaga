@@ -102,8 +102,8 @@ export const IMG_NAMES: Images[] = [
   },
 ] as const
 
-export const baseTime = 2
-export const baseAmount = 1
+// export const baseTime = 2
+// export const baseAmount = 1
 
 // export const russianLanguages = ['ru', 'be', 'uk', 'kk', 'ky', 'uz', 'tg', 'tk', 'hy', 'az', 'ka', 'lv', 'lt', 'et']
 
@@ -111,6 +111,8 @@ interface LevelsType {
   [AMOUNT]: number
   [COMBO]: number
   [TIME]: number
+  baseTime: number
+  baseAmount: number
   tasks?: number
   invites?: number
   streak?: number
@@ -118,8 +120,8 @@ interface LevelsType {
 
 export const LEVELS: LevelsType[] = [
   {
-    // baseTime: 2,
-    // baseAmount: 1,
+    baseTime: 2,
+    baseAmount: 1,
     // next: 69,
     [AMOUNT]: 10,
     [COMBO]: 8,
@@ -127,8 +129,8 @@ export const LEVELS: LevelsType[] = [
     streak: 10,
   },
   {
-    // baseTime: 4,
-    // baseAmount: 10,
+    baseTime: 4,
+    baseAmount: 10,
     // next: 690,
     [AMOUNT]: 100,
     [COMBO]: 80,
@@ -137,64 +139,64 @@ export const LEVELS: LevelsType[] = [
     invites: 2,
   },
   {
-    // baseTime: 8,
-    // baseAmount: 19,
+    baseTime: 8,
+    baseAmount: 19,
     // next: 3450,
     [AMOUNT]: 500,
     [COMBO]: 400,
     [TIME]: 250,
   },
   {
-    // baseTime: 15,
-    // baseAmount: 28,
+    baseTime: 15,
+    baseAmount: 28,
     // next: 10350,
     [AMOUNT]: 1500,
     [COMBO]: 1200,
     [TIME]: 750,
   },
   {
-    // baseTime: 30,
-    // baseAmount: 37,
+    baseTime: 30,
+    baseAmount: 37,
     // next: 31050,
     [AMOUNT]: 4500,
     [COMBO]: 3600,
     [TIME]: 2250,
   },
   {
-    // baseTime: 60,
-    // baseAmount: 46,
+    baseTime: 60,
+    baseAmount: 46,
     // next: 93150,
     [AMOUNT]: 13500,
     [COMBO]: 10800,
     [TIME]: 6750,
   },
   {
-    // baseTime: 120,
-    // baseAmount: 55,
+    baseTime: 120,
+    baseAmount: 55,
     // next: 279450,
     [AMOUNT]: 40500,
     [COMBO]: 32400,
     [TIME]: 20250,
   },
   {
-    // baseTime: 240,
-    // baseAmount: 64,
+    baseTime: 240,
+    baseAmount: 64,
     // next: 838350,
     [AMOUNT]: 121500,
     [COMBO]: 97200,
     [TIME]: 60750,
   },
   {
-    // baseTime: 480,
-    // baseAmount: 73,
+    baseTime: 480,
+    baseAmount: 73,
     // next: 1676700,
     [AMOUNT]: 243000,
     [COMBO]: 194400,
     [TIME]: 121500,
   },
   {
-    // baseTime: 960,
-    // baseAmount: 82,
+    baseTime: 960,
+    baseAmount: 82,
     // next: 2850390,
     [AMOUNT]: 413100,
     [COMBO]: 330480,

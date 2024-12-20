@@ -63,39 +63,12 @@ export async function setupBot() {
   }
 
   bot.on('message', async (ctx) => {
-    /* 
-    update: {
-    update_id: 711466068,
-    message: {
-      message_id: 26,
-      from: [Object],
-      chat: [Object],
-      date: 1732198040,
-      text: 'd'
+    console.log('config98', ctx.update.message.from)
+    try {
+      handleBotStart(ctx.update.message.from.id)
+    } catch (error) {
+      console.log(error)
     }
-  },
-  api: Api {
-    token: '7699788849:AAGwoxBS2jh0AHWNerQymnfivjx3ScHZJJ8',
-    options: undefined,
-    raw: {},
-    config: {
-      use: [Function: use],
-      installedTransformers: [Function: installedTransformers]
-    }
-  },
-  me: {
-    id: 7699788849,
-    is_bot: true,
-    first_name: 'Shnyaga Tyuryaga',
-    username: 'TestShnyagaTyuryagaBot',
-    can_join_groups: true,
-    can_read_all_group_messages: false,
-    supports_inline_queries: false,
-    can_connect_to_business: false,
-    has_main_web_app: true
-  }
- */
-    handleBotStart(ctx.update.message.from.id)
   })
 
   if (!bot.isRunning()) {

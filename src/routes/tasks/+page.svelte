@@ -38,7 +38,7 @@
       setDoneTask(item)
     } else if (item.status === taskStatus.start) {
       if (item.type === TASK_INVITE) {
-        if (item.invites > user.direct_invites) {
+        if (item.invites > user.invites) {
           isDrawerOpened = true
         } else {
           setDoneTask(item)
@@ -95,7 +95,7 @@
           {socialItem.name}
           <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">
             {#if socialItem.type === TASK_INVITE}
-              {user.direct_invites}/{socialItem.invites} {data.task_friends},
+              {user.invites}/{socialItem.invites} {data.task_friends},
             {/if}
             {socialItem.reward}
           </span>
