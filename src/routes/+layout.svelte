@@ -14,7 +14,7 @@
   import Yt from '@icons/socials/yt.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setError, setIsLoaded } from '@state/app.svelte'
-  import { setUser } from '@state/user.svelte'
+  import { setBaseFarm, setUser } from '@state/user.svelte'
   import {
     closeMiniApp,
     ERR_RETRIEVE_LP_FAILED,
@@ -23,7 +23,7 @@
     miniAppReady,
     mountMiniApp,
     parseInitData,
-    // retrieveLaunchParams,
+    retrieveLaunchParams,
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
   import { meUrl, TASK_CODE, TASK_CTX, TASK_INVITE, TASK_SUBSCRIBE, taskStatus } from '@utils/const'
@@ -158,13 +158,17 @@
       })
     }
 
+    let params
+    try {
+      params = retrieveLaunchParams()
+    } catch {}
+
     try {
       const reqStart = performance.now()
-      // const params = retrieveLaunchParams()
       const response = await fetch(meUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ initData: initData }), //params.initDataRaw
+        body: JSON.stringify({ initData: params?.initDataRaw ? params.initDataRaw : initData }),
       })
 
       stopProgress()
@@ -173,7 +177,7 @@
       progress.set(100, { duration: progressDefDur })
 
       const result: ValidationResponse = await response.json()
-
+      console.log('+layout180', result)
       if (!result.valid) {
         const error = result.error
         if (error === undefined) throw new Error(data.errors.data_error)
@@ -181,7 +185,11 @@
         throw new Error(errorMsg)
       }
 
-      const { tg_id, first_name, username, invites } = result.userData
+      const { tg_id, first_name, username, invites, level, bonuses } = result.userData
+
+      if (bonuses.length > 0) {
+        setBaseFarm(level, bonuses)
+      }
 
       setUser({
         tg_id,

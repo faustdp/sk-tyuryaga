@@ -4,6 +4,7 @@
   import FarmBtn from '@icons/FarmBtn.svelte'
   import { addBonus, setCigs, setEndTime, setFarm, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
+  import { postEndTime, postFarmCigs } from '@utils/api'
   import { CLAIMED, FARMED, FARMING, MINUTE, SECOND } from '@utils/const'
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
@@ -16,7 +17,10 @@
     if (time === 0) return 1
     const now = Date.now()
     if (now > time) {
-      if (user.farm === FARMING) setFarm(FARMED)
+      if (user.farm === FARMING) {
+        setFarm(FARMED)
+        // postSetFarmed(user.current_farm_amount, user.tg_id)
+      }
       return 1
     }
     return Math.max(0, (time - now) / user.current_farm_time)
@@ -89,13 +93,16 @@
     if (user.farm === FARMING) return
     if (user.farm === CLAIMED) {
       const now = Date.now()
-      setEndTime(now + user.farm_time * MINUTE)
+      const time = now + user.farm_time * MINUTE
+      setEndTime(time)
       setFarm(FARMING)
       startInterval()
       progress.target = 0
+      await postEndTime(new Date(time).toISOString(), user.tg_id, user.current_farm_amount)
     } else if (user.farm === FARMED) {
       setFarm(CLAIMED)
       setCigs(user.current_farm_amount)
+      await postFarmCigs(user.current_farm_amount, user.tg_id)
     }
   }
 

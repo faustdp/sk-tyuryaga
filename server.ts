@@ -7,8 +7,19 @@ import express, { Router } from 'express'
 // import path from 'path'
 // import { fileURLToPath } from 'url'
 import botHandler from './server/bot'
-import { apiPath, botPath, healthPath, mePath, setupBot, sitePort, siteUrl } from './server/config'
-import meHandler from './server/me'
+import {
+  apiPath,
+  botPath,
+  endTimePath,
+  farmCigsPath,
+  healthPath,
+  mePath,
+  setupBot,
+  sitePort,
+  siteUrl,
+} from './server/config'
+import { setEndTime, setFarmCigs } from './server/handlers'
+import { meHandler } from './server/me'
 
 // const dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -64,6 +75,18 @@ router.get(healthPath, (req, res) => {
 router.post('/test', (req) => {
   console.log('fromFront:', req.body)
 })
+
+router.post(endTimePath, (req, res) => {
+  setEndTime(req, res)
+})
+
+router.post(farmCigsPath, (req, res) => {
+  setFarmCigs(req, res)
+})
+
+// router.post(farmedCigsPath, (req, res) => {
+//   setFarmedCigs(req, res)
+// })
 
 app.use(apiPath, router)
 

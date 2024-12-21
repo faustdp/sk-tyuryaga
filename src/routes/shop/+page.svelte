@@ -5,7 +5,7 @@
   import Pack from '@icons/Pack.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
-  import { addBonus, setCigs, user } from '@state/user.svelte'
+  import { addBonus, user } from '@state/user.svelte'
   import { isEnglish } from '@utils'
   import { AMOUNT, BONUSES, COMBO, cubicOut, IMG_INDEXES, IMG_NAMES, LEVELS, TIME } from '@utils/const'
   import useRipple from '@utils/useRipple.svelte'
@@ -74,8 +74,7 @@
 
   function buyBoost(price: number, isAllowed: boolean) {
     if (user.cigs < price || !selectedItem || !isAllowed) return
-    addBonus(selectedItem.idx)
-    setCigs(-price)
+    addBonus(selectedItem.idx, -price)
   }
 </script>
 

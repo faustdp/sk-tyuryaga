@@ -74,10 +74,9 @@ function userStore() {
     }
   }
 
-  function setBaseFarm(lvl: number, bonuses: number[]) {
-    //TODO unused
-    state.farm_time = LEVELS[lvl].baseTime
-    state.farm_amount = LEVELS[lvl].baseAmount
+  function setBaseFarm(level: number, bonuses: number[]) {
+    state.farm_time = LEVELS[level].baseTime
+    state.farm_amount = LEVELS[level].baseAmount
     bonuses.forEach((idx) => {
       calcBonus(idx)
     })
@@ -117,12 +116,15 @@ function userStore() {
     state.claim_friends = time
   }
 
-  function addBonus(idx: BonusIndexes) {
+  function addBonus(idx: BonusIndexes, cigs?: number) {
     if (state.bonuses.includes(idx)) return
     state.bonuses = [...state.bonuses, idx]
     calcBonus(idx)
     if (state.bonuses.length >= IMG_NAMES.length) {
       upLevel()
+    }
+    if (cigs) {
+      setCigs(cigs)
     }
   }
 

@@ -1,9 +1,9 @@
 import crypto from 'crypto'
-import { type Request, type Response } from 'express'
+import { Request, Response } from 'express'
 
 import type { CreateUser, Inviters, UserForDb } from '../database.types'
 import { token } from './config'
-import { createUser, getInviters, getUser } from './db'
+import { createInvite, createUser, getInviters, getUser, updateInvites } from './db'
 
 // interface GenericError {
 //   message: string
@@ -62,7 +62,7 @@ function validateTgWebAppData(params: URLSearchParams) {
   return calculatedHash === hash
 }
 
-export default async function (req: Request, res: Response) {
+export async function meHandler(req: Request, res: Response) {
   try {
     const initData: string | undefined = req.body.initData
 
@@ -108,7 +108,7 @@ export default async function (req: Request, res: Response) {
         ...(userData.username && { username: userData.username }),
       },
     )
-    let inviters: Inviters[] | undefined = undefined
+    let inviters: Inviters | undefined = undefined
 
     if (startParam) {
       const parsed = parseInt(startParam, 10)
@@ -116,14 +116,28 @@ export default async function (req: Request, res: Response) {
       const { data: invitersData } = await getInviters(isNumber ? parsed : startParam.trim(), isNumber)
       inviters = invitersData
     }
+
     const inviterId = inviters?.[0]?.tg_id ?? null
     userForSb.invitedBy = inviterId
     const { data: createdData, error: createdError } = await createUser(userForSb)
+
     if (createdError || !createdData) {
       return res.status(500).json({
         valid: false,
         error: createdError ? createdError.message : 'create_error',
       })
+    }
+
+    if (inviterId) {
+      await Promise.all([
+        updateInvites(inviterId),
+        createInvite(inviterId, userData.id),
+        // sendToUser(inviterId, {
+        //   firstName: createdData.first_name,
+        //   username: createdData.username,
+        //   depth: 1,
+        // }),
+      ])
     }
 
     return res.status(200).json({ valid: true, userData })

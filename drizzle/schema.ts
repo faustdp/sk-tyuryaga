@@ -19,52 +19,6 @@ import {
 export const farmStatus = pgEnum('farm_status', ['farming', 'farmed', 'claimed'])
 export const taskStatus = pgEnum('task_status', ['start', 'check', 'claim', 'done'])
 
-export const users = pgTable(
-  'users',
-  {
-    id: integer()
-      .primaryKey()
-      .generatedByDefaultAsIdentity({
-        name: 'users_id_seq',
-        startWith: 1,
-        increment: 1,
-        minValue: 1,
-        maxValue: 2147483647,
-        cache: 1,
-      }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    tgId: bigint('tg_id', { mode: 'number' }).notNull(),
-    firstName: varchar('first_name', { length: 100 }).notNull(),
-    username: varchar({ length: 32 }),
-    address: varchar({ length: 55 }),
-    language: varchar({ length: 5 }),
-    farm: farmStatus().default('claimed').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    lastVisit: timestamp('last_visit', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    invitedBy: bigint('invited_by', { mode: 'number' }),
-    invites: integer(),
-    farmCigs: integer('farm_cigs').default(0).notNull(),
-    refCigs: integer('ref_cigs').default(0).notNull(),
-    endTime: timestamp('end_time', { withTimezone: true, mode: 'string' }),
-    activityDays: integer('activity_days').default(0).notNull(),
-    bonuses: smallint().array().default([]),
-    level: integer().default(0).notNull(),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.invitedBy],
-      foreignColumns: [table.tgId],
-      name: 'users_invited_by_fkey',
-    })
-      .onUpdate('cascade')
-      .onDelete('set null'),
-    unique('users_tg_id_key').on(table.tgId),
-    unique('users_first_name_key').on(table.firstName),
-    check('level_check', sql`(level >= 0) AND (level <= 9)`),
-  ],
-)
-
 export const messages = pgTable('messages', {
   id: integer().generatedByDefaultAsIdentity({
     name: 'messages_id_seq',
@@ -79,44 +33,6 @@ export const messages = pgTable('messages', {
   buttons: jsonb(),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 })
-
-export const invites = pgTable(
-  'invites',
-  {
-    id: integer()
-      .primaryKey()
-      .generatedByDefaultAsIdentity({
-        name: 'invites_id_seq',
-        startWith: 1,
-        increment: 1,
-        minValue: 1,
-        maxValue: 2147483647,
-        cache: 1,
-      }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    inviter: bigint({ mode: 'number' }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    invitee: bigint({ mode: 'number' }),
-    depth: smallint().default(1),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.inviter],
-      foreignColumns: [users.tgId],
-      name: 'invites_inviter_fkey',
-    })
-      .onUpdate('cascade')
-      .onDelete('set null'),
-    foreignKey({
-      columns: [table.invitee],
-      foreignColumns: [users.tgId],
-      name: 'invites_invitee_fkey',
-    })
-      .onUpdate('cascade')
-      .onDelete('set null'),
-    check('invites_depth_check', sql`depth = ANY (ARRAY[1, 2, 3])`),
-  ],
-)
 
 export const tasks = pgTable(
   'tasks',
@@ -143,9 +59,105 @@ export const tasks = pgTable(
   },
   (table) => [
     check(
+      'check_delay',
+      sql`(((type)::text = 'subscribe'::text) AND (delay IS NOT NULL)) OR (((type)::text <> 'subscribe'::text) AND (delay IS NULL))`,
+    ),
+    check(
       'tasks_type_check',
       sql`(type)::text = ANY ((ARRAY['invite'::character varying, 'code'::character varying, 'subscribe'::character varying])::text[])`,
     ),
+    check(
+      'check_invites',
+      sql`(((type)::text = 'invite'::text) AND (invites IS NOT NULL)) OR (((type)::text <> 'invite'::text) AND (invites IS NULL))`,
+    ),
+    check(
+      'check_codes',
+      sql`(((type)::text = 'code'::text) AND (codes IS NOT NULL)) OR (((type)::text <> 'code'::text) AND (codes IS NULL))`,
+    ),
+  ],
+)
+
+export const invites = pgTable(
+  'invites',
+  {
+    id: integer()
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: 'invites_id_seq',
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 2147483647,
+        cache: 1,
+      }),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    inviter: bigint({ mode: 'number' }),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    invitee: bigint({ mode: 'number' }),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.inviter],
+      foreignColumns: [users.tgId],
+      name: 'invites_inviter_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    foreignKey({
+      columns: [table.invitee],
+      foreignColumns: [users.tgId],
+      name: 'invites_invitee_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+  ],
+)
+
+export const users = pgTable(
+  'users',
+  {
+    id: integer()
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: 'users_id_seq',
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 2147483647,
+        cache: 1,
+      }),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    tgId: bigint('tg_id', { mode: 'number' }).notNull(),
+    firstName: varchar('first_name', { length: 100 }).notNull(),
+    username: varchar({ length: 32 }),
+    address: varchar({ length: 55 }),
+    language: varchar({ length: 5 }),
+    farm: farmStatus().default('claimed').notNull(),
+    farmedAmount: integer('farmed_amount').default(0),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    lastVisit: timestamp('last_visit', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    invitedBy: bigint('invited_by', { mode: 'number' }),
+    invites: integer(),
+    farmCigs: integer('farm_cigs').default(0).notNull(),
+    refCigs: integer('ref_cigs').default(0).notNull(),
+    endTime: timestamp('end_time', { withTimezone: true, mode: 'string' }),
+    claimFriends: timestamp('claim_friends', { withTimezone: true, mode: 'string' }),
+    activityDays: integer('activity_days').default(0).notNull(),
+    bonuses: smallint().array().default([]),
+    level: integer().default(0).notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.invitedBy],
+      foreignColumns: [table.tgId],
+      name: 'users_invited_by_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    unique('users_tg_id_key').on(table.tgId),
+    unique('users_first_name_key').on(table.firstName),
+    check('level_check', sql`(level >= 0) AND (level <= 9)`),
   ],
 )
 

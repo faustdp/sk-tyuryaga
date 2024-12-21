@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 
-import type { CreateUser, GetUser, Inviters } from '../database.types'
+import type { CreateUser, GetUser, Inviters, UpdateInvites } from '../database.types'
 import * as schema from '../drizzle/schema'
 import { dbUrl } from './config'
 
@@ -45,7 +45,7 @@ async function getUser(id: number) {
         END,
         last_visit = NOW()
       WHERE ${eq(users.tgId, id)}
-      RETURNING tg_id, activity_days, username, first_name, invites
+      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farm, farmed_amount, address
     `)
     const data = res?.rows?.[0] as unknown as GetUser
     if (data?.tg_id) {
@@ -59,40 +59,111 @@ async function getUser(id: number) {
 
 async function createUser(insertUser: CreateUser) {
   try {
-    const data = await db.insert(users).values(insertUser).returning({
+    const [data] = await db.insert(users).values(insertUser).returning({
       tg_id: users.tgId,
       first_name: users.firstName,
       language: users.language,
+      username: users.username,
+      activity_days: users.activityDays,
+      invites: users.invites,
+      level: users.level,
+      bonuses: users.bonuses,
+      end_time: users.endTime,
+      ref_cigs: users.refCigs,
+      farm_cigs: users.farmCigs,
+      farm: users.farm,
     })
-    return { data: data[0] }
-  } catch (err) {
-    return { error: err as Error }
+    return { data }
+  } catch (error) {
+    return { error }
   }
 }
 
 async function getInviters(id: number | string, isId: boolean) {
   try {
-    const res = await db.execute(sql`WITH RECURSIVE inviter_chain AS (
-        SELECT tg_id, username, first_name, invited_by, 1 AS level
-        FROM users
-        WHERE ${isId ? sql`tg_id` : sql`username`} = ${id}
-        UNION ALL
-        SELECT u.tg_id, u.username, u.first_name, u.invited_by, ic.level + 1
-        FROM users u
-        JOIN inviter_chain ic ON u.tg_id = ic.invited_by
-        WHERE ic.level < 3 AND ic.invited_by IS NOT NULL
-      )
-      SELECT * FROM inviter_chain
-      ORDER BY level;
+    const res = await db.execute(sql`
+      SELECT tg_id, username, first_name, invited_by
+      FROM users
+      WHERE ${isId ? sql`tg_id` : sql`username`} = ${id};
     `)
-    const data = res.rows as unknown as Inviters[]
-    data.forEach((row) => {
-      row.tg_id = Number(row.tg_id)
-    })
+    const data = res.rows[0] as unknown as Inviters
+    if (data) {
+      data.tg_id = Number(data.tg_id)
+    }
     return { data }
   } catch (err) {
     return { error: err as Error }
   }
 }
 
-export { getUser, createUser, getInviters }
+async function updateInvites(id: number) {
+  try {
+    const result = await db.execute(sql`
+      SELECT * FROM update_invites(${id})
+    `)
+    return { data: result.rows as unknown as UpdateInvites[] }
+  } catch (err) {
+    return { error: err as Error }
+  }
+}
+
+async function createInvite(inviter: number | string, invitee: number | string) {
+  try {
+    const query = sql`
+      INSERT INTO invites (inviter, invitee)
+      VALUES (${inviter}, ${invitee})
+    `
+    await db.execute(query)
+    return {}
+  } catch (err) {
+    return { error: err as Error }
+  }
+}
+
+async function setTime(id: number, time: string, cigs: number) {
+  try {
+    const data = await db
+      .update(users)
+      .set({
+        endTime: time,
+        farmedAmount: cigs,
+        farm: 'farming',
+      })
+      .where(eq(users.tgId, id))
+    return { data }
+  } catch (error) {
+    return { error }
+  }
+}
+
+async function farmCigs(id: number, cigs: number) {
+  try {
+    const data = await db
+      .update(users)
+      .set({
+        farmCigs: sql`${users.farmCigs} + ${cigs}`,
+        farm: 'claimed',
+      })
+      .where(eq(users.tgId, id))
+    return { data }
+  } catch (error) {
+    return { error }
+  }
+}
+
+// async function farmedCigs(id: number, cigs: number) {
+//   try {
+//     const data = await db
+//       .update(users)
+//       .set({
+//         farmedAmount: cigs,
+//         farm: 'farmed',
+//       })
+//       .where(eq(users.tgId, id))
+//     return { data }
+//   } catch (error) {
+//     return { error }
+//   }
+// }
+
+export { getUser, createUser, getInviters, updateInvites, createInvite, setTime, farmCigs }

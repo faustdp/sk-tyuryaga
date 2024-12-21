@@ -22,6 +22,22 @@ interface GetUser {
   username: string | null
   first_name: string
   invites: number
+  level: number
+  bonuses: number[]
+  activity_days: number
+  ref_cigs: number
+  farm_cigs: number
+  end_time: Date
+  language: string
+  farm: string
+  farmed_amount: number
+  address: string
 }
 
-export { UserForDb, CreateUser, Inviters, GetUser }
+interface UpdateInvites {
+  invites: number
+  invited_by: number
+  tg_id: number
+}
+
+export { UserForDb, CreateUser, Inviters, GetUser, UpdateInvites }

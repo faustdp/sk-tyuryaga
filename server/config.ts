@@ -12,6 +12,9 @@ export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828 // 5773 fro
 export const apiPath = '/api'
 export const mePath = '/me'
 export const healthPath = '/health'
+export const endTimePath = '/end-time'
+export const farmCigsPath = '/farm-cigs'
+// export const farmedCigsPath = '/farmed-cigs'
 export const botPath = '/bot'
 
 export const token = process.env.BOT_TOKEN!
