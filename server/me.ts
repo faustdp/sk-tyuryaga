@@ -1,8 +1,9 @@
 import crypto from 'crypto'
 import { type Request, type Response } from 'express'
-import { type User as TGUser } from 'grammy/types'
 
+import type { CreateUser, Inviters, UserForDb } from '../database.types'
 import { token } from './config'
+import { createUser, getInviters, getUser } from './db'
 
 // interface GenericError {
 //   message: string
@@ -82,49 +83,48 @@ export default async function (req: Request, res: Response) {
     //   return res.status(200).json({ valid: false, error: 'outdated_error' })
     // }
 
-    const userData: TGUser = JSON.parse(params.get('user') || '{}')
+    const userData: UserForDb = JSON.parse(params.get('user') || '{}')
 
     if (!userData.id) return res.status(500).json({ error: 'inner_error' })
 
-    /* const { data, error } = await getUser(userData)
+    const { data, error } = await getUser(userData.id)
 
-  if (error) {
-    return res.status(500).json({ error: error.message })
-  }
+    if (error) {
+      return res.status(500).json({ error: error.message })
+    }
 
-  if (data) {
-    return res.status(200).json({ valid: true, userData: data })
-  }
+    if (data) {
+      return res.status(200).json({ valid: true, userData: data })
+    }
 
-  const startParam = params.get('start_param')
-  const userForSb: UserSubset = Object.assign(
-    {},
-    {
-      tgId: userData.id,
-      firstName: userData.first_name,
-      username: userData.username || null,
-    },
-  )
-  const inviters: RawInviters[] | undefined = undefined
+    const startParam = params.get('start_param')
+    const userForSb: CreateUser = Object.assign(
+      {},
+      {
+        tgId: userData.id,
+        firstName: userData.first_name,
+        invitedBy: null,
+        ...(userData.language_code && { language: userData.language_code }),
+        ...(userData.username && { username: userData.username }),
+      },
+    )
+    let inviters: Inviters[] | undefined = undefined
 
-  if (startParam) {
-    const parsed = parseInt(startParam, 10)
-    const isNumber = !isNaN(parsed) && String(parsed) === startParam
-    // isNumber ? parsed : startParam.trim()
-  }
-  const inviterId = inviters?.[0]?.tg_id ?? null
-  userForSb.invitedBy = inviterId
-  const { data: createdData, error: createdError } = await createUser(userForSb)
-  if (createdError || !createdData) {
-    return res.status(500).json({
-      valid: false,
-      error: createdError ? createdError.message : 'Ошибка при создании пользователя',
-    })
-  }
-
-  try {
-    await handleBotStart(createdData.tg_id, createdData.first_name)
-  } catch {} */
+    if (startParam) {
+      const parsed = parseInt(startParam, 10)
+      const isNumber = !isNaN(parsed) && String(parsed) === startParam
+      const { data: invitersData } = await getInviters(isNumber ? parsed : startParam.trim(), isNumber)
+      inviters = invitersData
+    }
+    const inviterId = inviters?.[0]?.tg_id ?? null
+    userForSb.invitedBy = inviterId
+    const { data: createdData, error: createdError } = await createUser(userForSb)
+    if (createdError || !createdData) {
+      return res.status(500).json({
+        valid: false,
+        error: createdError ? createdError.message : 'create_error',
+      })
+    }
 
     return res.status(200).json({ valid: true, userData })
   } catch (_err) {

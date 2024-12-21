@@ -6,7 +6,8 @@
     "telegram_error": "Приложению нужен Telegram для работы",
     "data_error": "Неверные данные",
     "outdated_error": "Данные устарелы, перезагрузите Telegram",
-    "inner_error": "Внутрення ошибка"
+    "inner_error": "Внутрення ошибка",
+    "create_error": "Ошибка при создании пользователя"
   },
   "tasks_title": "Задания",
   "tasks_content": "Выполняй задания",

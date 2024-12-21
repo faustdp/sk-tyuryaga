@@ -24,9 +24,9 @@ export const siteUrl =
 // export const redisUrl =
 //   process.env.REDIS_URL ||
 //   `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-// export const dbUrl =
-//   process.env.DATABASE_URL ||
-//   `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
+export const dbUrl =
+  process.env.DATABASE_URL ||
+  `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
 // export const mimeTypes = {
 //   js: 'application/javascript; charset=UTF-8',
 //   css: 'text/css',

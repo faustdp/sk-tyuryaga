@@ -1,3 +1,5 @@
+import './server/db'
+
 import cors from 'cors'
 import express, { Router } from 'express'
 
@@ -66,6 +68,7 @@ router.post('/test', (req) => {
 app.use(apiPath, router)
 
 setupBot()
+
 // app.use(webhookCallback(bot, "express")) webhookcb from grammy
 // app.use(handler)
 
