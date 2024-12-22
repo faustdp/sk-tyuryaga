@@ -19,8 +19,6 @@
   let isDrawerOpened = $state(false)
   let showConfetti = $state(false)
 
-  const friendsClaim = 0 //TODO: idk
-
   function closeDrawer() {
     isDrawerOpened = false
   }
@@ -78,6 +76,8 @@
     }
   })
 
+  let isReady = $derived(user.claim_friends - date.getTime() < 0)
+
   function handleClick() {
     if (!isReady) return
     showConfetti = true
@@ -90,8 +90,6 @@
   onDestroy(() => {
     clearTimeout(confettiTO)
   })
-
-  let isReady = $derived(user.claim_friends - date.getTime() < 0)
 </script>
 
 <svelte:head>
@@ -126,7 +124,7 @@
     <p class="absolute left-0 top-0 flex size-full flex-col items-center justify-center gap-y-3 py-4">
       <span class="arbutus flex items-center text-xl">
         <Cigarette class="mr-1" width="38" height="23" />
-        {friendsClaim}
+        {user.amount_friends}
       </span>
       <button
         onclick={handleClick}

@@ -1,41 +1,45 @@
+import { postAddBonus } from '@utils/api'
 import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, IMG_NAMES, LEVELS, MINUTE, SIXTY, TIME } from '@utils/const'
 
 interface User {
+  //TODO SetCookie tg_id
   tg_id: number | null
+  username: string | null
   first_name: string
   address: string
   language: string
-  farm: Farm
   invites: number
+  level: number
   cigs: number
   farm_cigs: number
-  ref_cigs: number
-  level: number
-  claim_friends: number
+  ref_cigs: number //TODO
+  claim_friends: number //TODO
+  amount_friends: number //TODO
   end_time: number
   farm_time: number
   farm_amount: number
   current_farm_time: number
   current_farm_amount: number
-  tasks_completed: number //TODO TAsk statuses: {} AND CHANGE
+  tasks_completed: number
   activity_days: number
+  farm: Farm
   bonuses: BonusIndexes[]
-  username?: string | null
 }
 
 function userStore() {
   const state = $state<User>({
     tg_id: null,
+    username: null,
     first_name: '',
     address: '',
     language: 'ru',
-    farm: CLAIMED,
     invites: 0,
+    level: 0,
     cigs: 0,
     farm_cigs: 0,
     ref_cigs: 0,
-    level: 0,
     claim_friends: Date.now() + DAY,
+    amount_friends: 0,
     end_time: 0,
     farm_time: LEVELS[0].baseTime,
     farm_amount: LEVELS[0].baseAmount,
@@ -43,8 +47,8 @@ function userStore() {
     current_farm_amount: LEVELS[0].baseTime * LEVELS[0].baseAmount,
     tasks_completed: 0,
     activity_days: 0,
+    farm: CLAIMED,
     bonuses: [],
-    username: null,
   })
 
   function setAddress(wallet: string) {
@@ -92,6 +96,7 @@ function userStore() {
   }
 
   function setRefCigs(cigs: number) {
+    //TODO BACK
     state.ref_cigs += cigs
     sumCigs()
   }
@@ -113,19 +118,27 @@ function userStore() {
   }
 
   function setClaimFriends(time: number) {
+    //TODO BACK
     state.claim_friends = time
   }
 
-  function addBonus(idx: BonusIndexes, cigs?: number) {
+  function setAmountFriends(cigs: number) {
+    //TODO:USE
+    state.amount_friends = cigs
+  }
+
+  async function addBonus(idx: BonusIndexes, cigs: number) {
     if (state.bonuses.includes(idx)) return
     state.bonuses = [...state.bonuses, idx]
     calcBonus(idx)
-    if (state.bonuses.length >= IMG_NAMES.length) {
+    const isLevelUp = state.bonuses.length >= IMG_NAMES.length
+    if (isLevelUp) {
       upLevel()
     }
     if (cigs) {
       setCigs(cigs)
     }
+    await postAddBonus({ cigs, id: state.tg_id, ...(isLevelUp ? { level: state.level } : { index: idx }) })
   }
 
   return {
@@ -140,6 +153,7 @@ function userStore() {
     setEndTime,
     setBaseFarm,
     setClaimFriends,
+    setAmountFriends,
     addBonus,
   }
 }
@@ -154,5 +168,6 @@ export const {
   setEndTime,
   setBaseFarm,
   setClaimFriends,
+  setAmountFriends,
   addBonus,
 } = userStore()

@@ -187,10 +187,10 @@
 
       const { tg_id, first_name, username, invites, level, bonuses } = result.userData
 
-      if (bonuses.length > 0) {
+      if (bonuses?.length > 0) {
         setBaseFarm(level, bonuses)
       }
-
+      //TODO set FARM based on ENDTIME
       setUser({
         tg_id,
         first_name,

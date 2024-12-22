@@ -1,9 +1,9 @@
 import crypto from 'crypto'
 import { Request, Response } from 'express'
 
-import type { CreateUser, Inviters, UserForDb } from '../database.types'
+import type { CreateUser, Inviter, UserForDb } from '../database.types'
 import { token } from './config'
-import { createInvite, createUser, getInviters, getUser, updateInvites } from './db'
+import { createInvite, createUser, getInviter, getUser, updateInvites } from './db'
 
 // interface GenericError {
 //   message: string
@@ -108,16 +108,16 @@ export async function meHandler(req: Request, res: Response) {
         ...(userData.username && { username: userData.username }),
       },
     )
-    let inviters: Inviters | undefined = undefined
+    let inviter: Inviter | undefined = undefined
 
     if (startParam) {
       const parsed = parseInt(startParam, 10)
       const isNumber = !isNaN(parsed) && String(parsed) === startParam
-      const { data: invitersData } = await getInviters(isNumber ? parsed : startParam.trim(), isNumber)
-      inviters = invitersData
+      const { data: inviterData } = await getInviter(isNumber ? parsed : startParam.trim(), isNumber)
+      inviter = inviterData
     }
 
-    const inviterId = inviters?.[0]?.tg_id ?? null
+    const inviterId = inviter?.tg_id ?? null
     userForSb.invitedBy = inviterId
     const { data: createdData, error: createdError } = await createUser(userForSb)
 

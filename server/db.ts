@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 
-import type { CreateUser, GetUser, Inviters, UpdateInvites } from '../database.types'
+import type { CreateUser, GetUser, Inviter, UpdateInvites } from '../database.types'
 import * as schema from '../drizzle/schema'
 import { dbUrl } from './config'
 
@@ -45,7 +45,7 @@ async function getUser(id: number) {
         END,
         last_visit = NOW()
       WHERE ${eq(users.tgId, id)}
-      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farm, farmed_amount, address
+      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, claim_friends, address
     `)
     const data = res?.rows?.[0] as unknown as GetUser
     if (data?.tg_id) {
@@ -71,22 +71,25 @@ async function createUser(insertUser: CreateUser) {
       end_time: users.endTime,
       ref_cigs: users.refCigs,
       farm_cigs: users.farmCigs,
-      farm: users.farm,
+      farmed_amount: users.farmedAmount,
+      claim_friends: users.claimFriends,
+      address: users.address,
+      // farm: users.farm,
     })
-    return { data }
+    return { data: data as GetUser }
   } catch (error) {
     return { error }
   }
 }
 
-async function getInviters(id: number | string, isId: boolean) {
+async function getInviter(id: number | string, isId: boolean) {
   try {
     const res = await db.execute(sql`
       SELECT tg_id, username, first_name, invited_by
       FROM users
       WHERE ${isId ? sql`tg_id` : sql`username`} = ${id};
     `)
-    const data = res.rows[0] as unknown as Inviters
+    const data = res.rows[0] as unknown as Inviter
     if (data) {
       data.tg_id = Number(data.tg_id)
     }
@@ -101,7 +104,7 @@ async function updateInvites(id: number) {
     const result = await db.execute(sql`
       SELECT * FROM update_invites(${id})
     `)
-    return { data: result.rows as unknown as UpdateInvites[] }
+    return { data: result.rows[0] as unknown as UpdateInvites }
   } catch (err) {
     return { error: err as Error }
   }
@@ -127,7 +130,6 @@ async function setTime(id: number, time: string, cigs: number) {
       .set({
         endTime: time,
         farmedAmount: cigs,
-        farm: 'farming',
       })
       .where(eq(users.tgId, id))
     return { data }
@@ -142,7 +144,8 @@ async function farmCigs(id: number, cigs: number) {
       .update(users)
       .set({
         farmCigs: sql`${users.farmCigs} + ${cigs}`,
-        farm: 'claimed',
+        endTime: null,
+        farmedAmount: 0,
       })
       .where(eq(users.tgId, id))
     return { data }
@@ -151,19 +154,35 @@ async function farmCigs(id: number, cigs: number) {
   }
 }
 
-// async function farmedCigs(id: number, cigs: number) {
-//   try {
-//     const data = await db
-//       .update(users)
-//       .set({
-//         farmedAmount: cigs,
-//         farm: 'farmed',
-//       })
-//       .where(eq(users.tgId, id))
-//     return { data }
-//   } catch (error) {
-//     return { error }
-//   }
-// }
+async function addBonus({ cigs, id, level, index }: { cigs: number; id: number; level?: number; index?: number }) {
+  try {
+    const data = await db
+      .update(users)
+      .set({
+        farmCigs: sql`${users.farmCigs} + ${cigs}`,
+        bonuses: index ? sql`array_append(${users.bonuses}, ${index})` : sql`'{}'::smallint[]`,
+        ...(level ? { level } : {}),
+      })
+      .where(eq(users.tgId, id))
+    return { data }
+  } catch (error) {
+    return { error }
+  }
+}
 
-export { getUser, createUser, getInviters, updateInvites, createInvite, setTime, farmCigs }
+async function claimFriends(id: number, time: string) {
+  try {
+    const data = await db
+      .update(users)
+      .set({
+        claimFriends: time,
+        // farmedAmount: cigs,
+      })
+      .where(eq(users.tgId, id))
+    return { data }
+  } catch (error) {
+    return { error }
+  }
+}
+
+export { getUser, createUser, getInviter, updateInvites, createInvite, setTime, farmCigs, addBonus, claimFriends }

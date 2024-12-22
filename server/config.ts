@@ -5,7 +5,6 @@ import 'dotenv/config'
 // import crypto from 'crypto'
 // import type { ErrorRequestHandler, RequestHandler } from 'express'
 import { Bot } from 'grammy'
-// import { type FilteredContext } from "grammy/types";
 // import type { WebSocket } from 'ws'
 
 export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828 // 5773 front
@@ -14,7 +13,7 @@ export const mePath = '/me'
 export const healthPath = '/health'
 export const endTimePath = '/end-time'
 export const farmCigsPath = '/farm-cigs'
-// export const farmedCigsPath = '/farmed-cigs'
+export const addBonusPath = '/add-bonus'
 export const botPath = '/bot'
 
 export const token = process.env.BOT_TOKEN!

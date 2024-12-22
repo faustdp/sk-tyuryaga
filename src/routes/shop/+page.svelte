@@ -72,9 +72,9 @@
     event.target.style.position = 'absolute'
   }
 
-  function buyBoost(price: number, isAllowed: boolean) {
+  async function buyBoost(price: number, isAllowed: boolean) {
     if (user.cigs < price || !selectedItem || !isAllowed) return
-    addBonus(selectedItem.idx, -price)
+    await addBonus(selectedItem.idx, -price)
   }
 </script>
 

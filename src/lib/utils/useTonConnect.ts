@@ -1,9 +1,10 @@
 import { connectWallet, disconnectWallet } from '@state/app.svelte'
-import { setAddress } from '@state/user.svelte'
+import { setAddress, user } from '@state/user.svelte'
 // import { getHttpEndpoint } from "@orbs-network/ton-access";
 // import { TonClient } from "@ton/ton";
 // import { toNano } from '@ton/ton'
 import { THEME, TonConnectUI } from '@tonconnect/ui'
+import { postSetAddress } from '@utils/api'
 // import { logServer } from '@utils'
 import { TON_KEY } from '@utils/const'
 import { convertAddress } from '@utils/ton'
@@ -49,7 +50,7 @@ export function useTonConnect(disconnect = false) {
       if (tonConnectUI.connected) {
         await tonConnectUI.disconnect()
         disconnectWallet()
-        setAddress('')
+        // setAddress('')
       }
     }
     removeWallet()
@@ -58,12 +59,16 @@ export function useTonConnect(disconnect = false) {
   setContext(TON_KEY, tonConnectUI)
 
   onMount(() => {
-    const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
+    const unsubscribe = tonConnectUI.onStatusChange(async (wallet) => {
       if (wallet) {
         const address = convertAddress(wallet.account.address)
         if (!address) return
         connectWallet()
+        const isDifferentWallet = user.address !== address
         setAddress(address)
+        if (isDifferentWallet) {
+          await postSetAddress(address, user.tg_id)
+        }
         // const transaction = {
         //   validUntil: Math.floor(Date.now() / 1000) + 360,
         //   messages: [
@@ -76,7 +81,7 @@ export function useTonConnect(disconnect = false) {
         // await tonConnectUI.sendTransaction(transaction)
       } else {
         disconnectWallet()
-        setAddress('')
+        // setAddress('')
       }
     })
     return () => unsubscribe()

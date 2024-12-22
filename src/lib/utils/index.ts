@@ -22,8 +22,8 @@ export function formatTime(ms: number, withoutSeconds = false) {
 
   const padZero = (num: number) => num.toString().padStart(2, '0')
 
-  const language = navigator.language || navigator.languages[0] //TODO Change to PARAGLIDE
-  const isEnglish = language.startsWith('en')
+  // const language = navigator.language || navigator.languages[0]
+  const isEnglish = false //language.startsWith('en')
   const result = `${padZero(hours)}${isEnglish ? 'h' : 'ч'} ${padZero(remainingMinutes)}${isEnglish ? 'm' : 'м'}`
 
   if (withoutSeconds) return result

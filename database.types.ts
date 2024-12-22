@@ -10,7 +10,7 @@ interface CreateUser {
   invitedBy: number | null
 }
 
-interface Inviters {
+interface Inviter {
   tg_id: number
   invited_by: number | null
   username: string | null
@@ -27,11 +27,12 @@ interface GetUser {
   activity_days: number
   ref_cigs: number
   farm_cigs: number
-  end_time: Date
-  language: string
-  farm: string
+  end_time: string | null
+  language: string | null
+  claim_friends: string | null
+  // farm: string
   farmed_amount: number
-  address: string
+  address: string | null
 }
 
 interface UpdateInvites {
@@ -40,4 +41,4 @@ interface UpdateInvites {
   tg_id: number
 }
 
-export { UserForDb, CreateUser, Inviters, GetUser, UpdateInvites }
+export { UserForDb, CreateUser, Inviter, GetUser, UpdateInvites }

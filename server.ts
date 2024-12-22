@@ -8,6 +8,7 @@ import express, { Router } from 'express'
 // import { fileURLToPath } from 'url'
 import botHandler from './server/bot'
 import {
+  addBonusPath,
   apiPath,
   botPath,
   endTimePath,
@@ -18,7 +19,7 @@ import {
   sitePort,
   siteUrl,
 } from './server/config'
-import { setEndTime, setFarmCigs } from './server/handlers'
+import { setAddBonus, setEndTime, setFarmCigs } from './server/handlers'
 import { meHandler } from './server/me'
 
 // const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -60,20 +61,16 @@ app.enable('trust proxy')
 
 const router = Router()
 
+router.get(healthPath, (req, res) => {
+  res.status(200).send('OK')
+})
+
 router.post(mePath, (req, res) => {
   meHandler(req, res)
 })
 
 router.post(botPath, (req, res) => {
   botHandler(req, res)
-})
-
-router.get(healthPath, (req, res) => {
-  res.status(200).send('OK')
-})
-
-router.post('/test', (req) => {
-  console.log('fromFront:', req.body)
 })
 
 router.post(endTimePath, (req, res) => {
@@ -84,9 +81,13 @@ router.post(farmCigsPath, (req, res) => {
   setFarmCigs(req, res)
 })
 
-// router.post(farmedCigsPath, (req, res) => {
-//   setFarmedCigs(req, res)
-// })
+router.post(addBonusPath, (req, res) => {
+  setAddBonus(req, res)
+})
+
+router.post('/test', (req) => {
+  console.log('fromFront:', req.body)
+})
 
 app.use(apiPath, router)
 

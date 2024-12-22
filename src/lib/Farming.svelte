@@ -124,13 +124,13 @@
   class="farming-btn fixed left-1/2 z-30
     mx-auto flex h-14 w-full max-w-xs -translate-x-1/2 {isActive ? 'scale-95' : 'scale-100'} items-center
     justify-center gap-x-4 rounded-xl transition-transform">
-  <button class="absolute top-0 -mt-40 ml-5" onclick={() => addBonus(5)}>+time bonus</button>
-  <button class="absolute top-10 -mt-40 ml-5" onclick={() => addBonus(1)}>+amount bonus</button>
+  <button class="absolute top-0 -mt-40 ml-5" onclick={() => addBonus(5, 0)}>+time bonus</button>
+  <button class="absolute top-10 -mt-40 ml-5" onclick={() => addBonus(1, 0)}>+amount bonus</button>
   <button
     class="absolute top-20 -mt-40 ml-5"
     onclick={() => {
       for (let i = 0; i < 9; i++) {
-        addBonus(i as BonusIndexes)
+        addBonus(i as BonusIndexes, 0)
       }
     }}>
     +all bonuses
