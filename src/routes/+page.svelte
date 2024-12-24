@@ -25,11 +25,11 @@
   <Stats />
   <Tv />
   {#each IMG_NAMES as img}
-    {@const currImg = user.bonuses.includes(img.idx)}
-    {#if currImg || user.level > 0}
+    {@const currImg = user.selected_images[img.idx]}
+    {#if currImg >= 0}
       <img
-        src={getImgUrl(img.idx, currImg ? user.level : user.level - 1)}
-        alt={IMG_NAMES[img.idx].name[currImg ? user.level : user.level - 1]}
+        src={getImgUrl(img.idx, currImg)}
+        alt={IMG_NAMES[img.idx].name[currImg]}
         width={IMG_NAMES[img.idx].width}
         class="absolute {IMG_NAMES[img.idx].class}" />
     {/if}

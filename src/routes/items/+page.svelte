@@ -1,8 +1,15 @@
 <script lang="ts">
   import ItemsCard from '@components/ItemsCard.svelte'
   import ModalItems from '@components/ModalItems.svelte'
+  import { IMG_NAMES } from '@utils/const'
 
   import data from '@/messages.json'
+
+  let selectedIdx = $state<null | number>(null)
+
+  function selectItem(index: number | null) {
+    selectedIdx = index
+  }
 </script>
 
 <svelte:head>
@@ -16,10 +23,10 @@
     {data.items_desc}
   </p>
   <div class="grid w-full max-w-96 grid-cols-2 gap-x-3 gap-y-4">
-    <ItemsCard />
-    <ItemsCard />
-    <ItemsCard />
+    {#each IMG_NAMES as img}
+      <ItemsCard idx={img.idx} onclick={selectItem} />
+    {/each}
   </div>
 </div>
 
-<ModalItems />
+<ModalItems {selectedIdx} selectImage={selectItem} />

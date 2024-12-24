@@ -6,6 +6,7 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, closeModal } from '@state/app.svelte'
   import { user } from '@state/user.svelte'
+  import { postSelectImage } from '@utils/api'
   import { onDestroy } from 'svelte'
   import { sineInOut } from 'svelte/easing'
   import { fade, fly } from 'svelte/transition'
@@ -13,17 +14,32 @@
   import data from '@/messages.json'
   import * as Dialog from '$lib/components/dialog/'
 
+  let { selectedIdx, selectImage } = $props()
+
   let carouselApi = $state<CarouselAPI>()
   let current = $state(0)
   let prev = $state(-1)
-  let isLocked = $derived(current > user.level + 1)
-  const items = Array.from({ length: 5 }, () => ({ src: '/imgs/1/9.webp', level: 1 }))
+  let isLocked = $derived(current > user.level - 1 + (user.bonuses.includes(selectedIdx) ? 1 : 0))
+  let items = $derived.by(() => {
+    if (selectedIdx === null) return prevItems?.length > 0 ? prevItems : []
+    return Array.from({ length: 10 }, (_, i) => `/imgs/${selectedIdx}/${i + 1}.webp`)
+  })
 
-  function handleSelect() {
+  async function handleSelect() {
+    if (isLocked || current === user.selected_images[selectedIdx]) return
+    user.selected_images[selectedIdx] = current
+    await postSelectImage(selectedIdx, current)
     closeModal()
+    selectImage(null)
   }
 
-  const selectItem = (index: number) => carouselApi?.scrollTo(index)
+  const selectItem = (index: number, jump?: boolean) => carouselApi?.scrollTo(index, jump)
+
+  let prevItems: string[]
+
+  $effect(() => {
+    prevItems = items
+  })
 
   $effect(() => {
     if (carouselApi) {
@@ -41,6 +57,13 @@
     }
   })
 
+  $effect(() => {
+    const idx = selectedIdx
+    if (idx !== null && user.selected_images[idx] > 0) {
+      selectItem(user.selected_images[idx], true)
+    }
+  })
+
   onDestroy(() => {
     closeModal()
   })
@@ -53,13 +76,20 @@
     <div class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-textlight blur-2xl">
     </div>
     <Carousel.Content>
-      <div class="absolute right-0 top-0"><Cross isChoice /></div>
       {#each items as item, i (i)}
-        <Carousel.Item class="relative  ">
+        <Carousel.Item class="relative">
           <figure class="relative mb-2 flex flex-col items-center p-4 text-center">
-            <img class="relative z-10 mb-9" src={item.src} width="180" alt="Alt text" />
-            <figcaption>{data.level} {item.level + i}</figcaption>
+            <img class="relative z-10 mb-9" src={item} width="180" alt="Alt text" />
+            <figcaption>{data.level} {i + 1}</figcaption>
           </figure>
+          {#if current === user.selected_images[selectedIdx] && current === i}
+            <div
+              in:fade={{ duration: 220, easing: sineInOut }}
+              out:fade={{ delay: 160, duration: 60, easing: sineInOut }}
+              class="absolute right-0 top-0">
+              <Cross isChoice />
+            </div>
+          {/if}
         </Carousel.Item>
       {/each}
     </Carousel.Content>
@@ -89,8 +119,10 @@
     <WalletBtn
       classes="w-full"
       height={54}
-      fill={user.level + 1 === current ? 'rgb(var(--c-yellow))' : 'rgb(var(--c-lightblue))'}
-      stroke={user.level + 1 === current ? 'var(--dark-yellow)' : undefined} />
+      fill={isLocked || current === user.selected_images[selectedIdx]
+        ? 'rgb(var(--c-lightblue))'
+        : 'rgb(var(--c-yellow))'}
+      stroke={isLocked || current === user.selected_images[selectedIdx] ? undefined : 'var(--dark-yellow)'} />
     <span class="absolute left-0 top-0 flex size-full items-center justify-center text-sm">
       {data.select}!
     </span>

@@ -11,15 +11,18 @@ import {
   addBonusPath,
   apiPath,
   botPath,
+  claimFriendsPath,
   endTimePath,
   farmCigsPath,
+  getFriendsPath,
   healthPath,
   mePath,
+  selectImagePath,
   setupBot,
   sitePort,
   siteUrl,
 } from './server/config'
-import { setAddBonus, setEndTime, setFarmCigs } from './server/handlers'
+import { setAddBonus, setClaimFriends, setEndTime, setFarmCigs, setSelectImage } from './server/handlers'
 import { meHandler } from './server/me'
 
 // const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -83,6 +86,14 @@ router.post(farmCigsPath, (req, res) => {
 
 router.post(addBonusPath, (req, res) => {
   setAddBonus(req, res)
+})
+
+router.post(claimFriendsPath, (req, res) => {
+  setClaimFriends(req, res)
+})
+
+router.post(selectImagePath, (req, res) => {
+  setSelectImage(req, res)
 })
 
 router.post('/test', (req) => {

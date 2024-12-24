@@ -176,6 +176,33 @@ async function claimFriends(id: number, time: string) {
       .update(users)
       .set({
         claimFriends: time,
+      })
+      .where(eq(users.tgId, id))
+    return { data }
+  } catch (error) {
+    return { error }
+  }
+}
+
+async function selectImage(id: number, index: number, image: number) {
+  try {
+    const data = await db.execute(sql`
+      UPDATE users
+      SET selected_images[${index}] = ${image}
+      WHERE tg_id = ${id}
+  `)
+    console.log('db195', data)
+    return { data }
+  } catch (error) {
+    return { error }
+  }
+}
+
+async function getFriends(id: number) {
+  try {
+    const data = await db
+      .update(users)
+      .set({
         // farmedAmount: cigs,
       })
       .where(eq(users.tgId, id))
@@ -185,4 +212,15 @@ async function claimFriends(id: number, time: string) {
   }
 }
 
-export { getUser, createUser, getInviter, updateInvites, createInvite, setTime, farmCigs, addBonus, claimFriends }
+export {
+  getUser,
+  createUser,
+  getInviter,
+  updateInvites,
+  createInvite,
+  setTime,
+  farmCigs,
+  addBonus,
+  claimFriends,
+  selectImage,
+}

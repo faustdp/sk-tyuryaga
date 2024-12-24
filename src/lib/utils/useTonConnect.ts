@@ -67,7 +67,7 @@ export function useTonConnect(disconnect = false) {
         const isDifferentWallet = user.address !== address
         setAddress(address)
         if (isDifferentWallet) {
-          await postSetAddress(address, user.tg_id)
+          await postSetAddress(address)
         }
         // const transaction = {
         //   validUntil: Math.floor(Date.now() / 1000) + 360,
@@ -79,6 +79,10 @@ export function useTonConnect(disconnect = false) {
         //   ],
         // }
         // await tonConnectUI.sendTransaction(transaction)
+        /*         setTimeout(async () => {
+          await tonConnectUI.disconnect()   TODO CHECK DB
+          disconnectWallet()
+        }, 1000) */
       } else {
         disconnectWallet()
         // setAddress('')

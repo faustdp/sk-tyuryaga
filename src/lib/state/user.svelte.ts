@@ -1,4 +1,4 @@
-import { postAddBonus } from '@utils/api'
+import { postAddBonus, postSelectImage } from '@utils/api'
 import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, IMG_NAMES, LEVELS, MINUTE, SIXTY, TIME } from '@utils/const'
 
 interface User {
@@ -13,7 +13,7 @@ interface User {
   cigs: number
   farm_cigs: number
   ref_cigs: number //TODO
-  claim_friends: number //TODO
+  claim_friends: number
   amount_friends: number //TODO
   end_time: number
   farm_time: number
@@ -24,6 +24,7 @@ interface User {
   activity_days: number
   farm: Farm
   bonuses: BonusIndexes[]
+  selected_images: number[] //TODO BACKEDN
 }
 
 function userStore() {
@@ -49,6 +50,7 @@ function userStore() {
     activity_days: 0,
     farm: CLAIMED,
     bonuses: [],
+    selected_images: Array.from({ length: IMG_NAMES.length }, () => -1),
   })
 
   function setAddress(wallet: string) {
@@ -118,7 +120,6 @@ function userStore() {
   }
 
   function setClaimFriends(time: number) {
-    //TODO BACK
     state.claim_friends = time
   }
 
@@ -127,9 +128,16 @@ function userStore() {
     state.amount_friends = cigs
   }
 
+  function selectImage(index: number, image: number) {
+    if (index >= IMG_NAMES.length - 1) return
+    state.selected_images[index] = image
+  }
+
   async function addBonus(idx: BonusIndexes, cigs: number) {
     if (state.bonuses.includes(idx)) return
     state.bonuses = [...state.bonuses, idx]
+    const level = user.level
+    user.selected_images[idx] = level
     calcBonus(idx)
     const isLevelUp = state.bonuses.length >= IMG_NAMES.length
     if (isLevelUp) {
@@ -138,7 +146,10 @@ function userStore() {
     if (cigs) {
       setCigs(cigs)
     }
-    await postAddBonus({ cigs, id: state.tg_id, ...(isLevelUp ? { level: state.level } : { index: idx }) })
+    await Promise.all([
+      postAddBonus({ cigs, ...(isLevelUp ? { level: state.level } : { index: idx }) }),
+      postSelectImage(idx, level),
+    ])
   }
 
   return {
@@ -155,6 +166,7 @@ function userStore() {
     setClaimFriends,
     setAmountFriends,
     addBonus,
+    selectImage,
   }
 }
 
@@ -170,4 +182,5 @@ export const {
   setClaimFriends,
   setAmountFriends,
   addBonus,
+  selectImage,
 } = userStore()

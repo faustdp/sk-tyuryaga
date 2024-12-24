@@ -171,6 +171,10 @@
         body: JSON.stringify({ initData: params?.initDataRaw ? params.initDataRaw : initData }),
       })
 
+      if (response.ok === false) {
+        throw new Error(response.statusText)
+      }
+
       stopProgress()
       const reqDiff = performance.now() - reqStart
       progressDefDur = reqDiff < progressDefDur - 50 ? progressDefDur - reqDiff : 50
@@ -190,7 +194,7 @@
       if (bonuses?.length > 0) {
         setBaseFarm(level, bonuses)
       }
-      //TODO set FARM based on ENDTIME
+      //TODO set FARM based on ENDTIME, claim_friends to .getTime()
       setUser({
         tg_id,
         first_name,

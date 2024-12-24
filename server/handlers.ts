@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 
-import { addBonus, claimFriends, farmCigs, setTime } from './db'
+import { addBonus, claimFriends, farmCigs, selectImage, setTime } from './db'
 
 export async function setEndTime(req: Request, res: Response) {
   try {
@@ -38,6 +38,17 @@ export async function setClaimFriends(req: Request, res: Response) {
   try {
     const { id, time } = req.body
     await claimFriends(id, time)
+    return res.status(200).json({ message: 'OK' })
+  } catch {
+    // Bugsnag.notify(<Error>err)
+    return res.status(500).json({ error: 'inner_error' })
+  }
+}
+
+export async function setSelectImage(req: Request, res: Response) {
+  try {
+    const { id, index, image }: { id: number; index: number; image: number } = req.body
+    await selectImage(id, index, image)
     return res.status(200).json({ message: 'OK' })
   } catch {
     // Bugsnag.notify(<Error>err)

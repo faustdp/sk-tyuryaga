@@ -19,7 +19,6 @@
     if (now > time) {
       if (user.farm === FARMING) {
         setFarm(FARMED)
-        // postSetFarmed(user.current_farm_amount, user.tg_id)
       }
       return 1
     }
@@ -98,11 +97,11 @@
       setFarm(FARMING)
       startInterval()
       progress.target = 0
-      await postEndTime(new Date(time).toISOString(), user.tg_id, user.current_farm_amount)
+      await postEndTime(new Date(time).toISOString(), user.current_farm_amount)
     } else if (user.farm === FARMED) {
       setFarm(CLAIMED)
       setCigs(user.current_farm_amount)
-      await postFarmCigs(user.current_farm_amount, user.tg_id)
+      await postFarmCigs(user.current_farm_amount)
     }
   }
 

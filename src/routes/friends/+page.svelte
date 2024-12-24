@@ -7,6 +7,7 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { setClaimFriends, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
+  import { postClaimFriends } from '@utils/api'
   import { DAY, SECOND } from '@utils/const'
   import { onDestroy } from 'svelte'
   import { SvelteDate } from 'svelte/reactivity'
@@ -78,13 +79,15 @@
 
   let isReady = $derived(user.claim_friends - date.getTime() < 0)
 
-  function handleClick() {
+  async function handleClick() {
     if (!isReady) return
     showConfetti = true
-    setClaimFriends(DAY + date.getTime()) //TODO+ db
+    const time = DAY + date.getTime()
+    setClaimFriends(time)
     confettiTO = setTimeout(() => {
       showConfetti = false
     }, SECOND * 10)
+    await postClaimFriends(new Date(time).toISOString())
   }
 
   onDestroy(() => {

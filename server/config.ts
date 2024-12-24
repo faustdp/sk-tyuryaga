@@ -14,6 +14,9 @@ export const healthPath = '/health'
 export const endTimePath = '/end-time'
 export const farmCigsPath = '/farm-cigs'
 export const addBonusPath = '/add-bonus'
+export const claimFriendsPath = '/claim-friends'
+export const selectImagePath = '/select-image'
+export const getFriendsPath = '/get-friends'
 export const botPath = '/bot'
 
 export const token = process.env.BOT_TOKEN!
