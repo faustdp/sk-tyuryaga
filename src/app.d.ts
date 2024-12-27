@@ -52,6 +52,8 @@ declare global {
     width?: string
   }
 
+  type IconsComponents = Record<string, Component>
+
   type Farm = typeof FARMING | typeof FARMED | typeof CLAIMED
 
   type TaskType = typeof TASK_INVITE | typeof TASK_CODE | typeof TASK_SUBSCRIBE
@@ -60,9 +62,9 @@ declare global {
 
   interface SocialItem {
     id: number
-    Icon: Component
+    Icon: string
     name: string
-    reward: string
+    reward: number
     status: TaskStatus
     type: TaskType
     invites?: number

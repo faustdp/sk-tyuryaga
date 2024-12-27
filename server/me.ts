@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import { Request, Response } from 'express'
 
 import type { CreateUser, Inviter, UserForDb } from '../database.types'
-import { token } from './config'
+import { bot, token } from './config'
 import { createInvite, createUser, getInviter, getUser, updateInvites } from './db'
 
 // interface GenericError {

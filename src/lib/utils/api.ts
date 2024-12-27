@@ -1,4 +1,5 @@
 import { user } from '@state/user.svelte'
+import { taskStatus } from '@utils/const'
 
 const endTimeUrl = '/api/end-time'
 const farmCigsUrl = '/api/farm-cigs'
@@ -6,15 +7,19 @@ const addBonusUrl = '/api/add-bonus'
 const setAddressUrl = '/api/set-address'
 const claimFriendsUrl = '/api/claim-friends'
 const selectImageUrl = '/api/select-image'
-const getFriendsUrl = '/api/get-friends'
+const friendsListUrl = '/api/friends-list'
+const checkSubscriptionUrl = '/api/check-subscription'
+const checkCodeUrl = '/api/check-code'
+const taskStatusUrl = '/api/task-status'
 
 async function postRequest(url: string, data: any) {
   try {
-    await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
+    return res
   } catch (error) {
     console.error(error)
   }
@@ -33,7 +38,8 @@ export async function postAddBonus({ cigs, level, index }: { cigs: number; level
 }
 
 export async function postSetAddress(address: string) {
-  await postRequest(setAddressUrl, { address, id: user.tg_id })
+  const res = await postRequest(setAddressUrl, { address, id: user.tg_id })
+  return res ? await res.json() : null
 }
 
 export async function postClaimFriends(time: string) {
@@ -44,14 +50,20 @@ export async function postSelectImage(index: number, image: number) {
   await postRequest(selectImageUrl, { index, image, id: user.tg_id })
 }
 
-export async function getFriends(id: number | null) {
-  //TODO POST
-  try {
-    const data = await fetch(getFriendsUrl)
-    console.log('api53', data)
-    const res = await data.json()
-    return res
-  } catch (error) {
-    console.error(error)
-  }
+export async function postCheckSubscription(name: string) {
+  return await postRequest(checkSubscriptionUrl, { name, id: user.tg_id })
+}
+
+export async function postFriendsList() {
+  return await postRequest(friendsListUrl, { id: user.tg_id })
+}
+
+export async function postCheckCode(task: number, code: string) {
+  return await postRequest(checkCodeUrl, { task, code, id: user.tg_id })
+}
+
+type Statuses = Exclude<keyof typeof taskStatus, 'loading'>
+
+export async function postTaskStatus(task: number, status: Statuses) {
+  return await postRequest(taskStatusUrl, { task, status, id: user.tg_id })
 }

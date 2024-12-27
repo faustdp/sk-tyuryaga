@@ -1,11 +1,11 @@
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 
-import type { CreateUser, GetUser, Inviter, UpdateInvites } from '../database.types'
+import type { CreateUser, DbTaskStatus, GetUser, Inviter, UpdateInvites } from '../database.types'
 import * as schema from '../drizzle/schema'
 import { dbUrl } from './config'
 
-const { users } = schema
+const { users, userTasks } = schema
 
 let db = drizzle(dbUrl, { schema })
 
@@ -45,7 +45,7 @@ async function getUser(id: number) {
         END,
         last_visit = NOW()
       WHERE ${eq(users.tgId, id)}
-      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, claim_friends, address
+      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, claim_friends
     `)
     const data = res?.rows?.[0] as unknown as GetUser
     if (data?.tg_id) {
@@ -73,8 +73,6 @@ async function createUser(insertUser: CreateUser) {
       farm_cigs: users.farmCigs,
       farmed_amount: users.farmedAmount,
       claim_friends: users.claimFriends,
-      address: users.address,
-      // farm: users.farm,
     })
     return { data: data as GetUser }
   } catch (error) {
@@ -186,28 +184,134 @@ async function claimFriends(id: number, time: string) {
 
 async function selectImage(id: number, index: number, image: number) {
   try {
-    const data = await db.execute(sql`
+    await db.execute(sql`
       UPDATE users
       SET selected_images[${index}] = ${image}
       WHERE tg_id = ${id}
   `)
-    console.log('db195', data)
-    return { data }
+  } catch (error) {
+    console.log('db197', error)
+    return { error }
+  }
+}
+
+async function setAddress(id: number, address: string) {
+  try {
+    const data = await db.execute(sql`WITH upsert AS (
+      INSERT INTO wallets (address, user_id)
+      VALUES (${address}, ${id})
+      ON CONFLICT (address) DO
+        UPDATE SET last_connect = now()
+        WHERE wallets.user_id = ${id}
+        AND wallets.address = ${address}
+      RETURNING *
+    ),
+    validation AS (
+      SELECT CASE 
+        WHEN NOT EXISTS (SELECT 1 FROM upsert) 
+          AND EXISTS (SELECT 1 FROM wallets WHERE address = ${address})
+        THEN (SELECT wallets.user_id FROM wallets WHERE address = ${address})
+        ELSE NULL
+      END AS conflicting_user_id
+    )
+    SELECT 
+      CASE 
+        WHEN conflicting_user_id IS NOT NULL 
+        THEN NULL
+        ELSE 'OK'
+      END AS result,
+      conflicting_user_id
+    FROM validation;`)
+    return data.rows[0].result !== null
   } catch (error) {
     return { error }
   }
 }
 
-async function getFriends(id: number) {
+interface FriendsUser {
+  id: number
+  tg_id: number
+  first_name: string
+  farm_cigs: number
+  ref_cigs: number
+  invitees?: FriendsUser[]
+}
+
+async function getFriendsList(id: number) {
+  try {
+    const data = await db.execute(sql`
+      WITH RECURSIVE invite_tree AS (
+        SELECT id, tg_id, first_name, farm_cigs, ref_cigs, invited_by, 1 AS depth
+        FROM users
+        WHERE invited_by = ${id}
+        UNION ALL     
+        SELECT u.id, u.tg_id, u.first_name, u.farm_cigs, u.ref_cigs, u.invited_by, it.depth + 1
+        FROM users u
+        JOIN invite_tree it ON u.invited_by = it.tg_id
+        WHERE it.depth < 3
+      )
+      SELECT * FROM invite_tree
+      ORDER BY depth, first_name;
+    `)
+    const inviteTree: FriendsUser[] = []
+    const userMap = new Map<number, FriendsUser>()
+    data.rows.forEach((user: any) => {
+      const { id, tg_id, first_name, farm_cigs, ref_cigs, invited_by, depth } = user
+      if (depth === 1) {
+        const directInvitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs, invitees: [] }
+        inviteTree.push(directInvitee)
+        userMap.set(tg_id, directInvitee)
+      } else {
+        const invitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs }
+        const inviter = userMap.get(invited_by)
+        if (inviter) {
+          inviter.invitees = inviter.invitees || []
+          inviter.invitees.push(invitee)
+        }
+      }
+    })
+    return inviteTree
+  } catch (error) {
+    return { error }
+  }
+}
+
+function parseCodeResponse(result: string): boolean {
+  const [codesAmount, codesString] = result.slice(1, -1).split(',')
+  const amount = parseInt(codesAmount, 10)
+  const codes = codesString
+    .slice(1, -1)
+    .split(',')
+    .map((code) => code.trim().replace(/"/g, ''))
+  return codes.length >= amount
+}
+
+async function checkCode(id: number, task: number, code: string) {
+  try {
+    const data = await db.execute(sql`
+      SELECT check_and_update_code(${id}, ${task}, ${code})
+    `)
+    console.log('db251', data)
+    const isOk = data.rows.length > 0
+    return { ok: isOk, done: isOk ? parseCodeResponse(data.rows[0].check_and_update_code as string) : false }
+  } catch (error) {
+    console.log('db197', error)
+    return { error }
+  }
+}
+
+async function taskStatus(id: number, task: number, status: DbTaskStatus) {
   try {
     const data = await db
-      .update(users)
+      .update(userTasks)
       .set({
-        // farmedAmount: cigs,
+        status: status,
       })
-      .where(eq(users.tgId, id))
+      .where(and(eq(userTasks.userId, id), eq(userTasks.taskId, task)))
+    console.log('db267', data)
     return { data }
   } catch (error) {
+    console.log('db270', error)
     return { error }
   }
 }
@@ -223,4 +327,8 @@ export {
   addBonus,
   claimFriends,
   selectImage,
+  setAddress,
+  checkCode,
+  taskStatus,
+  getFriendsList,
 }

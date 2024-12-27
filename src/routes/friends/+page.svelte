@@ -2,6 +2,7 @@
   import InviteFriends from '@components/InviteFriends.svelte'
   import Cigarette from '@icons/cigarette.svg?component'
   import cigarette from '@icons/cigarette.svg?url'
+  import FriendsIcon from '@icons/friends.svg?component'
   import FriendsAmount from '@icons/friendsAmount.svg?component'
   import Inmates from '@icons/inmates.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
@@ -14,6 +15,12 @@
   import { Confetti } from 'svelte-confetti'
 
   import data from '@/messages.json'
+
+  let { data: pageData } = $props()
+
+  $effect(() => {
+    console.log('+page22', pageData)
+  })
 
   let confettiTO: NodeJS.Timeout
   let date = new SvelteDate()
@@ -105,10 +112,9 @@
     <div class="flex size-8 select-none items-center justify-center rounded-full bg-cblue pt-0.5">
       {name[0].toUpperCase()}
     </div>
-    <!-- <img src="" alt=""> -->
     <span class="flex flex-1 flex-col gap-y-2.5 text-sm">
       {name}
-      <span class="text-xs text-textgrey">+{invites}</span>
+      <span class="roboto flex gap-x-1 text-xs text-textgrey"><FriendsIcon />+{invites}</span>
     </span>
     <p class="relative ml-auto flex items-center">
       {cigs.toLocaleString()}

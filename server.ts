@@ -11,6 +11,8 @@ import {
   addBonusPath,
   apiPath,
   botPath,
+  checkCodePath,
+  checkSubscriptionPath,
   claimFriendsPath,
   endTimePath,
   farmCigsPath,
@@ -18,11 +20,24 @@ import {
   healthPath,
   mePath,
   selectImagePath,
+  setAddressPath,
   setupBot,
   sitePort,
   siteUrl,
+  taskStatusPath,
 } from './server/config'
-import { setAddBonus, setClaimFriends, setEndTime, setFarmCigs, setSelectImage } from './server/handlers'
+import {
+  handleCheckCode,
+  handleCheckSubscription,
+  handleGetFriends,
+  handleSetAddress,
+  handleTaskStatus,
+  setAddBonus,
+  setClaimFriends,
+  setEndTime,
+  setFarmCigs,
+  setSelectImage,
+} from './server/handlers'
 import { meHandler } from './server/me'
 
 // const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -94,6 +109,26 @@ router.post(claimFriendsPath, (req, res) => {
 
 router.post(selectImagePath, (req, res) => {
   setSelectImage(req, res)
+})
+
+router.post(setAddressPath, (req, res) => {
+  handleSetAddress(req, res)
+})
+
+router.post(checkSubscriptionPath, (req, res) => {
+  handleCheckSubscription(req, res)
+})
+
+router.post(checkCodePath, (req, res) => {
+  handleCheckCode(req, res)
+})
+
+router.post(taskStatusPath, (req, res) => {
+  handleTaskStatus(req, res)
+})
+
+router.post(getFriendsPath, (req, res) => {
+  handleGetFriends(req, res)
 })
 
 router.post('/test', (req) => {

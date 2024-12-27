@@ -41,4 +41,6 @@ interface UpdateInvites {
   tg_id: number
 }
 
-export { UserForDb, CreateUser, Inviter, GetUser, UpdateInvites }
+type DbTaskStatus = 'start' | 'check' | 'claim' | 'done'
+
+export { UserForDb, CreateUser, Inviter, GetUser, UpdateInvites, DbTaskStatus }

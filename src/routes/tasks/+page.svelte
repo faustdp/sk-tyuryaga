@@ -9,14 +9,16 @@
   import { app, openModal } from '@state/app.svelte'
   import { user } from '@state/user.svelte'
   import { sortTasks, w8 } from '@utils'
-  import { TASK_CODE, TASK_CTX, TASK_INVITE, taskStatus } from '@utils/const'
-  import { getContext } from 'svelte'
+  import { postCheckSubscription, postTaskStatus } from '@utils/api'
+  import { iconsComponents, TASK_CODE, TASK_CTX, TASK_INVITE, taskStatus } from '@utils/const'
+  import { getContext, untrack } from 'svelte'
   import { flip } from 'svelte/animate'
   import toast from 'svelte-hot-french-toast'
 
   import data from '@/messages.json'
 
   let isDrawerOpened = $state(false)
+  let taskId: number | null = $state(null)
 
   function closeDrawer() {
     isDrawerOpened = false
@@ -32,23 +34,64 @@
     }
   })
 
+  $effect(() => {
+    if (taskId === null) return
+    const intervalId = setInterval(async () => {
+      try {
+        const item = untrack(() => tasks.find((el) => el.id === taskId))
+        if (!item?.link) return
+        const response = await postCheckSubscription(`@${item.link.split('/').at(-1)}`)
+        const data = response ? await response.json() : null
+        if (data && data.ok) {
+          clearInterval(intervalId)
+          item.status = taskStatus.claim
+          taskId = null
+        }
+      } catch (error) {
+        console.error('+page54', error)
+      }
+    }, 5000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  })
+
   async function handleTaskClick(item: SocialItemCode | SocialItemInvite | SocialItemSubscribe) {
-    if (item.status === taskStatus.done || item.status === taskStatus.loading) return
+    if (item.status === taskStatus.done) return
+    if (item.status === taskStatus.loading) {
+      if (item.link) window.open(item.link, '_blank')
+      return
+    }
     if (item.status === taskStatus.claim) {
-      setDoneTask(item)
+      toastSuccess(item.reward)
+      await setDoneTask(item)
     } else if (item.status === taskStatus.start) {
       if (item.type === TASK_INVITE) {
         if (item.invites > user.invites) {
           isDrawerOpened = true
         } else {
-          setDoneTask(item)
+          toastSuccess(item.reward)
+          await setDoneTask(item)
         }
       } else {
         item.status = item.type === TASK_CODE ? taskStatus.check : taskStatus.loading
+        if (item.type === TASK_CODE) {
+          await postTaskStatus(item.id, taskStatus.check)
+        }
         window.open(item.link, '_blank')
         if (item.delay) {
-          await w8(item.delay) //TODO CHECK TG Дополнительно нужно реализовать трекинг подписки на ТГ канал
+          await w8(item.delay)
           item.status = taskStatus.claim
+          await postTaskStatus(item.id, taskStatus.claim)
+        } else {
+          if (taskId !== null) {
+            const task = tasks.find((el) => el.id === taskId)
+            if (task) {
+              task.status = taskStatus.start
+            }
+          }
+          taskId = item.id
         }
       }
     } else if (item.status === taskStatus.check) {
@@ -57,13 +100,17 @@
     }
   }
 
-  function setDoneTask(item: SocialItem) {
-    item.status = taskStatus.done
-    toast.success(`${data.toaster_msg} ${item.reward} ${data.boost_cig}!`, {
+  function toastSuccess(reward: number) {
+    toast.success(`${data.toaster_msg} ${reward} ${data.boost_cig}!`, {
       class: 'toast-success',
       icon: CheckSuccess,
     })
+  }
+
+  async function setDoneTask(item: SocialItem) {
+    item.status = taskStatus.done
     sortTasks(tasks)
+    await postTaskStatus(item.id, taskStatus.done)
   }
 </script>
 
@@ -86,11 +133,15 @@
   <ul class="flex w-full list-none flex-col">
     {#each tasks as socialItem (socialItem)}
       {@const isDone = socialItem.status === taskStatus.done}
-      {@const Icon = socialItem.Icon}
+      {@const Icon = socialItem.Icon in iconsComponents ? iconsComponents[socialItem.Icon] : socialItem.Icon}
       <li
         animate:flip={{ duration: 280 }}
         class="flex flex-1 items-center gap-x-3 border-b border-solid border-cborder py-2">
-        <Icon />
+        {#if typeof Icon === 'string'}
+          <img src={Icon} alt={socialItem.name} width="32" />
+        {:else}
+          <Icon />
+        {/if}
         <span class="flex flex-1 flex-col gap-y-2.5 text-sm {isDone ? 'text-cborder' : ''}">
           {socialItem.name}
           <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">
@@ -134,5 +185,5 @@
   </ul>
 </div>
 
-<ModalTasks task={selectedTaskCheck} {setDoneTask} />
+<ModalTasks task={selectedTaskCheck} {toastSuccess} {setDoneTask} />
 <InviteFriends isOpened={isDrawerOpened} {closeDrawer} />

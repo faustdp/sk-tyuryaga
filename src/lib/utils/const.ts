@@ -1,4 +1,22 @@
+import Disc from '@icons/socials/disc.svg?component'
+import Ig from '@icons/socials/ig.svg?component'
+import Tg from '@icons/socials/tg.svg?component'
+import Tt from '@icons/socials/tt.svg?component'
+import Vk from '@icons/socials/vk.svg?component'
+import Tw from '@icons/socials/x.svg?component'
+import Yt from '@icons/socials/yt.svg?component'
+
 import data from '@/messages.json'
+
+export const iconsComponents: IconsComponents = {
+  inst: Ig,
+  tg: Tg,
+  tiktok: Tt,
+  vk: Vk,
+  youtube: Yt,
+  twitter: Tw,
+  discord: Disc,
+}
 
 export const TEST_ADDRESS = 'EQChHpu8-rFBQyVCXJtT1aTwODTBc1dFUAEatbYy11ZLcBST'
 export const TON_KEY = 'TON_CONNECT'
@@ -101,9 +119,6 @@ export const IMG_NAMES: Images[] = [
     width: '60',
   },
 ] as const
-
-// export const baseTime = 2
-// export const baseAmount = 1
 
 // export const russianLanguages = ['ru', 'be', 'uk', 'kk', 'ky', 'uz', 'tg', 'tk', 'hy', 'az', 'ka', 'lv', 'lt', 'et']
 
@@ -213,11 +228,11 @@ export const LEVELS: LevelsType[] = [
 ] as const
 
 export const taskStatus = {
-  start: 0,
-  loading: 1,
-  check: 2,
-  claim: 3,
-  done: 4,
+  start: 'start',
+  loading: 'loading',
+  check: 'check',
+  claim: 'claim',
+  done: 'done',
 } as const
 
 export const TASK_INVITE = 'invite'

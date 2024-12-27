@@ -5,13 +5,6 @@
   import '@fontsource/roboto/400.css'
 
   import ProgressBar from '@components/ProgressBar.svelte'
-  // import CheckError from '@icons/checkError.svg?component'
-  // toast.error(`${data.toaster_msg} Ошибка ${data.boost_cig}!`, { class: 'toast-error', icon: CheckError })
-  import Ig from '@icons/socials/ig.svg?component'
-  import Tg from '@icons/socials/tg.svg?component'
-  import Tt from '@icons/socials/tt.svg?component'
-  import Vk from '@icons/socials/vk.svg?component'
-  import Yt from '@icons/socials/yt.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setError, setIsLoaded } from '@state/app.svelte'
   import { setBaseFarm, setUser } from '@state/user.svelte'
@@ -37,6 +30,7 @@
 
   import BottomNav from '@/BottomNav.svelte'
   import data from '@/messages.json'
+  import { invalidate } from '$app/navigation'
   import { page } from '$app/stores'
   import * as Dialog from '$lib/components/dialog/'
 
@@ -46,27 +40,28 @@
     sortTasks([
       {
         id: 1,
-        Icon: Yt,
-        name: 'Посмотри видео и впиши код',
-        reward: '200 USDT',
+        Icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
+        name: 'Test',
+        reward: 200,
         status: taskStatus.check,
         link: 'https://google.com',
         type: TASK_CODE,
       },
       {
         id: 7,
-        Icon: Ig,
-        name: 'Посмотри видео и впиши код',
-        reward: '200 USDT',
+        Icon: 'inst',
+        name: 'baza',
+        reward: 200,
         status: taskStatus.start,
-        link: 'https://google.com',
-        type: TASK_CODE,
+        link: 'https://t.me/PrisonTONx',
+        type: TASK_SUBSCRIBE,
+        // delay: 5000,
       },
       {
         id: 6,
-        Icon: Tg,
+        Icon: 'tg',
         name: 'Посмотри видео и впиши код',
-        reward: '200 USDT',
+        reward: 1200,
         status: taskStatus.start,
         link: 'https://x.com/intent/follow?screen_name=NASA',
         type: TASK_SUBSCRIBE,
@@ -74,36 +69,36 @@
       },
       {
         id: 5,
-        Icon: Tt,
+        Icon: 'tiktok',
         name: 'Позови 100 корешей',
-        reward: '200 USDT',
+        reward: 3200,
         status: taskStatus.start,
         type: TASK_INVITE,
         invites: 10,
       },
       {
         id: 3,
-        Icon: Yt,
+        Icon: 'youtube',
         name: 'Посмотри видео и впиши код',
-        reward: '200 USDT',
+        reward: 20,
         status: taskStatus.check,
         link: 'https://google.com',
         type: TASK_CODE,
       },
       {
         id: 2,
-        Icon: Ig,
+        Icon: 'inst',
         name: 'Посмотри видео и впиши код',
-        reward: '200 USDT',
+        reward: 200,
         status: taskStatus.claim,
         link: 'https://google.com',
         type: TASK_CODE,
       },
       {
         id: 4,
-        Icon: Vk,
+        Icon: 'vk',
         name: 'Посмотри видео и впиши код',
-        reward: '200 USDT',
+        reward: 200,
         status: taskStatus.loading,
         link: 'https://google.com',
         type: TASK_CODE,
@@ -201,6 +196,7 @@
         username,
         invites,
       })
+      invalidate('app:friends')
     } catch (err) {
       if (err instanceof Error) {
         const error = err as TypedError

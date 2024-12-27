@@ -2,7 +2,6 @@ import { postAddBonus, postSelectImage } from '@utils/api'
 import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, IMG_NAMES, LEVELS, MINUTE, SIXTY, TIME } from '@utils/const'
 
 interface User {
-  //TODO SetCookie tg_id
   tg_id: number | null
   username: string | null
   first_name: string
@@ -12,9 +11,9 @@ interface User {
   level: number
   cigs: number
   farm_cigs: number
-  ref_cigs: number //TODO
+  ref_cigs: number
   claim_friends: number
-  amount_friends: number //TODO
+  amount_friends: number
   end_time: number
   farm_time: number
   farm_amount: number
@@ -24,7 +23,7 @@ interface User {
   activity_days: number
   farm: Farm
   bonuses: BonusIndexes[]
-  selected_images: number[] //TODO BACKEDN
+  selected_images: number[]
 }
 
 function userStore() {

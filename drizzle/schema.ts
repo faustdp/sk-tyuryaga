@@ -18,20 +18,66 @@ import {
 
 export const taskStatus = pgEnum('task_status', ['start', 'check', 'claim', 'done'])
 
+export const tasks = pgTable(
+  'tasks',
+  {
+    id: integer()
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: 'tasks_id_seq',
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 2147483647,
+        cache: 1,
+      }),
+    type: varchar({ length: 20 }).notNull(),
+    position: integer(),
+    reward: integer().notNull(),
+    icon: varchar({ length: 1024 }).notNull(),
+    link: varchar({ length: 1024 }),
+    active: boolean().default(true).notNull(),
+    language: varchar({ length: 5 }),
+    delay: integer(),
+    invites: integer(),
+    codes: text().array(),
+  },
+  (table) => [
+    check(
+      'tasks_type_check',
+      sql`(type)::text = ANY ((ARRAY['invite'::character varying, 'code'::character varying, 'subscribe'::character varying])::text[])`,
+    ),
+    check(
+      'check_invites',
+      sql`(((type)::text = 'invite'::text) AND (invites IS NOT NULL)) OR (((type)::text <> 'invite'::text) AND (invites IS NULL))`,
+    ),
+    check(
+      'check_codes',
+      sql`(((type)::text = 'code'::text) AND (codes IS NOT NULL)) OR (((type)::text <> 'code'::text) AND (codes IS NULL))`,
+    ),
+    check(
+      'check_delay',
+      sql`(((type)::text = 'subscribe'::text) AND (delay IS NOT NULL)) OR (((type)::text <> 'subscribe'::text) AND (delay IS NULL))`,
+    ),
+  ],
+)
+
 export const wallets = pgTable(
   'wallets',
   {
-    id: integer().generatedByDefaultAsIdentity({
-      name: 'wallets_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      maxValue: 2147483647,
-      cache: 1,
-    }),
+    id: integer()
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: 'wallets_id_seq',
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 2147483647,
+        cache: 1,
+      }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     userId: bigint('user_id', { mode: 'number' }).notNull(),
-    address: varchar({ length: 50 }).notNull(),
+    address: varchar({ length: 80 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     lastConnect: timestamp('last_connect', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
   },
@@ -43,18 +89,21 @@ export const wallets = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('cascade'),
+    unique('wallets_address_key').on(table.address),
   ],
 )
 
 export const messages = pgTable('messages', {
-  id: integer().generatedByDefaultAsIdentity({
-    name: 'messages_id_seq',
-    startWith: 1,
-    increment: 1,
-    minValue: 1,
-    maxValue: 2147483647,
-    cache: 1,
-  }),
+  id: integer()
+    .primaryKey()
+    .generatedByDefaultAsIdentity({
+      name: 'messages_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      maxValue: 2147483647,
+      cache: 1,
+    }),
   text: text().notNull(),
   photoUrl: varchar('photo_url', { length: 1024 }),
   buttons: jsonb(),
@@ -78,7 +127,6 @@ export const users = pgTable(
     tgId: bigint('tg_id', { mode: 'number' }).notNull(),
     firstName: varchar('first_name', { length: 100 }).notNull(),
     username: varchar({ length: 32 }),
-    address: varchar({ length: 55 }),
     language: varchar({ length: 5 }),
     farmedAmount: integer('farmed_amount').default(0),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -94,7 +142,7 @@ export const users = pgTable(
       .notNull(),
     activityDays: integer('activity_days').default(0).notNull(),
     bonuses: smallint().array().default([]),
-    selectedImages: smallint('selected_images').array().default([]),
+    selectedImages: smallint('selected_images').array().default([-1, -1, -1, -1, -1, -1, -1, -1, -1]),
     level: integer().default(0).notNull(),
   },
   (table) => [
@@ -147,50 +195,6 @@ export const invites = pgTable(
   ],
 )
 
-export const tasks = pgTable(
-  'tasks',
-  {
-    id: integer()
-      .primaryKey()
-      .generatedByDefaultAsIdentity({
-        name: 'tasks_id_seq',
-        startWith: 1,
-        increment: 1,
-        minValue: 1,
-        maxValue: 2147483647,
-        cache: 1,
-      }),
-    type: varchar({ length: 20 }).notNull(),
-    position: integer().notNull(),
-    reward: integer().notNull(),
-    icon: varchar({ length: 1024 }).notNull(),
-    link: varchar({ length: 1024 }),
-    active: boolean().default(true).notNull(),
-    language: varchar({ length: 5 }),
-    delay: integer(),
-    invites: integer(),
-    codes: text().array(),
-  },
-  (table) => [
-    check(
-      'tasks_type_check',
-      sql`(type)::text = ANY ((ARRAY['invite'::character varying, 'code'::character varying, 'subscribe'::character varying])::text[])`,
-    ),
-    check(
-      'check_invites',
-      sql`(((type)::text = 'invite'::text) AND (invites IS NOT NULL)) OR (((type)::text <> 'invite'::text) AND (invites IS NULL))`,
-    ),
-    check(
-      'check_codes',
-      sql`(((type)::text = 'code'::text) AND (codes IS NOT NULL)) OR (((type)::text <> 'code'::text) AND (codes IS NULL))`,
-    ),
-    check(
-      'check_delay',
-      sql`(((type)::text = 'subscribe'::text) AND (delay IS NOT NULL)) OR (((type)::text <> 'subscribe'::text) AND (delay IS NULL))`,
-    ),
-  ],
-)
-
 export const userTasks = pgTable(
   'user_tasks',
   {
@@ -198,6 +202,8 @@ export const userTasks = pgTable(
     userId: bigint('user_id', { mode: 'number' }).notNull(),
     taskId: integer('task_id').notNull(),
     status: taskStatus().default('start').notNull(),
+    codes: text().array(),
+    codesAmount: integer('codes_amount').generatedAlwaysAs(sql`get_task_codes_length(task_id)`),
   },
   (table) => [
     foreignKey({
@@ -215,5 +221,6 @@ export const userTasks = pgTable(
       .onUpdate('cascade')
       .onDelete('cascade'),
     primaryKey({ columns: [table.userId, table.taskId], name: 'user_tasks_pkey' }),
+    check('check_codes_for_code_tasks', sql`is_code_task(task_id) = (codes IS NOT NULL)`),
   ],
 )

@@ -9,6 +9,7 @@ import { Bot } from 'grammy'
 
 export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828 // 5773 front
 export const apiPath = '/api'
+export const botPath = '/bot'
 export const mePath = '/me'
 export const healthPath = '/health'
 export const endTimePath = '/end-time'
@@ -16,8 +17,11 @@ export const farmCigsPath = '/farm-cigs'
 export const addBonusPath = '/add-bonus'
 export const claimFriendsPath = '/claim-friends'
 export const selectImagePath = '/select-image'
-export const getFriendsPath = '/get-friends'
-export const botPath = '/bot'
+export const getFriendsPath = '/friends-list'
+export const setAddressPath = '/set-address'
+export const checkSubscriptionPath = '/check-subscription'
+export const checkCodePath = '/check-code'
+export const taskStatusPath = '/task-status'
 
 export const token = process.env.BOT_TOKEN!
 export const secretToken = process.env.SETUP_SECRET
@@ -68,7 +72,7 @@ export async function setupBot() {
   }
 
   bot.on('message', async (ctx) => {
-    console.log('config98', ctx.update.message.from)
+    console.log('config98', ctx)
     try {
       handleBotStart(ctx.update.message.from.id)
     } catch (error) {
@@ -131,7 +135,7 @@ export async function handleBotStart(chatId: string | number, _firstName?: strin
   //     reply_markup: { inline_keyboard: inlineKeyboard },
   //     parse_mode: 'MarkdownV2',
   //   })
-  return bot.api.sendMessage(chatId, 'Hi') //5416188878
+  return bot.api.sendMessage(chatId, 'Hi') //5416188878 and 721149485 undelivered
 }
 
 // export async function handleLevelUp(chatId: number, level: number) {

@@ -6,6 +6,7 @@
   import Spider from '@images/Spider.svelte'
   import { closeModal } from '@state/app.svelte'
   import { w8 } from '@utils'
+  import { postCheckCode } from '@utils/api'
   import { SECOND } from '@utils/const'
   import { onDestroy, tick } from 'svelte'
   import { cubicOut } from 'svelte/easing'
@@ -17,9 +18,11 @@
   let {
     task,
     setDoneTask,
+    toastSuccess,
   }: {
     task: SocialItem | null
     setDoneTask: (item: SocialItem) => void
+    toastSuccess: (reward: number) => void
   } = $props()
 
   const errorTO = 2400
@@ -38,23 +41,26 @@
     if (value.length < minCodeLength || isFetchingCode || codeIsRight || value === lastWrongCode || !task) return
     clearTimeout(wrongTO)
     isFetchingCode = true
-    await w8(500) //TODO: Replace
-    const x = Math.random()
+    const res = await postCheckCode(task.id, value)
+    const data = res ? await res.json() : null
     isFetchingCode = false
-    if (x > 0.5) {
+    if (data?.ok) {
+      codeIsWrong = false
+      codeIsRight = true
+      toastSuccess(task.reward)
+      await w8(SECOND)
+      codeIsRight = false
+      inputValue = ''
+      if (data.done) {
+        await setDoneTask(task)
+        closeModal()
+      }
+    } else {
       codeIsWrong = true
       lastWrongCode = value
       wrongTO = setTimeout(() => {
         codeIsWrong = false
       }, errorTO)
-    } else {
-      codeIsWrong = false
-      codeIsRight = true
-      setDoneTask(task)
-      await w8(SECOND)
-      codeIsRight = false
-      inputValue = ''
-      closeModal()
     }
   }
 
