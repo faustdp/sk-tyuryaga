@@ -97,7 +97,6 @@ function userStore() {
   }
 
   function setRefCigs(cigs: number) {
-    //TODO BACK
     state.ref_cigs += cigs
     sumCigs()
   }
@@ -123,8 +122,11 @@ function userStore() {
   }
 
   function setAmountFriends(cigs: number) {
-    //TODO:USE
     state.amount_friends = cigs
+  }
+
+  function setSelectedImages(imgs: number[]) {
+    state.selected_images = imgs
   }
 
   function selectImage(index: number, image: number) {
@@ -166,6 +168,7 @@ function userStore() {
     setAmountFriends,
     addBonus,
     selectImage,
+    setSelectedImages,
   }
 }
 
@@ -182,4 +185,5 @@ export const {
   setAmountFriends,
   addBonus,
   selectImage,
+  setSelectedImages,
 } = userStore()

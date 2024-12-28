@@ -24,14 +24,15 @@ interface GetUser {
   invites: number
   level: number
   bonuses: number[]
+  selected_images: number[]
   activity_days: number
   ref_cigs: number
   farm_cigs: number
   end_time: string | null
   language: string | null
   claim_friends: string | null
-  // farm: string
   farmed_amount: number
+  farmed_time: number
   address: string | null
 }
 

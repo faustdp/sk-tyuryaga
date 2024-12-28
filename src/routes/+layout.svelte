@@ -7,7 +7,16 @@
   import ProgressBar from '@components/ProgressBar.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setError, setIsLoaded } from '@state/app.svelte'
-  import { setBaseFarm, setUser } from '@state/user.svelte'
+  import {
+    setBaseFarm,
+    setCigs,
+    setClaimFriends,
+    setFarm,
+    setRefCigs,
+    setSelectedImages,
+    setUser,
+    user,
+  } from '@state/user.svelte'
   import {
     closeMiniApp,
     ERR_RETRIEVE_LP_FAILED,
@@ -19,7 +28,7 @@
     retrieveLaunchParams,
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
-  import { meUrl, TASK_CODE, TASK_CTX, TASK_INVITE, TASK_SUBSCRIBE, taskStatus } from '@utils/const'
+  import { FARMED, FARMING, meUrl, TASK_CODE, TASK_CTX, TASK_INVITE, TASK_SUBSCRIBE, taskStatus } from '@utils/const'
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
   import { onMount, setContext } from 'svelte'
@@ -176,7 +185,7 @@
       progress.set(100, { duration: progressDefDur })
 
       const result: ValidationResponse = await response.json()
-      console.log('+layout180', result)
+
       if (!result.valid) {
         const error = result.error
         if (error === undefined) throw new Error(data.errors.data_error)
@@ -184,18 +193,48 @@
         throw new Error(errorMsg)
       }
 
-      const { tg_id, first_name, username, invites, level, bonuses } = result.userData
+      const {
+        tg_id,
+        first_name,
+        username,
+        invites,
+        level,
+        bonuses,
+        ref_cigs,
+        farm_cigs,
+        end_time,
+        claim_friends,
+        activity_days,
+        selected_images,
+        farmed_amount,
+        farmed_time,
+      } = result.userData
 
-      if (bonuses?.length > 0) {
-        setBaseFarm(level, bonuses)
+      setBaseFarm(level, bonuses)
+
+      if (end_time) {
+        const value = new Date(end_time).getTime()
+        const now = Date.now()
+        user.current_farm_amount = farmed_amount
+        user.current_farm_time = farmed_time
+        user.end_time = value
+        setFarm(value > now ? FARMING : FARMED)
       }
-      //TODO set FARM based on ENDTIME, claim_friends to .getTime()
+
+      setSelectedImages(selected_images)
+      setClaimFriends(new Date(claim_friends).getTime())
+      setCigs(farm_cigs)
+      setRefCigs(ref_cigs)
       setUser({
         tg_id,
         first_name,
         username,
         invites,
+        level,
+        bonuses,
+        activity_days,
       })
+
       invalidate('app:friends')
     } catch (err) {
       if (err instanceof Error) {
@@ -229,7 +268,6 @@
       fixTouch().then((listener: typeof noop) => {
         removeListeners = listener
       })
-      // setIsMounted()
       // mountBackButton()
       // showBackButton()
     } catch (_err) {}

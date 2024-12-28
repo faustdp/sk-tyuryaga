@@ -18,98 +18,6 @@ import {
 
 export const taskStatus = pgEnum('task_status', ['start', 'check', 'claim', 'done'])
 
-export const tasks = pgTable(
-  'tasks',
-  {
-    id: integer()
-      .primaryKey()
-      .generatedByDefaultAsIdentity({
-        name: 'tasks_id_seq',
-        startWith: 1,
-        increment: 1,
-        minValue: 1,
-        maxValue: 2147483647,
-        cache: 1,
-      }),
-    type: varchar({ length: 20 }).notNull(),
-    position: integer(),
-    reward: integer().notNull(),
-    icon: varchar({ length: 1024 }).notNull(),
-    link: varchar({ length: 1024 }),
-    active: boolean().default(true).notNull(),
-    language: varchar({ length: 5 }),
-    delay: integer(),
-    invites: integer(),
-    codes: text().array(),
-  },
-  (table) => [
-    check(
-      'tasks_type_check',
-      sql`(type)::text = ANY ((ARRAY['invite'::character varying, 'code'::character varying, 'subscribe'::character varying])::text[])`,
-    ),
-    check(
-      'check_invites',
-      sql`(((type)::text = 'invite'::text) AND (invites IS NOT NULL)) OR (((type)::text <> 'invite'::text) AND (invites IS NULL))`,
-    ),
-    check(
-      'check_codes',
-      sql`(((type)::text = 'code'::text) AND (codes IS NOT NULL)) OR (((type)::text <> 'code'::text) AND (codes IS NULL))`,
-    ),
-    check(
-      'check_delay',
-      sql`(((type)::text = 'subscribe'::text) AND (delay IS NOT NULL)) OR (((type)::text <> 'subscribe'::text) AND (delay IS NULL))`,
-    ),
-  ],
-)
-
-export const wallets = pgTable(
-  'wallets',
-  {
-    id: integer()
-      .primaryKey()
-      .generatedByDefaultAsIdentity({
-        name: 'wallets_id_seq',
-        startWith: 1,
-        increment: 1,
-        minValue: 1,
-        maxValue: 2147483647,
-        cache: 1,
-      }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    userId: bigint('user_id', { mode: 'number' }).notNull(),
-    address: varchar({ length: 80 }).notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    lastConnect: timestamp('last_connect', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [users.tgId],
-      name: 'wallets_user_id_fkey',
-    })
-      .onUpdate('cascade')
-      .onDelete('cascade'),
-    unique('wallets_address_key').on(table.address),
-  ],
-)
-
-export const messages = pgTable('messages', {
-  id: integer()
-    .primaryKey()
-    .generatedByDefaultAsIdentity({
-      name: 'messages_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      maxValue: 2147483647,
-      cache: 1,
-    }),
-  text: text().notNull(),
-  photoUrl: varchar('photo_url', { length: 1024 }),
-  buttons: jsonb(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-})
-
 export const users = pgTable(
   'users',
   {
@@ -129,6 +37,7 @@ export const users = pgTable(
     username: varchar({ length: 32 }),
     language: varchar({ length: 5 }),
     farmedAmount: integer('farmed_amount').default(0),
+    farmedTime: integer('farmed_time').default(0),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     lastVisit: timestamp('last_visit', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -194,6 +103,98 @@ export const invites = pgTable(
       .onDelete('set null'),
   ],
 )
+
+export const tasks = pgTable(
+  'tasks',
+  {
+    id: integer()
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: 'tasks_id_seq',
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 2147483647,
+        cache: 1,
+      }),
+    type: varchar({ length: 20 }).notNull(),
+    position: integer(),
+    reward: integer().notNull(),
+    icon: varchar({ length: 1024 }).notNull(),
+    link: varchar({ length: 1024 }),
+    active: boolean().default(true).notNull(),
+    language: varchar({ length: 5 }),
+    delay: integer(),
+    invites: integer(),
+    codes: text().array(),
+  },
+  (table) => [
+    check(
+      'check_invites',
+      sql`(((type)::text = 'invite'::text) AND (invites IS NOT NULL)) OR (((type)::text <> 'invite'::text) AND (invites IS NULL))`,
+    ),
+    check(
+      'check_codes',
+      sql`(((type)::text = 'code'::text) AND (codes IS NOT NULL)) OR (((type)::text <> 'code'::text) AND (codes IS NULL))`,
+    ),
+    check(
+      'check_delay',
+      sql`(((type)::text = 'subscribe'::text) AND (delay IS NOT NULL)) OR (((type)::text <> 'subscribe'::text) AND (delay IS NULL))`,
+    ),
+    check(
+      'tasks_type_check',
+      sql`(type)::text = ANY ((ARRAY['invite'::character varying, 'code'::character varying, 'subscribe'::character varying])::text[])`,
+    ),
+  ],
+)
+
+export const wallets = pgTable(
+  'wallets',
+  {
+    id: integer()
+      .primaryKey()
+      .generatedByDefaultAsIdentity({
+        name: 'wallets_id_seq',
+        startWith: 1,
+        increment: 1,
+        minValue: 1,
+        maxValue: 2147483647,
+        cache: 1,
+      }),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    userId: bigint('user_id', { mode: 'number' }).notNull(),
+    address: varchar({ length: 80 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    lastConnect: timestamp('last_connect', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.tgId],
+      name: 'wallets_user_id_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    unique('wallets_address_key').on(table.address),
+  ],
+)
+
+export const messages = pgTable('messages', {
+  id: integer()
+    .primaryKey()
+    .generatedByDefaultAsIdentity({
+      name: 'messages_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      maxValue: 2147483647,
+      cache: 1,
+    }),
+  text: text().notNull(),
+  photoUrl: varchar('photo_url', { length: 1024 }),
+  buttons: jsonb(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+})
 
 export const userTasks = pgTable(
   'user_tasks',

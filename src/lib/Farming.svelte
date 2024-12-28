@@ -32,7 +32,6 @@
   let time = $state('')
 
   let timeInterval: NodeJS.Timeout
-  let isMounted = false
 
   const progress = new Tween(prevProgress, {
     duration: () =>
@@ -41,6 +40,7 @@
   })
 
   function startInterval() {
+    progress.target = 0
     time = formatTime(progress.current * user.current_farm_time)
     timeInterval = setInterval(() => {
       time = formatTime(progress.current * user.current_farm_time)
@@ -61,8 +61,7 @@
   })
 
   onMount(() => {
-    if (prevProgress !== 1) {
-      progress.target = 0
+    if (prevProgress !== 1 || user.farm === FARMING) {
       startInterval()
     }
   })
@@ -75,30 +74,19 @@
     return Math.trunc((1 - val) * user.current_farm_amount)
   })
 
-  $effect(() => {
-    const farm = user.farm
-    if (!isMounted) {
-      isMounted = true
-      return
-    }
-    if (farm === CLAIMED) {
-      showConfetti = true
-    } else if (farm === FARMED) {
-      showConfetti = false
-    }
-  })
-
   async function handleClick() {
     if (user.farm === FARMING) return
     if (user.farm === CLAIMED) {
+      showConfetti = false
       const now = Date.now()
       const time = now + user.farm_time * MINUTE
       setEndTime(time)
       setFarm(FARMING)
       startInterval()
       progress.target = 0
-      await postEndTime(new Date(time).toISOString(), user.current_farm_amount)
+      await postEndTime(new Date(time).toISOString(), user.current_farm_amount, user.current_farm_time)
     } else if (user.farm === FARMED) {
+      showConfetti = true
       setFarm(CLAIMED)
       setCigs(user.current_farm_amount)
       await postFarmCigs(user.current_farm_amount)

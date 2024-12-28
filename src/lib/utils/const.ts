@@ -141,7 +141,6 @@ export const LEVELS: LevelsType[] = [
     [AMOUNT]: 10,
     [COMBO]: 8,
     [TIME]: 5,
-    streak: 10,
   },
   {
     baseTime: 4,
@@ -160,6 +159,7 @@ export const LEVELS: LevelsType[] = [
     [AMOUNT]: 500,
     [COMBO]: 400,
     [TIME]: 250,
+    streak: 10,
   },
   {
     baseTime: 15,

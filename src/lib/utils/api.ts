@@ -7,10 +7,10 @@ const addBonusUrl = '/api/add-bonus'
 const setAddressUrl = '/api/set-address'
 const claimFriendsUrl = '/api/claim-friends'
 const selectImageUrl = '/api/select-image'
-const friendsListUrl = '/api/friends-list'
 const checkSubscriptionUrl = '/api/check-subscription'
 const checkCodeUrl = '/api/check-code'
 const taskStatusUrl = '/api/task-status'
+export const friendsListUrl = '/api/friends-list'
 
 async function postRequest(url: string, data: any) {
   try {
@@ -25,8 +25,8 @@ async function postRequest(url: string, data: any) {
   }
 }
 
-export async function postEndTime(time: string, cigs: number) {
-  await postRequest(endTimeUrl, { time, cigs, id: user.tg_id })
+export async function postEndTime(time: string, cigs: number, farmedTime: number) {
+  await postRequest(endTimeUrl, { time, cigs, farmedTime, id: user.tg_id })
 }
 
 export async function postFarmCigs(cigs: number) {
@@ -42,8 +42,8 @@ export async function postSetAddress(address: string) {
   return res ? await res.json() : null
 }
 
-export async function postClaimFriends(time: string) {
-  await postRequest(claimFriendsUrl, { time, id: user.tg_id })
+export async function postClaimFriends(time: string, cigs: number) {
+  await postRequest(claimFriendsUrl, { time, cigs, id: user.tg_id })
 }
 
 export async function postSelectImage(index: number, image: number) {
@@ -52,10 +52,6 @@ export async function postSelectImage(index: number, image: number) {
 
 export async function postCheckSubscription(name: string) {
   return await postRequest(checkSubscriptionUrl, { name, id: user.tg_id })
-}
-
-export async function postFriendsList() {
-  return await postRequest(friendsListUrl, { id: user.tg_id })
 }
 
 export async function postCheckCode(task: number, code: string) {

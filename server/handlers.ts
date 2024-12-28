@@ -16,8 +16,8 @@ import {
 
 export async function setEndTime(req: Request, res: Response) {
   try {
-    const { id, time, cigs } = req.body
-    await setTime(id, time, cigs)
+    const { id, time, cigs, farmedTime } = req.body
+    await setTime(id, time, cigs, farmedTime)
     return res.status(200).json({ message: 'OK' })
   } catch {
     // Bugsnag.notify(<Error>err)
@@ -48,8 +48,8 @@ export async function setAddBonus(req: Request, res: Response) {
 
 export async function setClaimFriends(req: Request, res: Response) {
   try {
-    const { id, time } = req.body
-    await claimFriends(id, time)
+    const { id, time, cigs } = req.body
+    await claimFriends(id, time, cigs)
     return res.status(200).json({ message: 'OK' })
   } catch {
     // Bugsnag.notify(<Error>err)

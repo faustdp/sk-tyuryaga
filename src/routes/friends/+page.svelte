@@ -6,7 +6,7 @@
   import FriendsAmount from '@icons/friendsAmount.svg?component'
   import Inmates from '@icons/inmates.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import { setClaimFriends, user } from '@state/user.svelte'
+  import { setAmountFriends, setClaimFriends, setRefCigs, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
   import { postClaimFriends } from '@utils/api'
   import { DAY, SECOND } from '@utils/const'
@@ -18,10 +18,6 @@
 
   let { data: pageData } = $props()
 
-  $effect(() => {
-    console.log('+page22', pageData)
-  })
-
   let confettiTO: NodeJS.Timeout
   let date = new SvelteDate()
   let isDrawerOpened = $state(false)
@@ -32,47 +28,12 @@
   }
 
   interface FriendStat {
-    name: string
-    invites: number
-    cigs: number
+    first_name: string
+    farm_cigs: number
+    ref_cigs: number
+    depth: number
+    invitees?: FriendStat[]
   }
-  const friends: FriendStat[] = [
-    {
-      name: 'Имя',
-      invites: 3,
-      cigs: 123123,
-    },
-    {
-      name: 'ГИмя',
-      invites: 13,
-      cigs: 123,
-    },
-    {
-      name: 'ВИмя',
-      invites: 53,
-      cigs: 999999999,
-    },
-    {
-      name: 'Омя',
-      invites: 33,
-      cigs: 123123,
-    },
-    {
-      name: 'Амя',
-      invites: 3,
-      cigs: 1231,
-    },
-    {
-      name: 'Омя',
-      invites: 33,
-      cigs: 123123,
-    },
-    {
-      name: 'Амя',
-      invites: 3,
-      cigs: 1231,
-    },
-  ]
 
   $effect(() => {
     const interval = setInterval(() => {
@@ -84,17 +45,34 @@
     }
   })
 
-  let isReady = $derived(user.claim_friends - date.getTime() < 0)
+  let isReady = $derived(user.claim_friends - date.getTime() <= 0)
+
+  $effect(() => {
+    if (!pageData.friends?.length) return
+    let sum = 0
+    pageData.friends.forEach((el: FriendStat) => {
+      sum += el.farm_cigs * 0.1
+      if (el.invitees) {
+        el.invitees.forEach((el: FriendStat) => {
+          sum += el.farm_cigs * (el.depth === 2 ? 0.05 : 0.01)
+        })
+      }
+    })
+    user.amount_friends = Math.ceil(sum) - user.ref_cigs
+  })
 
   async function handleClick() {
     if (!isReady) return
     showConfetti = true
     const time = DAY + date.getTime()
-    setClaimFriends(time)
     confettiTO = setTimeout(() => {
       showConfetti = false
     }, SECOND * 10)
-    await postClaimFriends(new Date(time).toISOString())
+    const friendsCigs = user.amount_friends
+    setRefCigs(friendsCigs)
+    setClaimFriends(time)
+    setAmountFriends(0)
+    await postClaimFriends(new Date(time).toISOString(), friendsCigs)
   }
 
   onDestroy(() => {
@@ -107,17 +85,17 @@
   <meta name="description" content={data.friends_content} />
 </svelte:head>
 
-{#snippet frens({ name, invites, cigs }: FriendStat)}
+{#snippet frens({ first_name, invitees, farm_cigs, ref_cigs }: FriendStat)}
   <div class="flex flex-1 items-center gap-x-3 py-2">
     <div class="flex size-8 select-none items-center justify-center rounded-full bg-cblue pt-0.5">
-      {name[0].toUpperCase()}
+      {first_name[0].toUpperCase()}
     </div>
     <span class="flex flex-1 flex-col gap-y-2.5 text-sm">
-      {name}
-      <span class="roboto flex gap-x-1 text-xs text-textgrey"><FriendsIcon />+{invites}</span>
+      {first_name}
+      <span class="roboto flex gap-x-1 text-xs text-textgrey"><FriendsIcon />+{invitees?.length ?? 0}</span>
     </span>
     <p class="relative ml-auto flex items-center">
-      {cigs.toLocaleString()}
+      {(farm_cigs + ref_cigs).toLocaleString()}
       <Cigarette class="-mt-0.5 ml-1" width="36" height="19" />
     </p>
   </div>
@@ -163,7 +141,7 @@
   </p>
   <section class="mb-2 flex w-full max-w-[344px] flex-col">
     <h2 class="shadow-heading mb-3 self-start text-base">{data.friends_yours}</h2>
-    {#each friends as friend}
+    {#each pageData.friends as friend}
       {@render frens(friend)}
     {/each}
   </section>

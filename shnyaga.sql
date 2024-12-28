@@ -194,6 +194,7 @@ CREATE TABLE users (
   username VARCHAR(32),
   language VARCHAR(5),
   farmed_amount INT DEFAULT 0,
+  farmed_time INT DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   last_visit TIMESTAMPTZ NOT NULL DEFAULT now(),
   invited_by BIGINT,

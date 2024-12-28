@@ -1,15 +1,7 @@
 import { relations } from "drizzle-orm/relations";
-import { users, wallets, invites, userTasks, tasks } from "./schema";
-
-export const walletsRelations = relations(wallets, ({one}) => ({
-	user: one(users, {
-		fields: [wallets.userId],
-		references: [users.tgId]
-	}),
-}));
+import { users, invites, wallets, userTasks, tasks } from "./schema";
 
 export const usersRelations = relations(users, ({one, many}) => ({
-	wallets: many(wallets),
 	user: one(users, {
 		fields: [users.invitedBy],
 		references: [users.tgId],
@@ -24,6 +16,7 @@ export const usersRelations = relations(users, ({one, many}) => ({
 	invites_invitee: many(invites, {
 		relationName: "invites_invitee_users_tgId"
 	}),
+	wallets: many(wallets),
 	userTasks: many(userTasks),
 }));
 
@@ -37,6 +30,13 @@ export const invitesRelations = relations(invites, ({one}) => ({
 		fields: [invites.invitee],
 		references: [users.tgId],
 		relationName: "invites_invitee_users_tgId"
+	}),
+}));
+
+export const walletsRelations = relations(wallets, ({one}) => ({
+	user: one(users, {
+		fields: [wallets.userId],
+		references: [users.tgId]
 	}),
 }));
 

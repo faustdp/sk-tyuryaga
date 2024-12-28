@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm' //isNotNull, notEquals
 import { drizzle } from 'drizzle-orm/node-postgres'
 
 import type { CreateUser, DbTaskStatus, GetUser, Inviter, UpdateInvites } from '../database.types'
@@ -45,7 +45,7 @@ async function getUser(id: number) {
         END,
         last_visit = NOW()
       WHERE ${eq(users.tgId, id)}
-      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, claim_friends
+      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, farmed_time, selected_images, claim_friends
     `)
     const data = res?.rows?.[0] as unknown as GetUser
     if (data?.tg_id) {
@@ -72,7 +72,9 @@ async function createUser(insertUser: CreateUser) {
       ref_cigs: users.refCigs,
       farm_cigs: users.farmCigs,
       farmed_amount: users.farmedAmount,
+      farmed_time: users.farmedTime,
       claim_friends: users.claimFriends,
+      selected_images: users.selectedImages,
     })
     return { data: data as GetUser }
   } catch (error) {
@@ -121,13 +123,14 @@ async function createInvite(inviter: number | string, invitee: number | string) 
   }
 }
 
-async function setTime(id: number, time: string, cigs: number) {
+async function setTime(id: number, time: string, cigs: number, farmedTime: number) {
   try {
     const data = await db
       .update(users)
       .set({
         endTime: time,
         farmedAmount: cigs,
+        farmedTime: farmedTime,
       })
       .where(eq(users.tgId, id))
     return { data }
@@ -144,8 +147,13 @@ async function farmCigs(id: number, cigs: number) {
         farmCigs: sql`${users.farmCigs} + ${cigs}`,
         endTime: null,
         farmedAmount: 0,
+        farmedTime: 0,
       })
-      .where(eq(users.tgId, id))
+      .where(eq(users.tgId, id)) /* and(
+        eq(users.tgId, id),
+        isNotNull(users.endTime),
+        notEquals(users.farmedAmount, 0)
+      ) */
     return { data }
   } catch (error) {
     return { error }
@@ -168,12 +176,13 @@ async function addBonus({ cigs, id, level, index }: { cigs: number; id: number; 
   }
 }
 
-async function claimFriends(id: number, time: string) {
+async function claimFriends(id: number, time: string, cigs: number) {
   try {
     const data = await db
       .update(users)
       .set({
         claimFriends: time,
+        refCigs: sql`${users.refCigs} + ${cigs}`,
       })
       .where(eq(users.tgId, id))
     return { data }
@@ -186,7 +195,7 @@ async function selectImage(id: number, index: number, image: number) {
   try {
     await db.execute(sql`
       UPDATE users
-      SET selected_images[${index}] = ${image}
+      SET selected_images[${index + 1}] = ${image}
       WHERE tg_id = ${id}
   `)
   } catch (error) {
@@ -234,6 +243,7 @@ interface FriendsUser {
   first_name: string
   farm_cigs: number
   ref_cigs: number
+  depth: number
   invitees?: FriendsUser[]
 }
 
@@ -258,11 +268,11 @@ async function getFriendsList(id: number) {
     data.rows.forEach((user: any) => {
       const { id, tg_id, first_name, farm_cigs, ref_cigs, invited_by, depth } = user
       if (depth === 1) {
-        const directInvitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs, invitees: [] }
+        const directInvitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs, depth, invitees: [] }
         inviteTree.push(directInvitee)
         userMap.set(tg_id, directInvitee)
       } else {
-        const invitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs }
+        const invitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs, depth }
         const inviter = userMap.get(invited_by)
         if (inviter) {
           inviter.invitees = inviter.invitees || []
