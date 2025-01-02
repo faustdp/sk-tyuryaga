@@ -17,20 +17,36 @@ import {
 export async function setEndTime(req: Request, res: Response) {
   try {
     const { id, time, cigs, farmedTime } = req.body
-    await setTime(id, time, cigs, farmedTime)
+    if (
+      typeof id !== 'number' ||
+      typeof cigs !== 'number' ||
+      typeof time !== 'string' ||
+      typeof farmedTime !== 'number'
+    ) {
+      return res.status(400).json({ error: 'data_error' })
+    }
+    const data = await setTime(id, time, cigs, farmedTime)
+    if (data.error) {
+      return res.status(500).json({ error: 'inner_error' })
+    }
     return res.status(200).json({ message: 'OK' })
   } catch {
-    // Bugsnag.notify(<Error>err)
     return res.status(500).json({ error: 'inner_error' })
   }
 }
 
 export async function setFarmCigs(req: Request, res: Response) {
   try {
-    await farmCigs(req.body.id, req.body.cigs)
+    const { id, cigs } = req.body
+    if (typeof id !== 'number' || typeof cigs !== 'number') {
+      return res.status(400).json({ error: 'data_error' })
+    }
+    const data = await farmCigs(id, cigs)
+    if (data.error) {
+      return res.status(500).json({ error: 'inner_error' })
+    }
     return res.status(200).json({ message: 'OK' })
   } catch {
-    // Bugsnag.notify(<Error>err)
     return res.status(500).json({ error: 'inner_error' })
   }
 }
@@ -38,10 +54,15 @@ export async function setFarmCigs(req: Request, res: Response) {
 export async function setAddBonus(req: Request, res: Response) {
   try {
     const { cigs, id, level, index } = req.body
-    await addBonus({ cigs, id, level, index })
+    if (typeof id !== 'number' || typeof cigs !== 'number') {
+      return res.status(400).json({ error: 'data_error' })
+    }
+    const data = await addBonus({ cigs, id, level, index })
+    if (data.error) {
+      return res.status(500).json({ error: 'inner_error' })
+    }
     return res.status(200).json({ message: 'OK' })
   } catch {
-    // Bugsnag.notify(<Error>err)
     return res.status(500).json({ error: 'inner_error' })
   }
 }
@@ -52,7 +73,6 @@ export async function setClaimFriends(req: Request, res: Response) {
     await claimFriends(id, time, cigs)
     return res.status(200).json({ message: 'OK' })
   } catch {
-    // Bugsnag.notify(<Error>err)
     return res.status(500).json({ error: 'inner_error' })
   }
 }
@@ -63,16 +83,15 @@ export async function setSelectImage(req: Request, res: Response) {
     await selectImage(id, index, image)
     return res.status(200).json({ message: 'OK' })
   } catch {
-    // Bugsnag.notify(<Error>err)
     return res.status(500).json({ error: 'inner_error' })
   }
 }
 
 export async function handleSetAddress(req: Request, res: Response) {
   const { id, address }: { id: number; address: string } = req.body
-  const result = await setAddress(id, address)
-  if (typeof result === 'object' && result.error) return res.status(500).json({ error: 'inner_error' })
-  return res.status(200).json({ success: result })
+  const data = await setAddress(id, address)
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
+  return res.status(200).json({ success: data.data })
 }
 
 export async function handleCheckSubscription(req: Request, res: Response) {
@@ -82,9 +101,7 @@ export async function handleCheckSubscription(req: Request, res: Response) {
     const isOk =
       result && (result.status === 'member' || result.status === 'creator' || result.status === 'administrator')
     return res.status(200).json({ ok: isOk })
-  } catch (error) {
-    // Bugsnag.notify(<Error>err)
-    console.log('handlers83', error)
+  } catch {
     return res.status(500).json({ error: 'inner_error' })
   }
 }
@@ -92,25 +109,23 @@ export async function handleCheckSubscription(req: Request, res: Response) {
 export async function handleCheckCode(req: Request, res: Response) {
   try {
     const { id, task, code }: { id: number; task: number; code: string } = req.body
-    const result = await checkCode(id, task, code)
-    return res.status(200).json({ ok: result.ok, done: result.done })
-  } catch (err) {
-    console.log('handlers65', err)
-    // Bugsnag.notify(<Error>err)
+    const data = await checkCode(id, task, code)
+    return res.status(200).json({ ok: data.ok, done: data.done })
+  } catch {
     return res.status(500).json({ error: 'inner_error' })
   }
 }
 
 export async function handleTaskStatus(req: Request, res: Response) {
   const { id, task, status }: { id: number; task: number; status: DbTaskStatus } = req.body
-  const result = await taskStatus(id, task, status)
-  if (result.error) return res.status(500).json({ error: 'inner_error' })
-  return res.status(200).json({ ok: result })
+  const data = await taskStatus(id, task, status)
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
+  return res.status(200).json({ ok: data.data })
 }
 
 export async function handleGetFriends(req: Request, res: Response) {
   const { id }: { id: number } = req.body
-  const result = await getFriendsList(id)
-  if ('error' in result) return res.status(500).json({ error: 'inner_error' })
-  return res.status(200).json({ data: result })
+  const data = await getFriendsList(id)
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
+  return res.status(200).json({ data: data.data })
 }

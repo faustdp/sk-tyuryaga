@@ -26,40 +26,40 @@ async function postRequest(url: string, data: any) {
 }
 
 export async function postEndTime(time: string, cigs: number, farmedTime: number) {
-  await postRequest(endTimeUrl, { time, cigs, farmedTime, id: user.tg_id })
+  await postRequest(endTimeUrl, { time, cigs, farmedTime, id: user.id })
 }
 
 export async function postFarmCigs(cigs: number) {
-  await postRequest(farmCigsUrl, { cigs, id: user.tg_id })
+  await postRequest(farmCigsUrl, { cigs, id: user.id })
 }
 
 export async function postAddBonus({ cigs, level, index }: { cigs: number; level?: number; index?: number }) {
-  await postRequest(addBonusUrl, { cigs, level, index, id: user.tg_id })
+  await postRequest(addBonusUrl, { cigs, level, index, id: user.id })
 }
 
 export async function postSetAddress(address: string) {
-  const res = await postRequest(setAddressUrl, { address, id: user.tg_id })
+  const res = await postRequest(setAddressUrl, { address, id: user.id })
   return res ? await res.json() : null
 }
 
 export async function postClaimFriends(time: string, cigs: number) {
-  await postRequest(claimFriendsUrl, { time, cigs, id: user.tg_id })
+  await postRequest(claimFriendsUrl, { time, cigs, id: user.id })
 }
 
 export async function postSelectImage(index: number, image: number) {
-  await postRequest(selectImageUrl, { index, image, id: user.tg_id })
+  await postRequest(selectImageUrl, { index, image, id: user.id })
 }
 
 export async function postCheckSubscription(name: string) {
-  return await postRequest(checkSubscriptionUrl, { name, id: user.tg_id })
+  return await postRequest(checkSubscriptionUrl, { name, id: user.id })
 }
 
 export async function postCheckCode(task: number, code: string) {
-  return await postRequest(checkCodeUrl, { task, code, id: user.tg_id })
+  return await postRequest(checkCodeUrl, { task, code, id: user.id })
 }
 
 type Statuses = Exclude<keyof typeof taskStatus, 'loading'>
 
 export async function postTaskStatus(task: number, status: Statuses) {
-  return await postRequest(taskStatusUrl, { task, status, id: user.tg_id })
+  return await postRequest(taskStatusUrl, { task, status, id: user.id })
 }

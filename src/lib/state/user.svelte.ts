@@ -2,6 +2,7 @@ import { postAddBonus, postSelectImage } from '@utils/api'
 import { AMOUNT, BONUSES, CLAIMED, COMBO, DAY, IMG_NAMES, LEVELS, MINUTE, SIXTY, TIME } from '@utils/const'
 
 interface User {
+  id: number | null
   tg_id: number | null
   username: string | null
   first_name: string
@@ -28,6 +29,7 @@ interface User {
 
 function userStore() {
   const state = $state<User>({
+    id: null,
     tg_id: null,
     username: null,
     first_name: '',
@@ -105,9 +107,9 @@ function userStore() {
     state.farm = farming
   }
 
-  function setEndTime(time: number) {
-    state.current_farm_time = state.farm_time * MINUTE
-    state.current_farm_amount = Math.round(state.farm_time * state.farm_amount)
+  function setEndTime(time: number, farmTime?: number, farmAmount?: number) {
+    state.current_farm_time = farmTime ?? state.farm_time * MINUTE
+    state.current_farm_amount = farmAmount ?? Math.round(state.farm_time * state.farm_amount)
     state.end_time = time
   }
 

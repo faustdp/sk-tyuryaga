@@ -21,6 +21,9 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    exclude: ['./admin'],
+  },
   // test: {
   //   include: ['src/**/*.{test,spec}.{js,ts}'],
   // },

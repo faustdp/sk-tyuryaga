@@ -1,7 +1,7 @@
-import { and, eq, sql } from 'drizzle-orm' //isNotNull, notEquals
+import { and, eq, isNotNull, ne, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 
-import type { CreateUser, DbTaskStatus, GetUser, Inviter, UpdateInvites } from '../database.types'
+import type { CreateUser, DbTaskStatus, FriendsUser, GetUser, Inviter, UpdateInvites } from '../database.types'
 import * as schema from '../drizzle/schema'
 import { dbUrl } from './config'
 
@@ -44,13 +44,13 @@ async function getUser(id: number) {
           ELSE 0
         END,
         last_visit = NOW()
-      WHERE ${eq(users.tgId, id)}
-      RETURNING tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, farmed_time, selected_images, claim_friends
+      WHERE ${eq(users.tgId, String(id))}
+      RETURNING id, tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, farmed_time, selected_images, claim_friends
     `)
     const data = res?.rows?.[0] as unknown as GetUser
-    if (data?.tg_id) {
-      data.tg_id = Number(data.tg_id)
-    }
+    // if (data?.tg_id) {
+    //   data.tg_id = Number(data.tg_id)
+    // }
     return { data }
   } catch (err) {
     return { error: err as Error }
@@ -60,6 +60,7 @@ async function getUser(id: number) {
 async function createUser(insertUser: CreateUser) {
   try {
     const [data] = await db.insert(users).values(insertUser).returning({
+      id: users.id,
       tg_id: users.tgId,
       first_name: users.firstName,
       language: users.language,
@@ -85,14 +86,14 @@ async function createUser(insertUser: CreateUser) {
 async function getInviter(id: number | string, isId: boolean) {
   try {
     const res = await db.execute(sql`
-      SELECT tg_id, username, first_name, invited_by
+      SELECT id, tg_id, username, first_name, invited_by_id
       FROM users
       WHERE ${isId ? sql`tg_id` : sql`username`} = ${id};
     `)
     const data = res.rows[0] as unknown as Inviter
-    if (data) {
-      data.tg_id = Number(data.tg_id)
-    }
+    // if (data) {
+    //   data.tg_id = Number(data.tg_id)
+    // }
     return { data }
   } catch (err) {
     return { error: err as Error }
@@ -101,10 +102,18 @@ async function getInviter(id: number | string, isId: boolean) {
 
 async function updateInvites(id: number) {
   try {
-    const result = await db.execute(sql`
-      SELECT * FROM update_invites(${id})
-    `)
-    return { data: result.rows[0] as unknown as UpdateInvites }
+    const result = await db
+      .update(users)
+      .set({
+        invites: sql`${users.invites} + 1`,
+      })
+      .where(eq(users.id, id))
+      .returning({
+        invites: users.invites,
+        invited_by_id: users.invitedById,
+        tg_id: users.tgId,
+      })
+    return { data: result[0] as UpdateInvites }
   } catch (err) {
     return { error: err as Error }
   }
@@ -113,7 +122,7 @@ async function updateInvites(id: number) {
 async function createInvite(inviter: number | string, invitee: number | string) {
   try {
     const query = sql`
-      INSERT INTO invites (inviter, invitee)
+      INSERT INTO invites (inviter_id, invitee_id)
       VALUES (${inviter}, ${invitee})
     `
     await db.execute(query)
@@ -129,10 +138,10 @@ async function setTime(id: number, time: string, cigs: number, farmedTime: numbe
       .update(users)
       .set({
         endTime: time,
-        farmedAmount: cigs,
-        farmedTime: farmedTime,
+        farmedAmount: String(cigs),
+        farmedTime: String(farmedTime),
       })
-      .where(eq(users.tgId, id))
+      .where(eq(users.id, id))
     return { data }
   } catch (error) {
     return { error }
@@ -146,14 +155,10 @@ async function farmCigs(id: number, cigs: number) {
       .set({
         farmCigs: sql`${users.farmCigs} + ${cigs}`,
         endTime: null,
-        farmedAmount: 0,
-        farmedTime: 0,
+        farmedAmount: String(0),
+        farmedTime: String(0),
       })
-      .where(eq(users.tgId, id)) /* and(
-        eq(users.tgId, id),
-        isNotNull(users.endTime),
-        notEquals(users.farmedAmount, 0)
-      ) */
+      .where(and(eq(users.id, id), isNotNull(users.endTime), ne(users.farmedAmount, String(0))))
     return { data }
   } catch (error) {
     return { error }
@@ -166,10 +171,19 @@ async function addBonus({ cigs, id, level, index }: { cigs: number; id: number; 
       .update(users)
       .set({
         farmCigs: sql`${users.farmCigs} + ${cigs}`,
-        bonuses: index ? sql`array_append(${users.bonuses}, ${index})` : sql`'{}'::smallint[]`,
-        ...(level ? { level } : {}),
+        bonuses:
+          index != null
+            ? sql`CASE 
+          WHEN EXISTS (
+            SELECT 1 FROM jsonb_array_elements_text(COALESCE(${users.bonuses}::jsonb, '[]'::jsonb))
+            WHERE value::integer = ${index}::integer
+          ) THEN COALESCE(${users.bonuses}::jsonb, '[]'::jsonb)
+          ELSE COALESCE(${users.bonuses}::jsonb, '[]'::jsonb) || to_jsonb(${index}::integer)
+        END`
+            : sql`'[]'::jsonb`,
+        ...(level ? { level: String(level) } : {}),
       })
-      .where(eq(users.tgId, id))
+      .where(eq(users.id, id))
     return { data }
   } catch (error) {
     return { error }
@@ -184,7 +198,7 @@ async function claimFriends(id: number, time: string, cigs: number) {
         claimFriends: time,
         refCigs: sql`${users.refCigs} + ${cigs}`,
       })
-      .where(eq(users.tgId, id))
+      .where(eq(users.id, id))
     return { data }
   } catch (error) {
     return { error }
@@ -193,13 +207,13 @@ async function claimFriends(id: number, time: string, cigs: number) {
 
 async function selectImage(id: number, index: number, image: number) {
   try {
-    await db.execute(sql`
+    const data = await db.execute(sql`
       UPDATE users
-      SET selected_images[${index + 1}] = ${image}
-      WHERE tg_id = ${id}
+      SET selected_images[${index}] = ${image}
+      WHERE id = ${id}
   `)
+    return { data }
   } catch (error) {
-    console.log('db197', error)
     return { error }
   }
 }
@@ -207,11 +221,11 @@ async function selectImage(id: number, index: number, image: number) {
 async function setAddress(id: number, address: string) {
   try {
     const data = await db.execute(sql`WITH upsert AS (
-      INSERT INTO wallets (address, user_id)
+      INSERT INTO wallets (address, user_id_id)
       VALUES (${address}, ${id})
       ON CONFLICT (address) DO
         UPDATE SET last_connect = now()
-        WHERE wallets.user_id = ${id}
+        WHERE wallets.user_id_id = ${id}
         AND wallets.address = ${address}
       RETURNING *
     ),
@@ -219,7 +233,7 @@ async function setAddress(id: number, address: string) {
       SELECT CASE 
         WHEN NOT EXISTS (SELECT 1 FROM upsert) 
           AND EXISTS (SELECT 1 FROM wallets WHERE address = ${address})
-        THEN (SELECT wallets.user_id FROM wallets WHERE address = ${address})
+        THEN (SELECT wallets.user_id_id FROM wallets WHERE address = ${address})
         ELSE NULL
       END AS conflicting_user_id
     )
@@ -231,33 +245,23 @@ async function setAddress(id: number, address: string) {
       END AS result,
       conflicting_user_id
     FROM validation;`)
-    return data.rows[0].result !== null
+    return { data: data.rows[0].result !== null }
   } catch (error) {
     return { error }
   }
-}
-
-interface FriendsUser {
-  id: number
-  tg_id: number
-  first_name: string
-  farm_cigs: number
-  ref_cigs: number
-  depth: number
-  invitees?: FriendsUser[]
 }
 
 async function getFriendsList(id: number) {
   try {
     const data = await db.execute(sql`
       WITH RECURSIVE invite_tree AS (
-        SELECT id, tg_id, first_name, farm_cigs, ref_cigs, invited_by, 1 AS depth
+        SELECT id, tg_id, first_name, farm_cigs, ref_cigs, invited_by_id, 1 AS depth
         FROM users
-        WHERE invited_by = ${id}
+        WHERE invited_by_id = ${id}
         UNION ALL     
-        SELECT u.id, u.tg_id, u.first_name, u.farm_cigs, u.ref_cigs, u.invited_by, it.depth + 1
+        SELECT u.id, u.tg_id, u.first_name, u.farm_cigs, u.ref_cigs, u.invited_by_id, it.depth + 1
         FROM users u
-        JOIN invite_tree it ON u.invited_by = it.tg_id
+        JOIN invite_tree it ON u.invited_by_id = it.id
         WHERE it.depth < 3
       )
       SELECT * FROM invite_tree
@@ -266,27 +270,27 @@ async function getFriendsList(id: number) {
     const inviteTree: FriendsUser[] = []
     const userMap = new Map<number, FriendsUser>()
     data.rows.forEach((user: any) => {
-      const { id, tg_id, first_name, farm_cigs, ref_cigs, invited_by, depth } = user
+      const { id, tg_id, first_name, farm_cigs, ref_cigs, invited_by_id, depth } = user
       if (depth === 1) {
         const directInvitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs, depth, invitees: [] }
         inviteTree.push(directInvitee)
-        userMap.set(tg_id, directInvitee)
+        userMap.set(id, directInvitee)
       } else {
         const invitee: FriendsUser = { id, tg_id, first_name, farm_cigs, ref_cigs, depth }
-        const inviter = userMap.get(invited_by)
+        const inviter = userMap.get(invited_by_id)
         if (inviter) {
           inviter.invitees = inviter.invitees || []
           inviter.invitees.push(invitee)
         }
       }
     })
-    return inviteTree
+    return { data: inviteTree }
   } catch (error) {
     return { error }
   }
 }
 
-function parseCodeResponse(result: string): boolean {
+/* function parseCodeResponse(result: string): boolean {
   const [codesAmount, codesString] = result.slice(1, -1).split(',')
   const amount = parseInt(codesAmount, 10)
   const codes = codesString
@@ -294,16 +298,81 @@ function parseCodeResponse(result: string): boolean {
     .split(',')
     .map((code) => code.trim().replace(/"/g, ''))
   return codes.length >= amount
+} */
+function parseCodeResponse(result: { codes_amount: string; codes: string[] }): boolean {
+  if (!result.codes_amount || !result.codes) {
+    return false
+  }
+  const codes = Array.isArray(result.codes) ? result.codes : JSON.parse(result.codes)
+  return codes.length >= Number(result.codes_amount)
 }
 
+/* const data = await db.execute(sql`
+      SELECT check_and_update_code(${id}, ${task}, ${code})
+    `) */
 async function checkCode(id: number, task: number, code: string) {
   try {
     const data = await db.execute(sql`
-      SELECT check_and_update_code(${id}, ${task}, ${code})
+      WITH code_check AS (
+        SELECT EXISTS (
+          SELECT 1
+          FROM tasks
+          WHERE id = ${task}::int AND ${code}::text = ANY(ARRAY(
+            SELECT jsonb_array_elements_text(codes)
+          ))
+        ) AS code_exists
+      ),
+      current_codes AS (
+        SELECT codes, codes_amount
+        FROM user_tasks
+        WHERE user_id_id = ${id}::int AND task_id_id = ${task}::int
+      ),
+      update_codes AS (
+        UPDATE user_tasks
+        SET 
+          codes = CASE 
+            WHEN (SELECT code_exists FROM code_check) THEN
+              CASE
+                WHEN codes IS NULL THEN jsonb_build_array(${code}::text)
+                WHEN NOT (${code}::text IN (SELECT jsonb_array_elements_text(codes))) 
+                THEN codes || jsonb_build_array(${code}::text)
+                ELSE codes
+              END
+            ELSE codes
+          END
+        WHERE user_id_id = ${id}::int AND task_id_id = ${task}::int
+        RETURNING codes_amount, codes
+      )
+      SELECT
+        CASE
+          WHEN (SELECT code_exists FROM code_check) THEN
+            COALESCE(
+              (SELECT codes_amount FROM update_codes),
+              (SELECT codes_amount FROM current_codes)
+            )
+          ELSE NULL
+        END AS codes_amount,
+        CASE
+          WHEN (SELECT code_exists FROM code_check) THEN
+            COALESCE(
+              (SELECT codes FROM update_codes),
+              (SELECT codes FROM current_codes)
+            )
+          ELSE NULL
+        END AS codes
     `)
-    console.log('db251', data)
-    const isOk = data.rows.length > 0
-    return { ok: isOk, done: isOk ? parseCodeResponse(data.rows[0].check_and_update_code as string) : false }
+    console.log('db251', data, data.rows[0]?.codes)
+    const isOk = data.rows.length > 0 && data.rows[0].codes_amount !== null
+    const isDone = isOk
+      ? parseCodeResponse(
+          data.rows[0] as { codes_amount: string; codes: string[] },
+        ) /* parseCodeResponse(data.rows[0].check_and_update_code as string) */
+      : false
+    console.log('db365', isOk, isDone)
+    return {
+      ok: isOk,
+      done: isDone,
+    }
   } catch (error) {
     console.log('db197', error)
     return { error }
@@ -317,7 +386,7 @@ async function taskStatus(id: number, task: number, status: DbTaskStatus) {
       .set({
         status: status,
       })
-      .where(and(eq(userTasks.userId, id), eq(userTasks.taskId, task)))
+      .where(and(eq(userTasks.userIdId, id), eq(userTasks.taskIdId, task)))
     console.log('db267', data)
     return { data }
   } catch (error) {
@@ -325,6 +394,8 @@ async function taskStatus(id: number, task: number, status: DbTaskStatus) {
     return { error }
   }
 }
+
+//TODO FETCH AND CREATE USER_TASKS
 
 export {
   getUser,

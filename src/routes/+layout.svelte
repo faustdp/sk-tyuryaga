@@ -11,11 +11,11 @@
     setBaseFarm,
     setCigs,
     setClaimFriends,
+    setEndTime,
     setFarm,
     setRefCigs,
     setSelectedImages,
     setUser,
-    user,
   } from '@state/user.svelte'
   import {
     closeMiniApp,
@@ -40,7 +40,7 @@
   import BottomNav from '@/BottomNav.svelte'
   import data from '@/messages.json'
   import { invalidate } from '$app/navigation'
-  import { page } from '$app/stores'
+  import { page } from '$app/state'
   import * as Dialog from '$lib/components/dialog/'
 
   console.clear()
@@ -117,7 +117,7 @@
 
   setContext(TASK_CTX, tasks)
 
-  let progressDefDur = 1400
+  let progressDefDur = 140
   const progressShortDur = 130
   let progress = new Tween(0, {
     duration: progressShortDur,
@@ -194,11 +194,13 @@
       }
 
       const {
+        id,
         tg_id,
         first_name,
         username,
         invites,
         level,
+        // language,
         bonuses,
         ref_cigs,
         farm_cigs,
@@ -210,29 +212,28 @@
         farmed_time,
       } = result.userData
 
-      setBaseFarm(level, bonuses)
+      setBaseFarm(Number(level), bonuses)
 
       if (end_time) {
         const value = new Date(end_time).getTime()
         const now = Date.now()
-        user.current_farm_amount = farmed_amount
-        user.current_farm_time = farmed_time
-        user.end_time = value
+        setEndTime(value, Number(farmed_time), Number(farmed_amount))
         setFarm(value > now ? FARMING : FARMED)
       }
 
       setSelectedImages(selected_images)
       setClaimFriends(new Date(claim_friends).getTime())
-      setCigs(farm_cigs)
-      setRefCigs(ref_cigs)
+      setCigs(Number(farm_cigs))
+      setRefCigs(Number(ref_cigs))
       setUser({
-        tg_id,
+        id,
         first_name,
         username,
-        invites,
-        level,
         bonuses,
-        activity_days,
+        tg_id: Number(tg_id),
+        invites: Number(invites),
+        level: Number(level),
+        activity_days: Number(activity_days),
       })
 
       invalidate('app:friends')
@@ -288,7 +289,7 @@
 </script>
 
 <div
-  class="relative w-full overflow-y-auto overflow-x-hidden {$page.url.pathname === '/'
+  class="relative w-full overflow-y-auto overflow-x-hidden {page.url.pathname === '/'
     ? 'h-full'
     : 'h-[calc(100%_-_var(--nav-height))]'} ">
   <Dialog.Root bind:open={app.isModalOpened}>

@@ -3,22 +3,23 @@ import { type User as TGUser } from 'grammy/types'
 type UserForDb = Pick<TGUser, 'username' | 'id' | 'language_code' | 'first_name'>
 
 interface CreateUser {
-  tgId: number
+  tgId: string
   firstName: string
   language?: string
   username?: string
-  invitedBy: number | null
+  invitedById?: number
 }
 
 interface Inviter {
+  id: number
   tg_id: number
-  invited_by: number | null
+  invited_by_id: number | null
   username: string | null
   first_name: string
 }
 
 interface GetUser {
-  tg_id: number
+  /*   tg_id: number
   username: string | null
   first_name: string
   invites: number
@@ -32,16 +33,41 @@ interface GetUser {
   language: string | null
   claim_friends: string | null
   farmed_amount: number
-  farmed_time: number
-  address: string | null
+  farmed_time: number */
+  id: number
+  tg_id: string
+  username: string | null
+  first_name: string
+  invites: string
+  level: string
+  bonuses: number[]
+  selected_images: number[]
+  activity_days: string
+  ref_cigs: string
+  farm_cigs: string
+  end_time: string | null
+  language: string | null
+  claim_friends: string | null
+  farmed_amount: string
+  farmed_time: string
 }
 
 interface UpdateInvites {
-  invites: number
-  invited_by: number
+  invites: string
+  invited_by_id: number
+  tg_id: string
+}
+
+interface FriendsUser {
+  id: number
   tg_id: number
+  first_name: string
+  farm_cigs: number
+  ref_cigs: number
+  depth: number
+  invitees?: FriendsUser[]
 }
 
 type DbTaskStatus = 'start' | 'check' | 'claim' | 'done'
 
-export { UserForDb, CreateUser, Inviter, GetUser, UpdateInvites, DbTaskStatus }
+export { UserForDb, CreateUser, Inviter, GetUser, UpdateInvites, DbTaskStatus, FriendsUser }

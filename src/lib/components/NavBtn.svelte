@@ -2,7 +2,7 @@
   import { type Component } from 'svelte'
 
   import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
+  import { page } from '$app/state'
 
   interface Props {
     Icon: Component
@@ -34,7 +34,7 @@
   }
 
   function handleTouchStart() {
-    if (url && url === $page.url.pathname) return
+    if (url && url === page.url.pathname) return
     isActive = true
   }
 
@@ -43,7 +43,7 @@
      items-center outline-none transition will-change-transform relative`,
   )
 
-  let isCurrPath = $derived(url && url === $page.url.pathname)
+  let isCurrPath = $derived(url && url === page.url.pathname)
 </script>
 
 <svelte:element

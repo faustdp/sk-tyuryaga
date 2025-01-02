@@ -101,9 +101,9 @@ export async function meHandler(req: Request, res: Response) {
     const userForSb: CreateUser = Object.assign(
       {},
       {
-        tgId: userData.id,
+        tgId: String(userData.id),
         firstName: userData.first_name,
-        invitedBy: null,
+        // invitedBy: null,
         ...(userData.language_code && { language: userData.language_code }),
         ...(userData.username && { username: userData.username }),
       },
@@ -117,8 +117,10 @@ export async function meHandler(req: Request, res: Response) {
       inviter = inviterData
     }
 
-    const inviterId = inviter?.tg_id ?? null
-    userForSb.invitedBy = inviterId
+    const inviterId = inviter?.id ?? null
+    if (inviterId) {
+      userForSb.invitedById = inviterId
+    }
     const { data: createdData, error: createdError } = await createUser(userForSb)
 
     if (createdError || !createdData) {
@@ -131,7 +133,7 @@ export async function meHandler(req: Request, res: Response) {
     if (inviterId) {
       await Promise.all([
         updateInvites(inviterId),
-        createInvite(inviterId, userData.id),
+        createInvite(inviterId, createdData.id),
         // sendToUser(inviterId, {
         //   firstName: createdData.first_name,
         //   username: createdData.username,
@@ -140,7 +142,7 @@ export async function meHandler(req: Request, res: Response) {
       ])
     }
 
-    return res.status(200).json({ valid: true, userData })
+    return res.status(200).json({ valid: true, userData: createdData })
   } catch (_err) {
     console.log('me135', _err)
     // Bugsnag.notify(<GenericError>err)

@@ -58,11 +58,11 @@
         })
       }
     })
-    user.amount_friends = Math.ceil(sum) - user.ref_cigs
+    setAmountFriends(Math.ceil(sum) - user.ref_cigs)
   })
 
   async function handleClick() {
-    if (!isReady) return
+    // if (!isReady) return
     showConfetti = true
     const time = DAY + date.getTime()
     confettiTO = setTimeout(() => {
