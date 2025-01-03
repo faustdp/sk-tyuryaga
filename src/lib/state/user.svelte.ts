@@ -20,8 +20,8 @@ interface User {
   farm_amount: number
   current_farm_time: number
   current_farm_amount: number
-  tasks_completed: number
   activity_days: number
+  tasks_completed: number
   farm: Farm
   bonuses: BonusIndexes[]
   selected_images: number[]
@@ -47,8 +47,8 @@ function userStore() {
     farm_amount: LEVELS[0].baseAmount,
     current_farm_time: LEVELS[0].baseTime * MINUTE,
     current_farm_amount: LEVELS[0].baseTime * LEVELS[0].baseAmount,
-    tasks_completed: 0,
     activity_days: 0,
+    tasks_completed: 0,
     farm: CLAIMED,
     bonuses: [],
     selected_images: Array.from({ length: IMG_NAMES.length }, () => -1),
@@ -155,6 +155,10 @@ function userStore() {
     ])
   }
 
+  function increaseCompletedTasks() {
+    user.tasks_completed += 1
+  }
+
   return {
     get user() {
       return state
@@ -171,6 +175,7 @@ function userStore() {
     addBonus,
     selectImage,
     setSelectedImages,
+    increaseCompletedTasks,
   }
 }
 
@@ -188,4 +193,5 @@ export const {
   addBonus,
   selectImage,
   setSelectedImages,
+  increaseCompletedTasks,
 } = userStore()

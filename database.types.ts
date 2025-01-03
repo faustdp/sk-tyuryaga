@@ -60,10 +60,10 @@ interface UpdateInvites {
 
 interface FriendsUser {
   id: number
-  tg_id: number
+  tg_id: string
   first_name: string
-  farm_cigs: number
-  ref_cigs: number
+  farm_cigs: string
+  ref_cigs: string
   depth: number
   invitees?: FriendsUser[]
 }

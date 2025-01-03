@@ -27,14 +27,6 @@
     isDrawerOpened = false
   }
 
-  interface FriendStat {
-    first_name: string
-    farm_cigs: number
-    ref_cigs: number
-    depth: number
-    invitees?: FriendStat[]
-  }
-
   $effect(() => {
     const interval = setInterval(() => {
       date.setTime(Date.now())
@@ -51,10 +43,10 @@
     if (!pageData.friends?.length) return
     let sum = 0
     pageData.friends.forEach((el: FriendStat) => {
-      sum += el.farm_cigs * 0.1
+      sum += Number(el.farm_cigs) * 0.1
       if (el.invitees) {
         el.invitees.forEach((el: FriendStat) => {
-          sum += el.farm_cigs * (el.depth === 2 ? 0.05 : 0.01)
+          sum += Number(el.farm_cigs) * (el.depth === 2 ? 0.05 : 0.01)
         })
       }
     })
@@ -62,7 +54,7 @@
   })
 
   async function handleClick() {
-    // if (!isReady) return
+    if (!isReady) return
     showConfetti = true
     const time = DAY + date.getTime()
     confettiTO = setTimeout(() => {
@@ -95,7 +87,7 @@
       <span class="roboto flex gap-x-1 text-xs text-textgrey"><FriendsIcon />+{invitees?.length ?? 0}</span>
     </span>
     <p class="relative ml-auto flex items-center">
-      {(farm_cigs + ref_cigs).toLocaleString()}
+      {(Number(farm_cigs) + Number(ref_cigs)).toLocaleString()}
       <Cigarette class="-mt-0.5 ml-1" width="36" height="19" />
     </p>
   </div>

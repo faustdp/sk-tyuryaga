@@ -145,11 +145,15 @@ export interface Invite {
 export interface Task {
   id: number;
   type: 'invite' | 'code' | 'subscribe';
-  position?: number | null;
   reward: number;
-  icon: string;
+  icon: {
+    iconType: 'predefined' | 'custom';
+    icon_name?: ('inst' | 'tg' | 'tiktok' | 'vk' | 'youtube' | 'twitter' | 'discord') | null;
+    icon_url?: string | null;
+  };
   link?: string | null;
   active?: boolean | null;
+  position?: number | null;
   language?: string | null;
   delay?: number | null;
   invites?: number | null;
@@ -376,11 +380,17 @@ export interface InvitesSelect<T extends boolean = true> {
  */
 export interface TasksSelect<T extends boolean = true> {
   type?: T;
-  position?: T;
   reward?: T;
-  icon?: T;
+  icon?:
+    | T
+    | {
+        iconType?: T;
+        icon_name?: T;
+        icon_url?: T;
+      };
   link?: T;
   active?: T;
+  position?: T;
   language?: T;
   delay?: T;
   invites?: T;

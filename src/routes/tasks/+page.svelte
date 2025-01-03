@@ -7,11 +7,12 @@
   import Done from '@icons/done.svg?component'
   import Spinner from '@icons/Spinner.svelte'
   import { app, openModal } from '@state/app.svelte'
-  import { user } from '@state/user.svelte'
+  import { tasks } from '@state/tasks.svelte'
+  import { increaseCompletedTasks, user } from '@state/user.svelte'
   import { sortTasks, w8 } from '@utils'
   import { postCheckSubscription, postTaskStatus } from '@utils/api'
-  import { iconsComponents, TASK_CODE, TASK_CTX, TASK_INVITE, taskStatus } from '@utils/const'
-  import { getContext, untrack } from 'svelte'
+  import { iconsComponents, TASK_CODE, TASK_INVITE, taskStatus } from '@utils/const' //TASK_CTX,
+  import { untrack } from 'svelte' //getContext,
   import { flip } from 'svelte/animate'
   import toast from 'svelte-hot-french-toast'
 
@@ -24,7 +25,7 @@
     isDrawerOpened = false
   }
 
-  let tasks: (SocialItemCode | SocialItemInvite | SocialItemSubscribe)[] = getContext(TASK_CTX)
+  // let tasks: (SocialItemCode | SocialItemInvite | SocialItemSubscribe)[] = getContext(TASK_CTX)
   let selectedTaskCheck: SocialItem | null = $state(null)
 
   $effect(() => {
@@ -57,7 +58,8 @@
     }
   })
 
-  async function handleTaskClick(item: SocialItemCode | SocialItemInvite | SocialItemSubscribe) {
+  async function handleTaskClick(item: SocialItem) {
+    //SocialItemCode | SocialItemInvite | SocialItemSubscribe
     if (item.status === taskStatus.done) return
     if (item.status === taskStatus.loading) {
       if (item.link) window.open(item.link, '_blank')
@@ -67,7 +69,7 @@
       toastSuccess(item.reward)
       await setDoneTask(item)
     } else if (item.status === taskStatus.start) {
-      if (item.type === TASK_INVITE) {
+      if (item.type === TASK_INVITE && item.invites) {
         if (item.invites > user.invites) {
           isDrawerOpened = true
         } else {
@@ -110,6 +112,7 @@
   async function setDoneTask(item: SocialItem) {
     item.status = taskStatus.done
     sortTasks(tasks)
+    increaseCompletedTasks()
     await postTaskStatus(item.id, taskStatus.done)
   }
 </script>

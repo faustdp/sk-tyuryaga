@@ -2,8 +2,8 @@ import crypto from 'crypto'
 import { Request, Response } from 'express'
 
 import type { CreateUser, Inviter, UserForDb } from '../database.types'
-import { bot, token } from './config'
-import { createInvite, createUser, getInviter, getUser, updateInvites } from './db'
+import { token } from './config'
+import { createInvite, createUser, createUserTasks, getInviter, getUser, getUserTasks, updateInvites } from './db'
 
 // interface GenericError {
 //   message: string
@@ -94,7 +94,8 @@ export async function meHandler(req: Request, res: Response) {
     }
 
     if (data) {
-      return res.status(200).json({ valid: true, userData: data })
+      const tasks = await getUserTasks(data.id)
+      return res.status(200).json({ valid: true, userData: Object.assign(data, tasks) })
     }
 
     const startParam = params.get('start_param')
@@ -103,7 +104,6 @@ export async function meHandler(req: Request, res: Response) {
       {
         tgId: String(userData.id),
         firstName: userData.first_name,
-        // invitedBy: null,
         ...(userData.language_code && { language: userData.language_code }),
         ...(userData.username && { username: userData.username }),
       },
@@ -130,6 +130,8 @@ export async function meHandler(req: Request, res: Response) {
       })
     }
 
+    const tasks = await createUserTasks(createdData.id)
+
     if (inviterId) {
       await Promise.all([
         updateInvites(inviterId),
@@ -141,8 +143,7 @@ export async function meHandler(req: Request, res: Response) {
         // }),
       ])
     }
-
-    return res.status(200).json({ valid: true, userData: createdData })
+    return res.status(200).json({ valid: true, userData: Object.assign(createdData, tasks) })
   } catch (_err) {
     console.log('me135', _err)
     // Bugsnag.notify(<GenericError>err)

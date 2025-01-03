@@ -90,6 +90,14 @@ declare global {
   interface Window {
     _tonConnectUI?: TonConnectUI
   }
+
+  interface FriendStat {
+    first_name: string
+    farm_cigs: string
+    ref_cigs: string
+    depth: number
+    invitees?: FriendStat[]
+  }
 }
 
 declare module '*.svg' {

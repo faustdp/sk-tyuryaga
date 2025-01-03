@@ -48,7 +48,7 @@ export function sortTasks(tasks: SocialItem[]) {
   return tasks.sort((a, b) => (b.status === taskStatus.done && a.status !== taskStatus.done ? -1 : 0))
 }
 
-export const getImgUrl = (img: number, level: number) => `/imgs/${img}/${Number(level) + 1}.webp`
+export const getImgUrl = (img: number, level: number | string) => `/imgs/${img}/${Number(level) + 1}.webp`
 
 export function getFirstLetter(name: string): string {
   const firstLetterMatch = name.match(/[a-zA-Z]/)

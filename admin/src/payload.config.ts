@@ -3,40 +3,63 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
 import { ru } from '@payloadcms/translations/languages/ru'
+import { type Task } from './payload-types'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// async function isTaskCode(taskId: number) {
-//   const task = await payload.findByID({
-//     collection: 'tasks',
-//     id: taskId,
-//   })
-//   return task?.type === 'code'
-// }
-
-// async function getTaskCodesLength(taskId: number): Promise<number> {
-//   const task = await payload.findByID({
-//     collection: 'tasks',
-//     id: taskId,
-//   })
-//   console.log('payload.config28', task)
-//   const codes = typeof task?.codes === 'string' ? JSON.parse(task.codes) : task?.code
-//   if (Array.isArray(codes)) {
-//     return codes.length
-//   }
-//   if (typeof codes === 'object' && codes !== null) {
-//     return Object.keys(codes).length
-//   }
-//   return 0
-// }
+async function createUserTasks(payload: Payload, doc: Task) {
+  let page = 1
+  let hasMoreUsers = true
+  const limit = 100
+  await new Promise((resolve) => setTimeout(resolve, 2000))
+  try {
+    while (hasMoreUsers) {
+      const users = await payload.find({
+        collection: 'users',
+        limit,
+        page,
+        ...(doc.language && {
+          where: {
+            language: {
+              equals: doc.language,
+            },
+          },
+        }),
+      })
+      const userTaskPromises = users.docs.map((user) => {
+        return payload.create({
+          collection: 'user_tasks',
+          data: {
+            user_id: user.id,
+            task_id: doc.id,
+            status: 'start',
+            ...(doc.type === 'code' && { codes: [] }),
+            ...(doc.type === 'code' &&
+              doc.codes && { codes_amount: (doc.codes as string[]).length }),
+          },
+        })
+      })
+      await Promise.all(userTaskPromises)
+      hasMoreUsers = users.hasNextPage
+      page++
+    }
+  } catch (error) {
+    console.log('payload.config53', error)
+  }
+}
 
 export default buildConfig({
+  /*   hooks: {
+    afterError: [async ({ error }) => {
+      BugSnag report
+    }]
+  }, */
   admin: {
     user: 'admins',
     importMap: {
@@ -46,17 +69,13 @@ export default buildConfig({
   collections: [
     {
       slug: 'admins',
-      admin: {
-        useAsTitle: 'email',
-      },
+      admin: { useAsTitle: 'email' },
       auth: true,
       fields: [],
     },
     {
       slug: 'users',
-      admin: {
-        useAsTitle: 'first_name',
-      },
+      admin: { useAsTitle: 'id' },
       fields: [
         { name: 'tg_id', type: 'number', required: true, unique: true, index: true },
         { name: 'first_name', type: 'text', required: true, unique: true, maxLength: 100 },
@@ -64,16 +83,13 @@ export default buildConfig({
         { name: 'language', type: 'text', maxLength: 5 },
         { name: 'farmed_amount', type: 'number', defaultValue: 0 },
         { name: 'farmed_time', type: 'number', defaultValue: 0 },
-        { name: 'created_at', type: 'date', required: true },
+        { name: 'created_at', type: 'date', required: true, defaultValue: new Date() },
         { name: 'last_visit', type: 'date', defaultValue: new Date() },
         {
           name: 'invited_by',
           type: 'relationship',
           relationTo: 'users',
           hasMany: false,
-          filterOptions: {
-            tg_id: { exists: true },
-          },
         },
         { name: 'invites', type: 'number', required: true, defaultValue: 0 },
         { name: 'farm_cigs', type: 'number', required: true, defaultValue: 0 },
@@ -89,12 +105,6 @@ export default buildConfig({
         {
           name: 'bonuses',
           type: 'json',
-          // fields: [
-          //   {
-          //     name: 'value',
-          //     type: 'number',
-          //   },
-          // ],
           defaultValue: [],
         },
         {
@@ -122,55 +132,79 @@ export default buildConfig({
           required: true,
         },
       ],
-      // hooks: {
-      //   beforeValidate: [
-      //     async ({ data, operation }) => {
-      //       if (operation === 'create' && data) {
-      //         if (!data.invitee) {
-      //           throw new Error('invitee cannot be NULL')
-      //         }
-      //         if (!data.inviter) {
-      //           throw new Error('inviter cannot be NULL')
-      //         }
-      //       }
-      //       return data
-      //     },
-      //   ],
-      // },
     },
     {
       slug: 'tasks',
       fields: [
         { name: 'type', type: 'select', required: true, options: ['invite', 'code', 'subscribe'] },
-        { name: 'position', type: 'number' },
         { name: 'reward', type: 'number', required: true },
-        { name: 'icon', type: 'text', required: true, maxLength: 1024 },
+        {
+          name: 'icon',
+          type: 'group',
+          fields: [
+            {
+              name: 'iconType',
+              type: 'radio',
+              options: [
+                { label: 'Predefined', value: 'predefined' },
+                { label: 'Custom URL', value: 'custom' },
+              ],
+              defaultValue: 'predefined',
+              required: true,
+            },
+            {
+              name: 'icon_name',
+              type: 'select',
+              options: [
+                { label: 'Instagram', value: 'inst' },
+                { label: 'Telegram', value: 'tg' },
+                { label: 'TikTok', value: 'tiktok' },
+                { label: 'VK', value: 'vk' },
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'Twitter', value: 'twitter' },
+                { label: 'Discord', value: 'discord' },
+              ],
+              required: true,
+              admin: { condition: (_, siblingData) => siblingData?.iconType === 'predefined' },
+            },
+            {
+              name: 'icon_url',
+              type: 'text',
+              maxLength: 1024,
+              required: true,
+              admin: { condition: (_, siblingData) => siblingData?.iconType === 'custom' },
+            },
+          ],
+          admin: { description: 'Select an icon or enter a custom URL' },
+        },
         { name: 'link', type: 'text', maxLength: 1024 },
         { name: 'active', type: 'checkbox', defaultValue: true },
+        { name: 'position', type: 'number', defaultValue: 0 },
         { name: 'language', type: 'text', maxLength: 5 },
         {
           name: 'delay',
           type: 'number',
-          admin: {
-            condition: (data) => data.type === 'subscribe',
-          },
+          admin: { condition: (data) => data.type === 'subscribe' },
         },
         {
           name: 'invites',
           type: 'number',
-          admin: {
-            condition: (data) => data.type === 'invite',
-          },
+          admin: { condition: (data) => data.type === 'invite' },
         },
         {
           name: 'codes',
           type: 'json',
-          admin: {
-            condition: (data) => data.type === 'code',
-          },
+          admin: { condition: (data) => data.type === 'code' },
         },
       ],
       hooks: {
+        afterChange: [
+          async ({ doc, req, operation }) => {
+            if (operation !== 'create') return
+            createUserTasks(req.payload, doc)
+            return
+          },
+        ],
         beforeChange: [
           ({ data }) => {
             if (data.type === 'invite' && !data.invites) {
@@ -183,6 +217,26 @@ export default buildConfig({
               throw new Error('Delay required for subscribe type tasks')
             }
             return data
+          },
+        ],
+        beforeDelete: [
+          async ({ req, id }) => {
+            const payload = req.payload
+            const relatedDocs = await payload.find({
+              collection: 'user_tasks',
+              where: {
+                task_id: {
+                  equals: id,
+                },
+              },
+            })
+            const deletePromises = relatedDocs.docs.map((doc) =>
+              payload.delete({
+                collection: 'user_tasks',
+                id: doc.id,
+              }),
+            )
+            await Promise.all(deletePromises)
           },
         ],
       },
@@ -217,32 +271,8 @@ export default buildConfig({
         {
           name: 'codes_amount',
           type: 'number',
-          // admin: {
-          //   readOnly: true,
-          // },
-          // hooks: {
-          //   beforeChange: [
-          //     async ({ data }) => {
-          //       if (data && data.task_id) {
-          //         const codesLength = await getTaskCodesLength(data.task_id)
-          //         return codesLength
-          //       }
-          //       return 0
-          //     },
-          //   ],
-          // },
         },
       ],
-      // hooks: {
-      //   beforeChange: [
-      //     async ({ data }) => {
-      //       const isCodeTask = await isTaskCode(data.task)
-      //       if (isCodeTask && !data.codes) {
-      //         data.codes = []
-      //       }
-      //     },
-      //   ],
-      // },
     },
     {
       slug: 'wallets',
@@ -269,9 +299,7 @@ export default buildConfig({
     },
     {
       slug: 'media',
-      access: {
-        read: () => true,
-      },
+      access: { read: () => true },
       fields: [
         {
           name: 'alt',

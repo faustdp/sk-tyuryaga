@@ -7,6 +7,7 @@
   import ProgressBar from '@components/ProgressBar.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setError, setIsLoaded } from '@state/app.svelte'
+  import { setTasks } from '@state/tasks.svelte'
   import {
     setBaseFarm,
     setCigs,
@@ -28,10 +29,11 @@
     retrieveLaunchParams,
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
-  import { FARMED, FARMING, meUrl, TASK_CODE, TASK_CTX, TASK_INVITE, TASK_SUBSCRIBE, taskStatus } from '@utils/const'
+  import { FARMED, FARMING, meUrl, taskStatus } from '@utils/const'
+  // TASK_CODE,TASK_INVITE, TASK_SUBSCRIBE, taskStatus TASK_CTX
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
-  import { onMount, setContext } from 'svelte'
+  import { onMount } from 'svelte' //setContext
   import { sineInOut } from 'svelte/easing'
   import { Tween } from 'svelte/motion'
   import { fade } from 'svelte/transition'
@@ -45,8 +47,9 @@
 
   console.clear()
 
-  let tasks: SocialItem[] = $state(
-    sortTasks([
+  // let tasks: SocialItem[] = $state([])
+
+  /* sortTasks([
       {
         id: 1,
         Icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
@@ -112,11 +115,8 @@
         link: 'https://google.com',
         type: TASK_CODE,
       },
-    ]),
-  )
-
-  setContext(TASK_CTX, tasks)
-
+    ]),  */
+  // setContext(TASK_CTX, tasks)
   let progressDefDur = 140
   const progressShortDur = 130
   let progress = new Tween(0, {
@@ -200,7 +200,7 @@
         username,
         invites,
         level,
-        // language,
+        language,
         bonuses,
         ref_cigs,
         farm_cigs,
@@ -210,8 +210,9 @@
         selected_images,
         farmed_amount,
         farmed_time,
+        tasks,
       } = result.userData
-
+      console.log('+layout215', tasks)
       setBaseFarm(Number(level), bonuses)
 
       if (end_time) {
@@ -220,6 +221,13 @@
         setEndTime(value, Number(farmed_time), Number(farmed_amount))
         setFarm(value > now ? FARMING : FARMED)
       }
+
+      let tasks_completed = 0
+      ;(tasks as SocialItem[]).forEach((el) => {
+        if (el.status === taskStatus.done) {
+          tasks_completed += 1
+        }
+      })
 
       setSelectedImages(selected_images)
       setClaimFriends(new Date(claim_friends).getTime())
@@ -230,11 +238,46 @@
         first_name,
         username,
         bonuses,
+        language,
+        tasks_completed,
         tg_id: Number(tg_id),
         invites: Number(invites),
         level: Number(level),
         activity_days: Number(activity_days),
       })
+
+      /*  active: true
+        codes: (3) ['test', 'best', 'quest']
+        codesAmount: "3"
+        delay: null
+        iconName: "tg"
+        iconType: "predefined"
+        iconUrl: null
+        id: 49
+        invites: null
+        language: null
+        link: "https://google.com"
+        position: null
+        reward: "200"
+        status: "start"
+        taskId: 3
+        type: "code"
+        userCodes: [] */
+
+      /*  interface SocialItem {
+        id: number
+        Icon: string
+        name: string
+        reward: number
+        status: TaskStatus
+        type: TaskType
+        invites?: number
+        delay?: number
+        link?: string */
+
+      setTasks(sortTasks(tasks as SocialItem[]))
+
+      // tasks = sortTasks(userTasks as SocialItem[])
 
       invalidate('app:friends')
     } catch (err) {

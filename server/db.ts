@@ -1,11 +1,11 @@
-import { and, eq, isNotNull, ne, sql } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, isNull, ne, or, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 
 import type { CreateUser, DbTaskStatus, FriendsUser, GetUser, Inviter, UpdateInvites } from '../database.types'
 import * as schema from '../drizzle/schema'
 import { dbUrl } from './config'
 
-const { users, userTasks } = schema
+const { users, userTasks, tasks } = schema
 
 let db = drizzle(dbUrl, { schema })
 
@@ -48,9 +48,6 @@ async function getUser(id: number) {
       RETURNING id, tg_id, activity_days, username, first_name, invites, level, bonuses, end_time, ref_cigs, farm_cigs, language, farmed_amount, farmed_time, selected_images, claim_friends
     `)
     const data = res?.rows?.[0] as unknown as GetUser
-    // if (data?.tg_id) {
-    //   data.tg_id = Number(data.tg_id)
-    // }
     return { data }
   } catch (err) {
     return { error: err as Error }
@@ -91,9 +88,6 @@ async function getInviter(id: number | string, isId: boolean) {
       WHERE ${isId ? sql`tg_id` : sql`username`} = ${id};
     `)
     const data = res.rows[0] as unknown as Inviter
-    // if (data) {
-    //   data.tg_id = Number(data.tg_id)
-    // }
     return { data }
   } catch (err) {
     return { error: err as Error }
@@ -245,7 +239,7 @@ async function setAddress(id: number, address: string) {
       END AS result,
       conflicting_user_id
     FROM validation;`)
-    return { data: data.rows[0].result !== null }
+    return { data: data.rows[0].result === 'OK' }
   } catch (error) {
     return { error }
   }
@@ -361,20 +355,17 @@ async function checkCode(id: number, task: number, code: string) {
           ELSE NULL
         END AS codes
     `)
-    console.log('db251', data, data.rows[0]?.codes)
     const isOk = data.rows.length > 0 && data.rows[0].codes_amount !== null
     const isDone = isOk
       ? parseCodeResponse(
           data.rows[0] as { codes_amount: string; codes: string[] },
         ) /* parseCodeResponse(data.rows[0].check_and_update_code as string) */
       : false
-    console.log('db365', isOk, isDone)
     return {
       ok: isOk,
       done: isDone,
     }
   } catch (error) {
-    console.log('db197', error)
     return { error }
   }
 }
@@ -387,15 +378,104 @@ async function taskStatus(id: number, task: number, status: DbTaskStatus) {
         status: status,
       })
       .where(and(eq(userTasks.userIdId, id), eq(userTasks.taskIdId, task)))
-    console.log('db267', data)
     return { data }
   } catch (error) {
-    console.log('db270', error)
     return { error }
   }
 }
 
-//TODO FETCH AND CREATE USER_TASKS
+async function getUserTasks(userId: number) {
+  try {
+    const existingUserTasks = await db
+      .select({
+        id: userTasks.id,
+        taskId: userTasks.taskIdId,
+        status: userTasks.status,
+        userCodes: userTasks.codes,
+        codesAmount: userTasks.codesAmount,
+        position: tasks.position,
+        link: tasks.link,
+        active: tasks.active,
+        language: tasks.language,
+        delay: tasks.delay,
+        invites: tasks.invites,
+        codes: tasks.codes,
+        iconType: tasks.iconIconType,
+        iconName: tasks.iconIconName,
+        iconUrl: tasks.iconIconUrl,
+        type: tasks.type,
+        reward: tasks.reward,
+      })
+      .from(userTasks)
+      .innerJoin(tasks, eq(userTasks.taskIdId, tasks.id))
+      .where(eq(userTasks.userIdId, userId))
+    const myTasks = existingUserTasks.sort((a, b) =>
+      a.position === b.position ? b.taskId - a.taskId : Number(a.position) - Number(b.position),
+    )
+    return { tasks: myTasks }
+  } catch (error) {
+    return { error }
+  }
+}
+
+async function createUserTasks(userId: number, userLanguage = 'ru') {
+  const activeTasks = await db
+    .select({
+      taskId: tasks.id,
+      position: tasks.position,
+      link: tasks.link,
+      active: tasks.active,
+      language: tasks.language,
+      delay: tasks.delay,
+      invites: tasks.invites,
+      codes: tasks.codes,
+      iconType: tasks.iconIconType,
+      iconName: tasks.iconIconName,
+      iconUrl: tasks.iconIconUrl,
+      type: tasks.type,
+      reward: tasks.reward,
+    })
+    .from(tasks)
+    .where(and(eq(tasks.active, true), or(isNull(tasks.language), eq(tasks.language, userLanguage))))
+    .orderBy(tasks.position, desc(tasks.id))
+
+  type TasksWithId = ((typeof activeTasks)[0] & {
+    id?: number
+    codesAmount?: string | null
+    userCodes?: unknown
+    status?: string
+  })[]
+
+  const newUserTasks: any[] = []
+  for (const task of activeTasks) {
+    newUserTasks.push({
+      userIdId: userId,
+      taskIdId: task.taskId,
+      status: 'start',
+      ...(task.type === 'code' && { codes: [] }),
+      ...(task.type === 'code' && { codesAmount: (task.codes as string[]).length }),
+    })
+  }
+
+  if (newUserTasks.length === 0) return []
+  const result = await db.insert(userTasks).values(newUserTasks).returning({
+    id: userTasks.id,
+    taskId: userTasks.taskIdId,
+    status: userTasks.status,
+    userCodes: userTasks.codes,
+    codesAmount: userTasks.codesAmount,
+  })
+  if (!result) return []
+  ;(activeTasks as TasksWithId).forEach((el) => {
+    const sameTask = result.find((item) => item.taskId === el.taskId)
+    if (!sameTask) return
+    el.id = sameTask.id
+    el.userCodes = sameTask.userCodes
+    el.codesAmount = sameTask.codesAmount
+    el.status = sameTask.status
+  })
+  return { tasks: activeTasks }
+}
 
 export {
   getUser,
@@ -412,4 +492,6 @@ export {
   checkCode,
   taskStatus,
   getFriendsList,
+  getUserTasks,
+  createUserTasks,
 }

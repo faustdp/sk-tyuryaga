@@ -20,3 +20,4 @@ npm-debug.log*
 database/
 uploads/
 extensions/
+.next/

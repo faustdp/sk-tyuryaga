@@ -65,8 +65,6 @@ export function useTonConnect(disconnect = false) {
       if (wallet) {
         const address = convertAddress(wallet.account.address)
         if (!address) return
-        // const isDifferentWallet = user.address !== address
-        // if (isDifferentWallet) {
         const res = await postSetAddress(address)
         if (res && res.success) {
           connectWallet()
@@ -75,7 +73,6 @@ export function useTonConnect(disconnect = false) {
           toast.error(data.errors.wallet_error, { class: 'toast-error', icon: CheckError })
           await tonConnectUI.disconnect()
         }
-        // }
         // const transaction = {
         //   validUntil: Math.floor(Date.now() / 1000) + 360,
         //   messages: [
