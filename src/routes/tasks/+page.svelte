@@ -8,11 +8,11 @@
   import Spinner from '@icons/Spinner.svelte'
   import { app, openModal } from '@state/app.svelte'
   import { tasks } from '@state/tasks.svelte'
-  import { increaseCompletedTasks, user } from '@state/user.svelte'
+  import { increaseCompletedTasks, setCigs, user } from '@state/user.svelte'
   import { sortTasks, w8 } from '@utils'
-  import { postCheckSubscription, postTaskStatus } from '@utils/api'
-  import { iconsComponents, TASK_CODE, TASK_INVITE, taskStatus } from '@utils/const' //TASK_CTX,
-  import { untrack } from 'svelte' //getContext,
+  import { postCheckSubscription, postFarmCigs, postTaskStatus } from '@utils/api'
+  import { iconsComponents, TASK_CODE, TASK_INVITE, taskStatus } from '@utils/const'
+  import { untrack } from 'svelte'
   import { flip } from 'svelte/animate'
   import toast from 'svelte-hot-french-toast'
 
@@ -25,7 +25,6 @@
     isDrawerOpened = false
   }
 
-  // let tasks: (SocialItemCode | SocialItemInvite | SocialItemSubscribe)[] = getContext(TASK_CTX)
   let selectedTaskCheck: SocialItem | null = $state(null)
 
   $effect(() => {
@@ -39,7 +38,7 @@
     if (taskId === null) return
     const intervalId = setInterval(async () => {
       try {
-        const item = untrack(() => tasks.find((el) => el.id === taskId))
+        const item = untrack(() => tasks.data.find((el) => el.id === taskId))
         if (!item?.link) return
         const response = await postCheckSubscription(`@${item.link.split('/').at(-1)}`)
         const data = response ? await response.json() : null
@@ -59,7 +58,6 @@
   })
 
   async function handleTaskClick(item: SocialItem) {
-    //SocialItemCode | SocialItemInvite | SocialItemSubscribe
     if (item.status === taskStatus.done) return
     if (item.status === taskStatus.loading) {
       if (item.link) window.open(item.link, '_blank')
@@ -88,7 +86,7 @@
           await postTaskStatus(item.id, taskStatus.claim)
         } else {
           if (taskId !== null) {
-            const task = tasks.find((el) => el.id === taskId)
+            const task = tasks.data.find((el) => el.id === taskId)
             if (task) {
               task.status = taskStatus.start
             }
@@ -111,9 +109,10 @@
 
   async function setDoneTask(item: SocialItem) {
     item.status = taskStatus.done
-    sortTasks(tasks)
+    sortTasks(tasks.data)
     increaseCompletedTasks()
-    await postTaskStatus(item.id, taskStatus.done)
+    setCigs(item.reward)
+    await Promise.all([postTaskStatus(item.id, taskStatus.done), postFarmCigs(item.reward, false)])
   }
 </script>
 
@@ -134,7 +133,7 @@
     <Chain classes="absolute w-full top-0 left-0 rotate-180" />
   </div>
   <ul class="flex w-full list-none flex-col">
-    {#each tasks as socialItem (socialItem)}
+    {#each tasks.data as socialItem (socialItem)}
       {@const isDone = socialItem.status === taskStatus.done}
       {@const Icon = socialItem.Icon in iconsComponents ? iconsComponents[socialItem.Icon] : socialItem.Icon}
       <li
@@ -147,11 +146,13 @@
         {/if}
         <span class="flex flex-1 flex-col gap-y-2.5 text-sm {isDone ? 'text-cborder' : ''}">
           {socialItem.name}
-          <span class="text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">
+          <span class="flex text-xs {isDone ? 'text-cborder' : 'text-textgrey'}">
             {#if socialItem.type === TASK_INVITE}
               {user.invites}/{socialItem.invites} {data.task_friends},
+            {:else if socialItem.type === TASK_CODE && socialItem.codesAmount}
+              {socialItem.userCodes.length}/{socialItem.codesAmount}
             {/if}
-            {socialItem.reward}
+            +{socialItem.reward}<Cigarette class="-mt-0.5" width="32" height="17" />
           </span>
         </span>
         <button

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users, invites, wallets, userTasks, tasks, payloadPreferences, payloadPreferencesRels, admins, payloadLockedDocuments, payloadLockedDocumentsRels, messages, media } from "./schema";
+import { users, invites, wallets, payloadPreferences, payloadPreferencesRels, admins, payloadLockedDocuments, payloadLockedDocumentsRels, tasks, userTasks, messages, media } from "./schema";
 
 export const invitesRelations = relations(invites, ({one, many}) => ({
 	user_inviterId: one(users, {
@@ -31,8 +31,8 @@ export const usersRelations = relations(users, ({one, many}) => ({
 	users: many(users, {
 		relationName: "users_invitedById_users_id"
 	}),
-	userTasks: many(userTasks),
 	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+	userTasks: many(userTasks),
 }));
 
 export const walletsRelations = relations(wallets, ({one, many}) => ({
@@ -40,23 +40,6 @@ export const walletsRelations = relations(wallets, ({one, many}) => ({
 		fields: [wallets.userIdId],
 		references: [users.id]
 	}),
-	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
-}));
-
-export const userTasksRelations = relations(userTasks, ({one, many}) => ({
-	user: one(users, {
-		fields: [userTasks.userIdId],
-		references: [users.id]
-	}),
-	task: one(tasks, {
-		fields: [userTasks.taskIdId],
-		references: [tasks.id]
-	}),
-	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
-}));
-
-export const tasksRelations = relations(tasks, ({many}) => ({
-	userTasks: many(userTasks),
 	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
 }));
 
@@ -121,6 +104,23 @@ export const payloadLockedDocumentsRelsRelations = relations(payloadLockedDocume
 
 export const payloadLockedDocumentsRelations = relations(payloadLockedDocuments, ({many}) => ({
 	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const tasksRelations = relations(tasks, ({many}) => ({
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+	userTasks: many(userTasks),
+}));
+
+export const userTasksRelations = relations(userTasks, ({one, many}) => ({
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+	user: one(users, {
+		fields: [userTasks.userIdId],
+		references: [users.id]
+	}),
+	task: one(tasks, {
+		fields: [userTasks.taskIdId],
+		references: [tasks.id]
+	}),
 }));
 
 export const messagesRelations = relations(messages, ({many}) => ({

@@ -3,7 +3,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig, type Payload } from 'payload'
+import { APIError, buildConfig, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
@@ -51,6 +51,15 @@ async function createUserTasks(payload: Payload, doc: Task) {
     }
   } catch (error) {
     console.log('payload.config53', error)
+  }
+}
+
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
   }
 }
 
@@ -177,6 +186,7 @@ export default buildConfig({
           ],
           admin: { description: 'Select an icon or enter a custom URL' },
         },
+        { name: 'name', type: 'text', required: true },
         { name: 'link', type: 'text', maxLength: 1024 },
         { name: 'active', type: 'checkbox', defaultValue: true },
         { name: 'position', type: 'number', defaultValue: 0 },
@@ -208,15 +218,18 @@ export default buildConfig({
         beforeChange: [
           ({ data }) => {
             if (data.type === 'invite' && !data.invites) {
-              throw new Error('Invites required for invite type tasks')
+              return Promise.reject(new APIError('Invites required for invite type tasks', 400))
             }
             if (data.type === 'code' && !data.codes) {
-              throw new Error('Codes required for code type tasks')
+              return Promise.reject(new APIError('Codes required for code type tasks', 400))
             }
             if (data.type === 'subscribe' && !data.delay) {
-              throw new Error('Delay required for subscribe type tasks')
+              return Promise.reject(new APIError('Delay required for subscribe type tasks', 400))
             }
-            return data
+            if ((data.type === 'code' || data.type === 'subscribe') && !isValidUrl(data.link)) {
+              return Promise.reject(new APIError('Provide valid Link for this type of task', 400))
+            }
+            return Promise.resolve(data)
           },
         ],
         beforeDelete: [

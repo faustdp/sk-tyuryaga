@@ -45,6 +45,7 @@
     const data = res ? await res.json() : null
     isFetchingCode = false
     if (data?.ok) {
+      task.userCodes.push(value)
       codeIsWrong = false
       codeIsRight = true
       toastSuccess(task.reward)

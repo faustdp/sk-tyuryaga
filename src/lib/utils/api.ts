@@ -29,8 +29,8 @@ export async function postEndTime(time: string, cigs: number, farmedTime: number
   await postRequest(endTimeUrl, { time, cigs, farmedTime, id: user.id })
 }
 
-export async function postFarmCigs(cigs: number) {
-  await postRequest(farmCigsUrl, { cigs, id: user.id })
+export async function postFarmCigs(cigs: number, fromFarm = true) {
+  await postRequest(farmCigsUrl, { cigs, fromFarm, id: user.id })
 }
 
 export async function postAddBonus({ cigs, level, index }: { cigs: number; level?: number; index?: number }) {

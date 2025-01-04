@@ -37,11 +37,11 @@ export async function setEndTime(req: Request, res: Response) {
 
 export async function setFarmCigs(req: Request, res: Response) {
   try {
-    const { id, cigs } = req.body
-    if (typeof id !== 'number' || typeof cigs !== 'number') {
+    const { id, cigs, fromFarm } = req.body
+    if (typeof id !== 'number' || typeof cigs !== 'number' || typeof fromFarm !== 'boolean') {
       return res.status(400).json({ error: 'data_error' })
     }
-    const data = await farmCigs(id, cigs)
+    const data = await farmCigs(id, cigs, fromFarm)
     if (data.error) {
       return res.status(500).json({ error: 'inner_error' })
     }

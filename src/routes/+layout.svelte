@@ -7,7 +7,7 @@
   import ProgressBar from '@components/ProgressBar.svelte'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setError, setIsLoaded } from '@state/app.svelte'
-  import { setTasks } from '@state/tasks.svelte'
+  import { tasks } from '@state/tasks.svelte'
   import {
     setBaseFarm,
     setCigs,
@@ -30,10 +30,9 @@
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
   import { FARMED, FARMING, meUrl, taskStatus } from '@utils/const'
-  // TASK_CODE,TASK_INVITE, TASK_SUBSCRIBE, taskStatus TASK_CTX
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
-  import { onMount } from 'svelte' //setContext
+  import { onMount } from 'svelte'
   import { sineInOut } from 'svelte/easing'
   import { Tween } from 'svelte/motion'
   import { fade } from 'svelte/transition'
@@ -47,76 +46,6 @@
 
   console.clear()
 
-  // let tasks: SocialItem[] = $state([])
-
-  /* sortTasks([
-      {
-        id: 1,
-        Icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
-        name: 'Test',
-        reward: 200,
-        status: taskStatus.check,
-        link: 'https://google.com',
-        type: TASK_CODE,
-      },
-      {
-        id: 7,
-        Icon: 'inst',
-        name: 'baza',
-        reward: 200,
-        status: taskStatus.start,
-        link: 'https://t.me/PrisonTONx',
-        type: TASK_SUBSCRIBE,
-        // delay: 5000,
-      },
-      {
-        id: 6,
-        Icon: 'tg',
-        name: 'Посмотри видео и впиши код',
-        reward: 1200,
-        status: taskStatus.start,
-        link: 'https://x.com/intent/follow?screen_name=NASA',
-        type: TASK_SUBSCRIBE,
-        delay: 5000,
-      },
-      {
-        id: 5,
-        Icon: 'tiktok',
-        name: 'Позови 100 корешей',
-        reward: 3200,
-        status: taskStatus.start,
-        type: TASK_INVITE,
-        invites: 10,
-      },
-      {
-        id: 3,
-        Icon: 'youtube',
-        name: 'Посмотри видео и впиши код',
-        reward: 20,
-        status: taskStatus.check,
-        link: 'https://google.com',
-        type: TASK_CODE,
-      },
-      {
-        id: 2,
-        Icon: 'inst',
-        name: 'Посмотри видео и впиши код',
-        reward: 200,
-        status: taskStatus.claim,
-        link: 'https://google.com',
-        type: TASK_CODE,
-      },
-      {
-        id: 4,
-        Icon: 'vk',
-        name: 'Посмотри видео и впиши код',
-        reward: 200,
-        status: taskStatus.loading,
-        link: 'https://google.com',
-        type: TASK_CODE,
-      },
-    ]),  */
-  // setContext(TASK_CTX, tasks)
   let progressDefDur = 140
   const progressShortDur = 130
   let progress = new Tween(0, {
@@ -210,9 +139,9 @@
         selected_images,
         farmed_amount,
         farmed_time,
-        tasks,
+        tasks: fetchedTasks,
       } = result.userData
-      console.log('+layout215', tasks)
+
       setBaseFarm(Number(level), bonuses)
 
       if (end_time) {
@@ -223,11 +152,21 @@
       }
 
       let tasks_completed = 0
-      ;(tasks as SocialItem[]).forEach((el) => {
-        if (el.status === taskStatus.done) {
-          tasks_completed += 1
-        }
-      })
+      ;(fetchedTasks as (SocialItem & { iconType: string; iconName: string | null; iconUrl: string | null })[]).forEach(
+        (el) => {
+          el.reward = Number(el.reward)
+          el.Icon = el.iconType === 'custom' && el.iconUrl ? el.iconUrl : el.iconName ? el.iconName : 'tg'
+          if (el.status === taskStatus.done) {
+            tasks_completed += 1
+          }
+          if (el.delay) {
+            el.delay = Number(el.delay)
+          }
+          if (el.invites) {
+            el.invites = Number(el.invites)
+          }
+        },
+      )
 
       setSelectedImages(selected_images)
       setClaimFriends(new Date(claim_friends).getTime())
@@ -246,38 +185,7 @@
         activity_days: Number(activity_days),
       })
 
-      /*  active: true
-        codes: (3) ['test', 'best', 'quest']
-        codesAmount: "3"
-        delay: null
-        iconName: "tg"
-        iconType: "predefined"
-        iconUrl: null
-        id: 49
-        invites: null
-        language: null
-        link: "https://google.com"
-        position: null
-        reward: "200"
-        status: "start"
-        taskId: 3
-        type: "code"
-        userCodes: [] */
-
-      /*  interface SocialItem {
-        id: number
-        Icon: string
-        name: string
-        reward: number
-        status: TaskStatus
-        type: TaskType
-        invites?: number
-        delay?: number
-        link?: string */
-
-      setTasks(sortTasks(tasks as SocialItem[]))
-
-      // tasks = sortTasks(userTasks as SocialItem[])
+      tasks.data = sortTasks(fetchedTasks as SocialItem[])
 
       invalidate('app:friends')
     } catch (err) {

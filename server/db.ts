@@ -142,17 +142,23 @@ async function setTime(id: number, time: string, cigs: number, farmedTime: numbe
   }
 }
 
-async function farmCigs(id: number, cigs: number) {
+async function farmCigs(id: number, cigs: number, fromFarm = true) {
   try {
     const data = await db
       .update(users)
       .set({
         farmCigs: sql`${users.farmCigs} + ${cigs}`,
-        endTime: null,
-        farmedAmount: String(0),
-        farmedTime: String(0),
+        ...(fromFarm && {
+          endTime: null,
+          farmedAmount: String(0),
+          farmedTime: String(0),
+        }),
       })
-      .where(and(eq(users.id, id), isNotNull(users.endTime), ne(users.farmedAmount, String(0))))
+      .where(
+        fromFarm
+          ? and(eq(users.id, id), isNotNull(users.endTime), ne(users.farmedAmount, String(0)))
+          : eq(users.id, id),
+      )
     return { data }
   } catch (error) {
     return { error }
@@ -284,15 +290,6 @@ async function getFriendsList(id: number) {
   }
 }
 
-/* function parseCodeResponse(result: string): boolean {
-  const [codesAmount, codesString] = result.slice(1, -1).split(',')
-  const amount = parseInt(codesAmount, 10)
-  const codes = codesString
-    .slice(1, -1)
-    .split(',')
-    .map((code) => code.trim().replace(/"/g, ''))
-  return codes.length >= amount
-} */
 function parseCodeResponse(result: { codes_amount: string; codes: string[] }): boolean {
   if (!result.codes_amount || !result.codes) {
     return false
@@ -301,11 +298,9 @@ function parseCodeResponse(result: { codes_amount: string; codes: string[] }): b
   return codes.length >= Number(result.codes_amount)
 }
 
-/* const data = await db.execute(sql`
-      SELECT check_and_update_code(${id}, ${task}, ${code})
-    `) */
 async function checkCode(id: number, task: number, code: string) {
   try {
+    console.log('db303', id, task, code)
     const data = await db.execute(sql`
       WITH code_check AS (
         SELECT EXISTS (
@@ -356,16 +351,14 @@ async function checkCode(id: number, task: number, code: string) {
         END AS codes
     `)
     const isOk = data.rows.length > 0 && data.rows[0].codes_amount !== null
-    const isDone = isOk
-      ? parseCodeResponse(
-          data.rows[0] as { codes_amount: string; codes: string[] },
-        ) /* parseCodeResponse(data.rows[0].check_and_update_code as string) */
-      : false
+    const isDone = isOk ? parseCodeResponse(data.rows[0] as { codes_amount: string; codes: string[] }) : false
+    console.log('db354', data, isOk, isDone)
     return {
       ok: isOk,
       done: isDone,
     }
   } catch (error) {
+    console.log('db360', error)
     return { error }
   }
 }
@@ -388,12 +381,12 @@ async function getUserTasks(userId: number) {
   try {
     const existingUserTasks = await db
       .select({
-        id: userTasks.id,
-        taskId: userTasks.taskIdId,
+        id: userTasks.taskIdId,
         status: userTasks.status,
         userCodes: userTasks.codes,
         codesAmount: userTasks.codesAmount,
         position: tasks.position,
+        name: tasks.name,
         link: tasks.link,
         active: tasks.active,
         language: tasks.language,
@@ -410,7 +403,7 @@ async function getUserTasks(userId: number) {
       .innerJoin(tasks, eq(userTasks.taskIdId, tasks.id))
       .where(eq(userTasks.userIdId, userId))
     const myTasks = existingUserTasks.sort((a, b) =>
-      a.position === b.position ? b.taskId - a.taskId : Number(a.position) - Number(b.position),
+      a.position === b.position ? b.id - a.id : Number(a.position) - Number(b.position),
     )
     return { tasks: myTasks }
   } catch (error) {
@@ -422,6 +415,7 @@ async function createUserTasks(userId: number, userLanguage = 'ru') {
   const activeTasks = await db
     .select({
       taskId: tasks.id,
+      name: tasks.name,
       position: tasks.position,
       link: tasks.link,
       active: tasks.active,
@@ -459,17 +453,16 @@ async function createUserTasks(userId: number, userLanguage = 'ru') {
 
   if (newUserTasks.length === 0) return []
   const result = await db.insert(userTasks).values(newUserTasks).returning({
-    id: userTasks.id,
-    taskId: userTasks.taskIdId,
+    id: userTasks.taskIdId,
     status: userTasks.status,
     userCodes: userTasks.codes,
     codesAmount: userTasks.codesAmount,
   })
   if (!result) return []
   ;(activeTasks as TasksWithId).forEach((el) => {
-    const sameTask = result.find((item) => item.taskId === el.taskId)
+    const sameTask = result.find((item) => item.id === el.taskId)
     if (!sameTask) return
-    el.id = sameTask.id
+    // el.id = sameTask.id
     el.userCodes = sameTask.userCodes
     el.codesAmount = sameTask.codesAmount
     el.status = sameTask.status

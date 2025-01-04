@@ -133,9 +133,13 @@
   </p>
   <section class="mb-2 flex w-full max-w-[344px] flex-col">
     <h2 class="shadow-heading mb-3 self-start text-base">{data.friends_yours}</h2>
-    {#each pageData.friends as friend}
-      {@render frens(friend)}
-    {/each}
+    {#if pageData.friends.length > 0}
+      {#each pageData.friends as friend}
+        {@render frens(friend)}
+      {/each}
+    {:else}
+      <span class="mb-1.5 text-sm">{data.no_friends}</span>
+    {/if}
   </section>
   <button
     class="sticky -bottom-px outline-none transition-transform will-change-transform active:scale-95"

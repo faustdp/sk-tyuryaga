@@ -95,7 +95,8 @@ export async function meHandler(req: Request, res: Response) {
 
     if (data) {
       const tasks = await getUserTasks(data.id)
-      return res.status(200).json({ valid: true, userData: Object.assign(data, tasks) })
+      const result = Object.assign(data, tasks)
+      return res.status(200).json({ valid: true, userData: result })
     }
 
     const startParam = params.get('start_param')

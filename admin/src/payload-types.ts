@@ -151,6 +151,7 @@ export interface Task {
     icon_name?: ('inst' | 'tg' | 'tiktok' | 'vk' | 'youtube' | 'twitter' | 'discord') | null;
     icon_url?: string | null;
   };
+  name: string;
   link?: string | null;
   active?: boolean | null;
   position?: number | null;
@@ -388,6 +389,7 @@ export interface TasksSelect<T extends boolean = true> {
         icon_name?: T;
         icon_url?: T;
       };
+  name?: T;
   link?: T;
   active?: T;
   position?: T;

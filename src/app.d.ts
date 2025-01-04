@@ -67,24 +67,11 @@ declare global {
     reward: number
     status: TaskStatus
     type: TaskType
+    userCodes: string[]
+    codesAmount: string | null
     invites?: number
     delay?: number
     link?: string
-  }
-
-  interface SocialItemInvite extends SocialItem {
-    type: typeof TASK_INVITE
-    invites: number
-  }
-
-  interface SocialItemSubscribe extends SocialItem {
-    type: typeof TASK_SUBSCRIBE
-    delay: number
-  }
-
-  interface SocialItemCode extends SocialItem {
-    type: typeof TASK_CODE
-    link: string
   }
 
   interface Window {
