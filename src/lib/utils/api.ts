@@ -51,7 +51,7 @@ export async function postSelectImage(index: number, image: number) {
 }
 
 export async function postCheckSubscription(name: string) {
-  return await postRequest(checkSubscriptionUrl, { name, id: user.id })
+  return await postRequest(checkSubscriptionUrl, { name, id: user.tg_id })
 }
 
 export async function postCheckCode(task: number, code: string) {

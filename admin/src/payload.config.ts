@@ -13,56 +13,6 @@ import { type Task } from './payload-types'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-async function createUserTasks(payload: Payload, doc: Task) {
-  let page = 1
-  let hasMoreUsers = true
-  const limit = 100
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-  try {
-    while (hasMoreUsers) {
-      const users = await payload.find({
-        collection: 'users',
-        limit,
-        page,
-        ...(doc.language && {
-          where: {
-            language: {
-              equals: doc.language,
-            },
-          },
-        }),
-      })
-      const userTaskPromises = users.docs.map((user) => {
-        return payload.create({
-          collection: 'user_tasks',
-          data: {
-            user_id: user.id,
-            task_id: doc.id,
-            status: 'start',
-            ...(doc.type === 'code' && { codes: [] }),
-            ...(doc.type === 'code' &&
-              doc.codes && { codes_amount: (doc.codes as string[]).length }),
-          },
-        })
-      })
-      await Promise.all(userTaskPromises)
-      hasMoreUsers = users.hasNextPage
-      page++
-    }
-  } catch (error) {
-    console.log('payload.config53', error)
-  }
-}
-
-function isValidUrl(url: string): boolean {
-  try {
-    new URL(url)
-    return true
-  } catch {
-    return false
-  }
-}
-
 export default buildConfig({
   /*   hooks: {
     afterError: [async ({ error }) => {
@@ -71,9 +21,7 @@ export default buildConfig({
   }, */
   admin: {
     user: 'admins',
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
+    importMap: { baseDir: path.resolve(dirname) },
   },
   collections: [
     {
@@ -84,7 +32,7 @@ export default buildConfig({
     },
     {
       slug: 'users',
-      admin: { useAsTitle: 'id' },
+      admin: { useAsTitle: 'first_name', pagination: { defaultLimit: 100 } },
       fields: [
         { name: 'tg_id', type: 'number', required: true, unique: true, index: true },
         { name: 'first_name', type: 'text', required: true, unique: true, maxLength: 100 },
@@ -111,11 +59,7 @@ export default buildConfig({
           defaultValue: new Date(Date.now() + 24 * 60 * 60 * 1000),
         },
         { name: 'activity_days', type: 'number', required: true, defaultValue: 0 },
-        {
-          name: 'bonuses',
-          type: 'json',
-          defaultValue: [],
-        },
+        { name: 'bonuses', type: 'json', defaultValue: [] },
         {
           name: 'selected_images',
           type: 'json',
@@ -188,24 +132,17 @@ export default buildConfig({
         },
         { name: 'name', type: 'text', required: true },
         { name: 'link', type: 'text', maxLength: 1024 },
+        { name: 'language', type: 'text', maxLength: 5 },
+        { name: 'activity', type: 'number' },
         { name: 'active', type: 'checkbox', defaultValue: true },
         { name: 'position', type: 'number', defaultValue: 0 },
-        { name: 'language', type: 'text', maxLength: 5 },
         {
           name: 'delay',
           type: 'number',
           admin: { condition: (data) => data.type === 'subscribe' },
         },
-        {
-          name: 'invites',
-          type: 'number',
-          admin: { condition: (data) => data.type === 'invite' },
-        },
-        {
-          name: 'codes',
-          type: 'json',
-          admin: { condition: (data) => data.type === 'code' },
-        },
+        { name: 'invites', type: 'number', admin: { condition: (data) => data.type === 'invite' } },
+        { name: 'codes', type: 'json', admin: { condition: (data) => data.type === 'code' } },
       ],
       hooks: {
         afterChange: [
@@ -222,9 +159,6 @@ export default buildConfig({
             }
             if (data.type === 'code' && !data.codes) {
               return Promise.reject(new APIError('Codes required for code type tasks', 400))
-            }
-            if (data.type === 'subscribe' && !data.delay) {
-              return Promise.reject(new APIError('Delay required for subscribe type tasks', 400))
             }
             if ((data.type === 'code' || data.type === 'subscribe') && !isValidUrl(data.link)) {
               return Promise.reject(new APIError('Provide valid Link for this type of task', 400))
@@ -281,10 +215,7 @@ export default buildConfig({
           type: 'json',
           defaultValue: [],
         },
-        {
-          name: 'codes_amount',
-          type: 'number',
-        },
+        { name: 'codes_amount', type: 'number' },
       ],
     },
     {
@@ -321,28 +252,99 @@ export default buildConfig({
         },
       ],
       upload: true,
+      admin: { hidden: true },
     },
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
-  typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
-  },
+  typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || '',
-    },
+    pool: { connectionString: process.env.DATABASE_URI || '' },
   }),
+  graphQL: { disable: true },
   sharp,
   i18n: {
     supportedLanguages: { en, ru },
     fallbackLanguage: 'en',
-    translations: {
-      ru,
-    },
+    translations: { ru },
   },
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
   ],
 })
+
+async function createUserTasks(payload: Payload, doc: Task) {
+  let page = 1
+  let hasMoreUsers = true
+  const limit = 100
+  await new Promise((resolve) => setTimeout(resolve, 2000))
+  try {
+    while (hasMoreUsers) {
+      const users = await payload.find({
+        collection: 'users',
+        limit,
+        page,
+        where: {
+          and: [
+            ...(doc.language ? [{ language: { equals: doc.language } }] : []),
+            ...(doc.activity
+              ? [
+                  {
+                    last_visit: {
+                      [doc.activity > 0 ? 'greater_than' : 'less_than']: new Date(
+                        Date.now() - Math.abs(doc.activity) * 24 * 60 * 60 * 1000,
+                      ).toISOString(),
+                    },
+                  },
+                ]
+              : []),
+          ],
+        },
+      })
+      const userTaskPromises = users.docs.map((user) => {
+        return payload.create({
+          collection: 'user_tasks',
+          data: {
+            user_id: user.id,
+            task_id: doc.id,
+            status: 'start',
+            ...(doc.type === 'code' && { codes: [] }),
+            ...(doc.type === 'code' &&
+              doc.codes && { codes_amount: (doc.codes as string[]).length }),
+          },
+        })
+      })
+      await Promise.all(userTaskPromises)
+      hasMoreUsers = users.hasNextPage
+      page++
+    }
+  } catch (error) {
+    console.log('payload.config53', error)
+  }
+}
+
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/*
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+
+export const GET = async () => {
+  const payload = await getPayload({
+    config: configPromise,
+  })
+
+  const data = await payload.find({
+    collection: 'users',
+  })
+
+  return Response.json(data)
+} */

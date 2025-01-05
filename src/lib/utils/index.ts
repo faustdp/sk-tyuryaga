@@ -44,7 +44,16 @@ export function logServer(data: any, file?: string) {
   })
 }
 
+// const sortStatus: { [key: string]: number } = {
+//   [taskStatus.claim]: 0,
+//   [taskStatus.check]: 1,
+//   [taskStatus.loading]: 2,
+//   [taskStatus.start]: 3,
+//   [taskStatus.done]: 4,
+// }
+
 export function sortTasks(tasks: SocialItem[]) {
+  // return tasks.sort((a, b) => sortStatus[a.status] - sortStatus[b.status])
   return tasks.sort((a, b) => (b.status === taskStatus.done && a.status !== taskStatus.done ? -1 : 0))
 }
 

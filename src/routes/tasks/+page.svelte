@@ -12,14 +12,15 @@
   import { sortTasks, w8 } from '@utils'
   import { postCheckSubscription, postFarmCigs, postTaskStatus } from '@utils/api'
   import { iconsComponents, TASK_CODE, TASK_INVITE, taskStatus } from '@utils/const'
-  import { untrack } from 'svelte'
+  import { onDestroy } from 'svelte'
   import { flip } from 'svelte/animate'
   import toast from 'svelte-hot-french-toast'
 
   import data from '@/messages.json'
 
   let isDrawerOpened = $state(false)
-  let taskId: number | null = $state(null)
+  const telegramIntervals: NodeJS.Timeout[] = []
+  const telegramIds: number[] = []
 
   function closeDrawer() {
     isDrawerOpened = false
@@ -34,69 +35,72 @@
     }
   })
 
-  $effect(() => {
-    if (taskId === null) return
+  async function createTgInterval(item: SocialItem) {
+    if (telegramIds.includes(item.id)) return
+    telegramIds.push(item.id)
     const intervalId = setInterval(async () => {
-      try {
-        const item = untrack(() => tasks.data.find((el) => el.id === taskId))
-        if (!item?.link) return
-        const response = await postCheckSubscription(`@${item.link.split('/').at(-1)}`)
-        const data = response ? await response.json() : null
-        if (data && data.ok) {
-          clearInterval(intervalId)
-          item.status = taskStatus.claim
-          taskId = null
-        }
-      } catch (error) {
-        console.error('+page54', error)
+      const response = await postCheckSubscription(`@${item.link!.split('/').at(-1)}`)
+      const data = response ? await response.json() : null
+      if (data?.ok) {
+        clearInterval(intervalId)
+        item.status = taskStatus.claim
+        telegramIds.splice(telegramIds.indexOf(item.id), 1)
+        await postTaskStatus(item.id, taskStatus.claim)
       }
     }, 5000)
+    telegramIntervals.push(intervalId)
+  }
 
-    return () => {
-      clearInterval(intervalId)
-    }
+  onDestroy(() => {
+    telegramIntervals.forEach((el) => clearInterval(el))
+    telegramIds.forEach((id) => {
+      const task = tasks.data.find((el) => el.id === id)
+      if (task?.status === taskStatus.loading) {
+        task.status = taskStatus.start
+      }
+    })
   })
 
   async function handleTaskClick(item: SocialItem) {
     if (item.status === taskStatus.done) return
-    if (item.status === taskStatus.loading) {
-      if (item.link) window.open(item.link, '_blank')
-      return
-    }
+
     if (item.status === taskStatus.claim) {
       toastSuccess(item.reward)
       await setDoneTask(item)
-    } else if (item.status === taskStatus.start) {
+      return
+    }
+
+    if (item.status === taskStatus.loading) {
+      if (item.link) return window.open(item.link, '_blank')
+    }
+
+    if (item.status === taskStatus.check) {
+      selectedTaskCheck = item
+      openModal()
+      return
+    }
+
+    if (item.status === taskStatus.start) {
       if (item.type === TASK_INVITE && item.invites) {
         if (item.invites > user.invites) {
           isDrawerOpened = true
         } else {
-          toastSuccess(item.reward)
-          await setDoneTask(item)
+          item.status = taskStatus.claim
+          await postTaskStatus(item.id, taskStatus.claim)
         }
       } else {
         item.status = item.type === TASK_CODE ? taskStatus.check : taskStatus.loading
+        window.open(item.link, '_blank')
         if (item.type === TASK_CODE) {
           await postTaskStatus(item.id, taskStatus.check)
-        }
-        window.open(item.link, '_blank')
-        if (item.delay) {
+        } else if (item.delay) {
           await w8(item.delay)
           item.status = taskStatus.claim
           await postTaskStatus(item.id, taskStatus.claim)
-        } else {
-          if (taskId !== null) {
-            const task = tasks.data.find((el) => el.id === taskId)
-            if (task) {
-              task.status = taskStatus.start
-            }
-          }
-          taskId = item.id
+        } else if (item.link?.includes('t.me/')) {
+          createTgInterval(item)
         }
       }
-    } else if (item.status === taskStatus.check) {
-      selectedTaskCheck = item
-      openModal()
     }
   }
 

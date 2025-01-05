@@ -78,7 +78,7 @@
     <Carousel.Content>
       {#each items as item, i (i)}
         <Carousel.Item class="relative">
-          <figure class="relative mb-2 flex flex-col items-center p-4 text-center">
+          <figure class="relative mb-2 flex flex-col items-center px-4 pb-4 pt-10 text-center">
             <img class="relative z-10" src={item} width="180" alt="Alt text" />
             <figcaption class="mt-10">{data.level} {i + 1}</figcaption>
           </figure>

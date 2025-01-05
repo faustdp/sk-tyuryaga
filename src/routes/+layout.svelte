@@ -74,6 +74,14 @@
     }, 80)
   }
 
+  /*TODO 
+    - Dashboard: Общее количество присоединившихся пользователей. Динамика регистраций. C фильтром по дню, неделе, месяцу
+
+    Если задание не выполнено, то при следующей сессии кнопка 'Чек' должна возвращаться в исходное состояние 'Старт'.
+    В награду засчитываются только % от клеймов друзей на вкладке Home
+    Логика единоразовой награды за приглашение - in progress 
+    */
+
   async function initTgApp() {
     const isTG = await isTMA()
     const initData =
@@ -154,11 +162,11 @@
       let tasks_completed = 0
       ;(fetchedTasks as (SocialItem & { iconType: string; iconName: string | null; iconUrl: string | null })[]).forEach(
         (el) => {
-          el.reward = Number(el.reward)
-          el.Icon = el.iconType === 'custom' && el.iconUrl ? el.iconUrl : el.iconName ? el.iconName : 'tg'
           if (el.status === taskStatus.done) {
             tasks_completed += 1
           }
+          el.reward = Number(el.reward)
+          el.Icon = el.iconType === 'custom' && el.iconUrl ? el.iconUrl : el.iconName ? el.iconName : 'tg'
           if (el.delay) {
             el.delay = Number(el.delay)
           }

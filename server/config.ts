@@ -72,7 +72,7 @@ export async function setupBot() {
   }
 
   bot.on('message', async (ctx) => {
-    console.log('config98', ctx.update.message.from)
+    console.log('config98', ctx.msg.text, ctx.update.message.from)
     try {
       handleBotStart(ctx.update.message.from.id)
     } catch (error) {

@@ -153,9 +153,10 @@ export interface Task {
   };
   name: string;
   link?: string | null;
+  language?: string | null;
+  activity?: number | null;
   active?: boolean | null;
   position?: number | null;
-  language?: string | null;
   delay?: number | null;
   invites?: number | null;
   codes?:
@@ -391,9 +392,10 @@ export interface TasksSelect<T extends boolean = true> {
       };
   name?: T;
   link?: T;
+  language?: T;
+  activity?: T;
   active?: T;
   position?: T;
-  language?: T;
   delay?: T;
   invites?: T;
   codes?: T;

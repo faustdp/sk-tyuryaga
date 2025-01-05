@@ -67,6 +67,7 @@
 
   $effect(() => {
     if (inputEl) {
+      lastWrongCode = ''
       tick().then(() => {
         inputEl?.focus()
       })

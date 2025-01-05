@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, isNull, ne, or, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, isNotNull, isNull, ne, or, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 
 import type { CreateUser, DbTaskStatus, FriendsUser, GetUser, Inviter, UpdateInvites } from '../database.types'
@@ -300,7 +300,6 @@ function parseCodeResponse(result: { codes_amount: string; codes: string[] }): b
 
 async function checkCode(id: number, task: number, code: string) {
   try {
-    console.log('db303', id, task, code)
     const data = await db.execute(sql`
       WITH code_check AS (
         SELECT EXISTS (
@@ -352,13 +351,11 @@ async function checkCode(id: number, task: number, code: string) {
     `)
     const isOk = data.rows.length > 0 && data.rows[0].codes_amount !== null
     const isDone = isOk ? parseCodeResponse(data.rows[0] as { codes_amount: string; codes: string[] }) : false
-    console.log('db354', data, isOk, isDone)
     return {
       ok: isOk,
       done: isDone,
     }
   } catch (error) {
-    console.log('db360', error)
     return { error }
   }
 }
@@ -392,7 +389,6 @@ async function getUserTasks(userId: number) {
         language: tasks.language,
         delay: tasks.delay,
         invites: tasks.invites,
-        codes: tasks.codes,
         iconType: tasks.iconIconType,
         iconName: tasks.iconIconName,
         iconUrl: tasks.iconIconUrl,
@@ -430,7 +426,13 @@ async function createUserTasks(userId: number, userLanguage = 'ru') {
       reward: tasks.reward,
     })
     .from(tasks)
-    .where(and(eq(tasks.active, true), or(isNull(tasks.language), eq(tasks.language, userLanguage))))
+    .where(
+      and(
+        eq(tasks.active, true),
+        or(isNull(tasks.language), eq(tasks.language, userLanguage)),
+        or(isNull(tasks.activity), gte(tasks.activity, '0')),
+      ),
+    )
     .orderBy(tasks.position, desc(tasks.id))
 
   type TasksWithId = ((typeof activeTasks)[0] & {
@@ -438,7 +440,7 @@ async function createUserTasks(userId: number, userLanguage = 'ru') {
     codesAmount?: string | null
     userCodes?: unknown
     status?: string
-  })[]
+  } & { codes?: string[] })[]
 
   const newUserTasks: any[] = []
   for (const task of activeTasks) {
@@ -462,7 +464,9 @@ async function createUserTasks(userId: number, userLanguage = 'ru') {
   ;(activeTasks as TasksWithId).forEach((el) => {
     const sameTask = result.find((item) => item.id === el.taskId)
     if (!sameTask) return
-    // el.id = sameTask.id
+    if (el.codes) {
+      delete el.codes
+    }
     el.userCodes = sameTask.userCodes
     el.codesAmount = sameTask.codesAmount
     el.status = sameTask.status

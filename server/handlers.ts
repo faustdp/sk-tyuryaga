@@ -98,10 +98,12 @@ export async function handleCheckSubscription(req: Request, res: Response) {
   try {
     const { id, name }: { id: number; name: string } = req.body
     const result = await bot.api.getChatMember(name, id)
+    console.log('handlers102', result)
     const isOk =
       result && (result.status === 'member' || result.status === 'creator' || result.status === 'administrator')
     return res.status(200).json({ ok: isOk })
-  } catch {
+  } catch (error) {
+    console.log('handlers106', error)
     return res.status(500).json({ error: 'inner_error' })
   }
 }
