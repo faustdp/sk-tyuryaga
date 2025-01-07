@@ -1,9 +1,13 @@
 'use client'
 
 import { useState } from 'react';
-import { SelectInput, ReactSelectOption } from '@payloadcms/ui';
+import {  Button } from '@payloadcms/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+type TimeRange = 'day' | 'week' | 'month';
+
+interface Props { total: number; users: {period: string; count: number }[]; filters: TimeRange[] }
 
 const monthNames: Record<string, string> = {
   '01': 'Янв',
@@ -20,14 +24,14 @@ const monthNames: Record<string, string> = {
   '12': 'Дек'
 };
 
-const Chart: React.FC<{ total: number; users: {period: string; count: number }[] }> = ({ total, users }) => {
-  const [value, setValue] = useState<string>('day')
+const filterNames = {day: 'День', week:'Неделя', 'month': 'Месяц'}
+
+const Chart: React.FC<Props> = ({ total, users, filters }) => {
+  const [value, setValue] = useState<TimeRange>('day')
   const router = useRouter()
   const searchParams = useSearchParams();
 
-  function handleChange(e: ReactSelectOption | ReactSelectOption[]) {
-    const value = Array.isArray(e) ? e[0].value as string : e.value as string
-    if (!value) return
+  function handleChange(value: TimeRange) {
     setValue(value)
     const params = new URLSearchParams(searchParams);
     params.set('filter', value);
@@ -37,15 +41,11 @@ const Chart: React.FC<{ total: number; users: {period: string; count: number }[]
   return <>
    <span className="total-users">Всего юзеров: {total}</span>
     <span>Показать юзеров по:</span>
-    <SelectInput
-      path="filter"
-      name="filter"
-      hasMany={false}
-      options={[{value: 'day', label: 'День'}, {value: 'week', label: 'Неделя'}, {value: 'month', label: 'Месяц'}]}
-      value={value}
-      onChange={handleChange}
-      className="my-select"
-    />
+    {filters.map((el) =>
+      <Button key={el} onClick={() => handleChange(el)} disabled={value === el} className="filter-btn">
+        {filterNames[el]}
+      </Button>
+    )}
     <ResponsiveContainer width="100%" height="100%" className="recharts">
       <BarChart
         width={500}
@@ -69,7 +69,7 @@ const Chart: React.FC<{ total: number; users: {period: string; count: number }[]
           labelFormatter={(label) => {
             const parts = label.split('-');
             const [year, month, day] = parts;
-            return parts.length === 2 ? `${year} ${monthNames[month]}` :
+            return parts.length === 2 ? `${monthNames[month]} ${year}` :
               parts.length === 3 ? `${day} ${monthNames[month]}` : label
           }}
         />

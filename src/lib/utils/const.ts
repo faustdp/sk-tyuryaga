@@ -137,7 +137,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 2,
     baseAmount: 1,
-    // next: 69,
     [AMOUNT]: 10,
     [COMBO]: 8,
     [TIME]: 5,
@@ -145,7 +144,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 4,
     baseAmount: 10,
-    // next: 690,
     [AMOUNT]: 100,
     [COMBO]: 80,
     [TIME]: 50,
@@ -155,7 +153,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 8,
     baseAmount: 19,
-    // next: 3450,
     [AMOUNT]: 500,
     [COMBO]: 400,
     [TIME]: 250,
@@ -172,7 +169,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 30,
     baseAmount: 37,
-    // next: 31050,
     [AMOUNT]: 4500,
     [COMBO]: 3600,
     [TIME]: 2250,
@@ -180,7 +176,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 60,
     baseAmount: 46,
-    // next: 93150,
     [AMOUNT]: 13500,
     [COMBO]: 10800,
     [TIME]: 6750,
@@ -188,7 +183,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 120,
     baseAmount: 55,
-    // next: 279450,
     [AMOUNT]: 40500,
     [COMBO]: 32400,
     [TIME]: 20250,
@@ -196,7 +190,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 240,
     baseAmount: 64,
-    // next: 838350,
     [AMOUNT]: 121500,
     [COMBO]: 97200,
     [TIME]: 60750,
@@ -204,7 +197,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 480,
     baseAmount: 73,
-    // next: 1676700,
     [AMOUNT]: 243000,
     [COMBO]: 194400,
     [TIME]: 121500,
@@ -212,7 +204,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 960,
     baseAmount: 82,
-    // next: 2850390,
     [AMOUNT]: 413100,
     [COMBO]: 330480,
     [TIME]: 206550,

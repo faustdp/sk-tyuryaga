@@ -1,5 +1,4 @@
 <script lang="ts">
-  // let {data} = $props() $effect(() => {console.log('+page12', data)})
   import Steam from '@images/Steam.svelte'
   import Tv from '@images/Tv.svelte'
   import { user } from '@state/user.svelte'

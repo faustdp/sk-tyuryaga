@@ -135,7 +135,7 @@ const Analytics: React.FC<AdminViewProps> = async ({
       <Link href="/admin">
         <Button>Домой</Button>
       </Link>
-      <Chart total={total.totalDocs} users={users} />
+      <Chart total={total.totalDocs} users={users} filters={filters} />
     </Gutter>
   </DefaultTemplate>
 }

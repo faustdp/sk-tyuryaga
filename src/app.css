@@ -43,8 +43,6 @@ body {
   height: 100%;
   overflow-y: hidden;
   margin: 0;
-  /* background-color: rgb(var(--c-darkblue)); */
-  /* background: linear-gradient(360deg, #6d6a57 0, #2d4e61 var(--nav-height), #2d4e61 95.64%); */
 }
 
 h1,
