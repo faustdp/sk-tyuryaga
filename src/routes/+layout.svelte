@@ -242,8 +242,10 @@
 
   $effect(() => {
     const isDark = !!app.error || !!app.isLoading
-    document.body.classList.add(isDark ? 'bg-cdarkblue' : 'bg-main')
-    document.body.classList.remove(isDark ? 'bg-main' : 'bg-cdarkblue')
+    const body = document.body
+    if (!body) return
+    body.classList.add(isDark ? 'bg-cdarkblue' : 'bg-main')
+    body.classList.remove(isDark ? 'bg-main' : 'bg-cdarkblue')
   })
 </script>
 

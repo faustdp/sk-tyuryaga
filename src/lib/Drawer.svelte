@@ -11,7 +11,6 @@
   }: { isOpened: boolean; handleClose: () => void; children: Children } = $props()
 </script>
 
-<!-- bottom-[max(0px,_calc((var(--screen)_-_var(--height-limit))_/_2))] -->
 {#if isOpened}
   <section
     transition:fly={{ y: 200, opacity: 0, duration: 250, easing: quartOut }}

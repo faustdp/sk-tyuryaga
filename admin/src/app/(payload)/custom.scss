@@ -1,0 +1,26 @@
+.test {
+  display: flex;
+  padding: 5px;
+}
+
+.t-white {
+  color: white!important;
+}
+
+.my-select {
+  margin-left: 5px;
+  display: inline-block;
+  min-width: 200px;
+}
+
+.total-users {
+  display: inline-flex;
+  margin-left: 20px;
+  margin-right: 30px;
+}
+
+.recharts {
+  position: relative!important;
+  height: 75vh!important;
+  min-height: 300px !important;
+}

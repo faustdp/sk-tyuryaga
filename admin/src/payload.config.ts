@@ -3,7 +3,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { APIError, buildConfig, type Payload } from 'payload'
+import { APIError, buildConfig, type Payload, type PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
@@ -22,6 +22,16 @@ export default buildConfig({
   admin: {
     user: 'admins',
     importMap: { baseDir: path.resolve(dirname) },
+    components: {
+      afterNavLinks: [{ path: 'src/components/AnalyticsLink.tsx' }],
+      afterDashboard: [{ path: 'src/components/AnalyticsLink.tsx' }],
+      views: {
+        Analytics: {
+          Component: 'src/components/Analytics',
+          path: '/analytics',
+        },
+      },
+    },
   },
   collections: [
     {
@@ -148,7 +158,7 @@ export default buildConfig({
         afterChange: [
           async ({ doc, req, operation }) => {
             if (operation !== 'create') return
-            createUserTasks(req.payload, doc)
+            createUserTasks(req.payload, doc, req)
             return
           },
         ],
@@ -274,7 +284,7 @@ export default buildConfig({
   ],
 })
 
-async function createUserTasks(payload: Payload, doc: Task) {
+async function createUserTasks(payload: Payload, doc: Task, req: PayloadRequest) {
   let page = 1
   let hasMoreUsers = true
   const limit = 100
@@ -313,6 +323,7 @@ async function createUserTasks(payload: Payload, doc: Task) {
             ...(doc.type === 'code' &&
               doc.codes && { codes_amount: (doc.codes as string[]).length }),
           },
+          req,
         })
       })
       await Promise.all(userTaskPromises)
