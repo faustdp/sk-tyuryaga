@@ -1,5 +1,3 @@
-import './server/db'
-
 import cors from 'cors'
 import express, { Router } from 'express'
 
@@ -7,25 +5,8 @@ import express, { Router } from 'express'
 // import path from 'path'
 // import { fileURLToPath } from 'url'
 import botHandler from './server/bot'
-import {
-  addBonusPath,
-  apiPath,
-  botPath,
-  checkCodePath,
-  checkSubscriptionPath,
-  claimFriendsPath,
-  endTimePath,
-  farmCigsPath,
-  getFriendsPath,
-  healthPath,
-  mePath,
-  selectImagePath,
-  setAddressPath,
-  setupBot,
-  sitePort,
-  siteUrl,
-  taskStatusPath,
-} from './server/config'
+import { apiPaths, serverId, setupBot, sitePort, siteUrl } from './server/config'
+import * as DB from './server/db'
 import {
   handleCheckCode,
   handleCheckSubscription,
@@ -79,55 +60,55 @@ app.enable('trust proxy')
 
 const router = Router()
 
-router.get(healthPath, (req, res) => {
+router.get(apiPaths.healthPath, (req, res) => {
   res.status(200).send('OK')
 })
 
-router.post(mePath, (req, res) => {
+router.post(apiPaths.mePath, (req, res) => {
   meHandler(req, res)
 })
 
-router.post(botPath, (req, res) => {
+router.post(apiPaths.botPath, (req, res) => {
   botHandler(req, res)
 })
 
-router.post(endTimePath, (req, res) => {
+router.post(apiPaths.endTimePath, (req, res) => {
   setEndTime(req, res)
 })
 
-router.post(farmCigsPath, (req, res) => {
+router.post(apiPaths.farmCigsPath, (req, res) => {
   setFarmCigs(req, res)
 })
 
-router.post(addBonusPath, (req, res) => {
+router.post(apiPaths.addBonusPath, (req, res) => {
   setAddBonus(req, res)
 })
 
-router.post(claimFriendsPath, (req, res) => {
+router.post(apiPaths.claimFriendsPath, (req, res) => {
   setClaimFriends(req, res)
 })
 
-router.post(selectImagePath, (req, res) => {
+router.post(apiPaths.selectImagePath, (req, res) => {
   setSelectImage(req, res)
 })
 
-router.post(setAddressPath, (req, res) => {
+router.post(apiPaths.setAddressPath, (req, res) => {
   handleSetAddress(req, res)
 })
 
-router.post(checkSubscriptionPath, (req, res) => {
+router.post(apiPaths.checkSubscriptionPath, (req, res) => {
   handleCheckSubscription(req, res)
 })
 
-router.post(checkCodePath, (req, res) => {
+router.post(apiPaths.checkCodePath, (req, res) => {
   handleCheckCode(req, res)
 })
 
-router.post(taskStatusPath, (req, res) => {
+router.post(apiPaths.taskStatusPath, (req, res) => {
   handleTaskStatus(req, res)
 })
 
-router.post(getFriendsPath, (req, res) => {
+router.post(apiPaths.getFriendsPath, (req, res) => {
   handleGetFriends(req, res)
 })
 
@@ -135,15 +116,20 @@ router.post('/test', (req) => {
   console.log('fromFront:', req.body)
 })
 
-app.use(apiPath, router)
+app.use(apiPaths.apiPath, router)
 
 setupBot()
 
 // app.use(webhookCallback(bot, "express")) webhookcb from grammy
 // app.use(handler)
 
+let isClosing = false
+
 async function shutdown() {
+  if (isClosing) return
+  isClosing = true
   try {
+    await DB.pool.end()
     console.log('Shutdown complete.')
     process.exit(0)
   } catch (err) {
@@ -156,5 +142,5 @@ process.on('SIGINT', shutdown)
 process.on('SIGTERM', shutdown)
 
 app.listen(sitePort, '0.0.0.0', () => {
-  console.log(`Express server is running`)
+  console.log(`Express server ${serverId} is running on port ${sitePort}`)
 })

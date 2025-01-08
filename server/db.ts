@@ -1,5 +1,6 @@
 import { and, desc, eq, gte, isNotNull, isNull, ne, or, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
+import pg from 'pg'
 
 import type { CreateUser, DbTaskStatus, FriendsUser, GetUser, Inviter, UpdateInvites } from '../database.types'
 import * as schema from '../drizzle/schema'
@@ -7,26 +8,38 @@ import { dbUrl } from './config'
 
 const { users, userTasks, tasks } = schema
 
-let db = drizzle(dbUrl, { schema })
+const { Pool } = pg
+const pool = new Pool({ connectionString: dbUrl })
+const db = drizzle(pool, { schema })
 
-db.$client.on('error', (err: Error & { code?: string }) => {
+let retryCount = 0
+
+pool.on('error', (err: Error & { code?: string }) => {
   console.error('Unexpected error on idle client', err)
   if (['ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT'].includes(err.code || '')) {
-    handleRetry(5)
+    handleRetry()
   } else {
     process.exit(1)
   }
 })
 
-function handleRetry(retryCount: number): void {
+async function handleRetry(): Promise<void> {
   if (retryCount < 5) {
     const delay = Math.pow(2, retryCount) * 1000
-    console.log(`Retrying to connect in ${delay / 1000} seconds...`)
-    setTimeout(() => {
-      db = drizzle(dbUrl, { schema })
-    }, delay)
+    console.log(`Postgres Retrying to connect in ${delay / 1000} seconds...`)
+    await new Promise((resolve) => setTimeout(resolve, delay))
+
+    try {
+      await pool.query('SELECT 1')
+      console.log('Postgres reconnection successful')
+      retryCount = 0
+    } catch (error) {
+      console.error('Postgres Reconnection failed:', error)
+      retryCount++
+      handleRetry()
+    }
   } else {
-    console.error('Max retries reached. Exiting...')
+    console.error('Postgres Max retries reached. Exiting...')
     process.exit(1)
   }
 }
@@ -38,7 +51,7 @@ async function getUser(id: number) {
       SET
         activity_days = CASE 
           WHEN last_visit >= CURRENT_DATE AND last_visit < CURRENT_DATE + INTERVAL '1 day' 
-          THEN 0
+          THEN activity_days
           WHEN last_visit >= CURRENT_DATE - INTERVAL '1 day' AND last_visit < CURRENT_DATE 
           THEN activity_days + 1
           ELSE 0
@@ -475,6 +488,7 @@ async function createUserTasks(userId: number, userLanguage = 'ru') {
 }
 
 export {
+  pool,
   getUser,
   createUser,
   getInviter,

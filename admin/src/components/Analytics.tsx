@@ -1,9 +1,9 @@
 import { Gutter, Button } from '@payloadcms/ui';
-import type { AdminViewProps } from 'payload'
+import { type AdminViewProps } from 'payload'
 import { DefaultTemplate } from '@payloadcms/next/templates';
 import Chart from './Chart';
-import  Link  from 'next/link'
-import { PayloadRequest } from 'payload';
+import Link from 'next/link'
+import { type PayloadRequest } from 'payload';
 
 type TimeRange = 'day' | 'week' | 'month';
 type AnalyticsData = {

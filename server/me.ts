@@ -1,4 +1,5 @@
-import crypto from 'crypto'
+import crypto from 'node:crypto'
+
 import { Request, Response } from 'express'
 
 import type { CreateUser, Inviter, UserForDb } from '../database.types'

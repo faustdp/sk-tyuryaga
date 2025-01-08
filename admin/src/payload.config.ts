@@ -61,12 +61,27 @@ export default buildConfig({
         { name: 'invites', type: 'number', required: true, defaultValue: 0 },
         { name: 'farm_cigs', type: 'number', required: true, defaultValue: 0 },
         { name: 'ref_cigs', type: 'number', required: true, defaultValue: 0 },
-        { name: 'end_time', type: 'date' },
+        {
+          name: 'end_time',
+          type: 'date',
+          admin: {
+            date: {
+              pickerAppearance: 'dayAndTime',
+              displayFormat: 'dd/MM/yyyy HH:mm',
+            },
+          },
+        },
         {
           name: 'claim_friends',
           type: 'date',
           required: true,
           defaultValue: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          admin: {
+            date: {
+              pickerAppearance: 'dayAndTime',
+              displayFormat: 'dd/MM/yyyy HH:mm',
+            },
+          },
         },
         { name: 'activity_days', type: 'number', required: true, defaultValue: 0 },
         { name: 'bonuses', type: 'json', defaultValue: [] },
@@ -145,7 +160,7 @@ export default buildConfig({
         { name: 'language', type: 'text', maxLength: 5 },
         { name: 'activity', type: 'number' },
         { name: 'active', type: 'checkbox', defaultValue: true },
-        { name: 'position', type: 'number', defaultValue: 0 },
+        { name: 'position', type: 'number', defaultValue: 1 },
         {
           name: 'delay',
           type: 'number',
@@ -239,7 +254,18 @@ export default buildConfig({
         },
         { name: 'address', type: 'text', required: true, unique: true, maxLength: 80 },
         { name: 'created_at', type: 'date', defaultValue: new Date() },
-        { name: 'last_connect', type: 'date', required: true, defaultValue: new Date() },
+        {
+          name: 'last_connect',
+          type: 'date',
+          required: true,
+          defaultValue: new Date(),
+          admin: {
+            date: {
+              pickerAppearance: 'dayAndTime',
+              displayFormat: 'dd/MM/yyyy HH:mm',
+            },
+          },
+        },
       ],
     },
     {

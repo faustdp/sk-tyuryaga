@@ -2,26 +2,29 @@ import 'dotenv/config'
 
 // import Bugsnag from '@bugsnag/js'
 // import BugsnagPluginExpress from '@bugsnag/plugin-express'
-// import crypto from 'crypto'
+import crypto from 'node:crypto'
+
 // import type { ErrorRequestHandler, RequestHandler } from 'express'
 import { Bot } from 'grammy'
 // import type { WebSocket } from 'ws'
 
 export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828 // 5773 front
-export const apiPath = '/api'
-export const botPath = '/bot'
-export const mePath = '/me'
-export const healthPath = '/health'
-export const endTimePath = '/end-time'
-export const farmCigsPath = '/farm-cigs'
-export const addBonusPath = '/add-bonus'
-export const claimFriendsPath = '/claim-friends'
-export const selectImagePath = '/select-image'
-export const getFriendsPath = '/friends-list'
-export const setAddressPath = '/set-address'
-export const checkSubscriptionPath = '/check-subscription'
-export const checkCodePath = '/check-code'
-export const taskStatusPath = '/task-status'
+export const apiPaths = {
+  apiPath: '/api',
+  botPath: '/bot',
+  mePath: '/me',
+  healthPath: '/health',
+  endTimePath: '/end-time',
+  farmCigsPath: '/farm-cigs',
+  addBonusPath: '/add-bonus',
+  claimFriendsPath: '/claim-friends',
+  selectImagePath: '/select-image',
+  getFriendsPath: '/friends-list',
+  setAddressPath: '/set-address',
+  checkSubscriptionPath: '/check-subscription',
+  checkCodePath: '/check-code',
+  taskStatusPath: '/task-status',
+}
 
 export const token = process.env.BOT_TOKEN!
 export const secretToken = process.env.SETUP_SECRET
@@ -57,7 +60,7 @@ export const dbUrl =
 //   bug2: 'https://otlp.bugsnag.com',
 //   bug3: 'https://notify.bugsnag.com',
 // }
-// export const serverId = crypto.randomBytes(10).toString('hex')
+export const serverId = crypto.randomBytes(10).toString('hex')
 // export const PUBSUB_CHANNEL = 'websocket_broadcast'
 // export const localConnections: Map<string, WebSocket> = new Map()
 
