@@ -93,6 +93,7 @@ export default {
       },
       boxShadow: {
         wallet: '0px -4px 6px 0px rgb(var(--c-darkblue))',
+        menu: '1px -3px 4px 0px rgb(var(--c-darkblue))',
       },
       content: {
         empty: '""',

@@ -9,7 +9,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { linear, sineOut } from 'svelte/easing'
   import { Tween } from 'svelte/motion'
-  import { Confetti } from 'svelte-confetti'
+  import Confetti from 'svelte-confetti'
 
   import data from '@/messages.json'
 

@@ -83,7 +83,7 @@
   <meta name="description" content={data.shop_content} />
 </svelte:head>
 
-<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-4">
+<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-8">
   <div class="page-circle relative mb-5">
     <Pack class="size-11" />
   </div>

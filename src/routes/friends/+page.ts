@@ -4,7 +4,7 @@ import { friendsListUrl } from '@utils/api'
 /** @type {import('./$types').PageLoad} */
 export async function load({ fetch, depends }) {
   depends('app:friends')
-  if (!user.id) return {}
+  if (!user.id || user.invites === 0) return {}
   try {
     const result = await fetch(friendsListUrl, {
       method: 'POST',

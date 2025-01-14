@@ -52,12 +52,8 @@
           "tableFrom": "invites",
           "tableTo": "users",
           "schemaTo": "public",
-          "columnsFrom": [
-            "inviter"
-          ],
-          "columnsTo": [
-            "tg_id"
-          ],
+          "columnsFrom": ["inviter"],
+          "columnsTo": ["tg_id"],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -66,12 +62,8 @@
           "tableFrom": "invites",
           "tableTo": "users",
           "schemaTo": "public",
-          "columnsFrom": [
-            "invitee"
-          ],
-          "columnsTo": [
-            "tg_id"
-          ],
+          "columnsFrom": ["invitee"],
+          "columnsTo": ["tg_id"],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -366,12 +358,8 @@
           "tableFrom": "users",
           "tableTo": "users",
           "schemaTo": "public",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "tg_id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["tg_id"],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -379,16 +367,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_tg_id_key": {
-          "columns": [
-            "tg_id"
-          ],
+          "columns": ["tg_id"],
           "nullsNotDistinct": false,
           "name": "users_tg_id_key"
         },
         "users_first_name_key": {
-          "columns": [
-            "first_name"
-          ],
+          "columns": ["first_name"],
           "nullsNotDistinct": false,
           "name": "users_first_name_key"
         }
@@ -434,12 +418,8 @@
           "tableFrom": "user_tasks",
           "tableTo": "users",
           "schemaTo": "public",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "tg_id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["tg_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -448,12 +428,8 @@
           "tableFrom": "user_tasks",
           "tableTo": "tasks",
           "schemaTo": "public",
-          "columnsFrom": [
-            "task_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -461,10 +437,7 @@
       "compositePrimaryKeys": {
         "user_tasks_pkey": {
           "name": "user_tasks_pkey",
-          "columns": [
-            "user_id",
-            "task_id"
-          ]
+          "columns": ["user_id", "task_id"]
         }
       },
       "uniqueConstraints": {},
@@ -476,21 +449,12 @@
   "enums": {
     "public.farm_status": {
       "name": "farm_status",
-      "values": [
-        "farming",
-        "farmed",
-        "claimed"
-      ],
+      "values": ["farming", "farmed", "claimed"],
       "schema": "public"
     },
     "public.task_status": {
       "name": "task_status",
-      "values": [
-        "start",
-        "check",
-        "claim",
-        "done"
-      ],
+      "values": ["start", "check", "claim", "done"],
       "schema": "public"
     }
   },

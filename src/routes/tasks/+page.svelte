@@ -125,7 +125,7 @@
   <meta name="description" content={data.tasks_content} />
 </svelte:head>
 
-<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-4">
+<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-8">
   <div class="page-circle relative mb-5">
     <Cigarette width="64" height="64" class="relative" />
   </div>

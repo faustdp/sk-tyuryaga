@@ -17,7 +17,7 @@
   <meta name="description" content={data.items_content} />
 </svelte:head>
 
-<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pb-2 pt-4">
+<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pb-2 pt-8">
   <h1 class="shadow-heading mb-2.5 text-xl">{data.items_title}</h1>
   <p class="roboto mb-4 max-w-sm text-center text-xs tracking-wide text-textgrey">
     {data.items_desc}

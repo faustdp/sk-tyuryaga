@@ -19,16 +19,18 @@
 }
 
 .recharts {
-  position: relative!important;
-  height: 75vh!important;
+  position: relative !important;
+  height: 75vh !important;
   min-height: 300px !important;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 12px 6px !important;
   min-width: 120px !important;
 }
 
-.table tr > th, .table tr > td {
+.table tr > th,
+.table tr > td {
   min-width: 40px !important;
 }

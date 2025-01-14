@@ -14,7 +14,7 @@ export const noop = () => {}
 
 export function formatTime(ms: number, withoutSeconds = false) {
   const seconds = Math.trunc(ms / 1000)
-  const minutes = Math.trunc(seconds / SIXTY)
+  const minutes = withoutSeconds ? Math.ceil(seconds / SIXTY) : Math.trunc(seconds / SIXTY)
   const hours = Math.trunc(minutes / SIXTY)
 
   const remainingSeconds = seconds % SIXTY
@@ -24,6 +24,7 @@ export function formatTime(ms: number, withoutSeconds = false) {
 
   // const language = navigator.language || navigator.languages[0]
   const isEnglish = false //language.startsWith('en')
+
   const result = `${padZero(hours)}${isEnglish ? 'h' : 'ч'} ${padZero(remainingMinutes)}${isEnglish ? 'm' : 'м'}`
 
   if (withoutSeconds) return result

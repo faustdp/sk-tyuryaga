@@ -142,15 +142,6 @@
         tasks: fetchedTasks,
       } = result.userData
 
-      setBaseFarm(Number(level), bonuses)
-
-      if (end_time) {
-        const value = new Date(end_time).getTime()
-        const now = Date.now()
-        setEndTime(value, Number(farmed_time), Number(farmed_amount))
-        setFarm(value > now ? FARMING : FARMED)
-      }
-
       let tasks_completed = 0
       ;(fetchedTasks as (SocialItem & { iconType: string; iconName: string | null; iconUrl: string | null })[]).forEach(
         (el) => {
@@ -184,6 +175,15 @@
         level: Number(level),
         activity_days: Number(activity_days),
       })
+
+      setBaseFarm(Number(level), bonuses)
+
+      if (end_time) {
+        const value = new Date(end_time).getTime()
+        const now = Date.now()
+        setEndTime(value, Number(farmed_time), Number(farmed_amount))
+        setFarm(value > now ? FARMING : FARMED)
+      }
 
       tasks.data = sortTasks(fetchedTasks as SocialItem[])
 

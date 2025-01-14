@@ -1,12 +1,9 @@
 import CheckError from '@icons/checkError.svg?component'
 import { connectWallet, disconnectWallet } from '@state/app.svelte'
-import { setAddress } from '@state/user.svelte'
-// import { getHttpEndpoint } from "@orbs-network/ton-access";
-// import { TonClient } from "@ton/ton";
-// import { toNano } from '@ton/ton'
+import { setAddress, user } from '@state/user.svelte'
+// import {  toNano } from "@ton/ton";
 import { THEME, TonConnectUI } from '@tonconnect/ui'
 import { postSetAddress } from '@utils/api'
-// import { logServer } from '@utils'
 import { TON_KEY } from '@utils/const'
 import { convertAddress } from '@utils/ton'
 import { onMount, setContext } from 'svelte'
@@ -26,7 +23,7 @@ export function useTonConnect(disconnect = false) {
         uiPreferences: {
           theme: THEME.DARK,
         },
-        language: 'ru',
+        language: user.language === 'en' ? 'en' : 'ru',
         actionsConfiguration: {
           twaReturnUrl,
         },
@@ -64,7 +61,7 @@ export function useTonConnect(disconnect = false) {
     const unsubscribe = tonConnectUI.onStatusChange(async (wallet) => {
       if (wallet) {
         const address = convertAddress(wallet.account.address)
-        if (!address) return
+        if (!address || !user.id) return
         const res = await postSetAddress(address)
         if (res && res.success) {
           connectWallet()

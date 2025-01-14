@@ -60,7 +60,7 @@ export const IMG_NAMES: Images[] = [
     name: data.images_2,
     desc: data.images_desc,
     class: 'img-2',
-    width: '85',
+    width: '100',
   },
   {
     type: COMBO,

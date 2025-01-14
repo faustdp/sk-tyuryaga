@@ -10,7 +10,7 @@
   import { formatTime } from '@utils'
   import { postClaimFriends } from '@utils/api'
   import { DAY, SECOND } from '@utils/const'
-  import { onDestroy } from 'svelte'
+  import { onDestroy, untrack } from 'svelte'
   import { SvelteDate } from 'svelte/reactivity'
   import { Confetti } from 'svelte-confetti'
 
@@ -50,7 +50,7 @@
         })
       }
     })
-    setAmountFriends(Math.ceil(sum) - user.ref_cigs)
+    setAmountFriends(Math.ceil(sum) - untrack(() => user.ref_cigs))
   })
 
   async function handleClick() {
@@ -93,7 +93,7 @@
   </div>
 {/snippet}
 
-<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-4">
+<div class="mx-auto flex max-w-limit flex-col items-center justify-center px-4 pt-8">
   <div class="page-circle relative mb-5">
     <Inmates class="relative" width="64" height="64" viewBox="0 0 37 32" />
   </div>
@@ -133,7 +133,7 @@
   </p>
   <section class="mb-2 flex w-full max-w-[344px] flex-col">
     <h2 class="shadow-heading mb-3 self-start text-base">{data.friends_yours}</h2>
-    {#if pageData.friends.length > 0}
+    {#if pageData.friends && pageData.friends.length > 0}
       {#each pageData.friends as friend}
         {@render frens(friend)}
       {/each}

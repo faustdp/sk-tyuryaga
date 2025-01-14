@@ -108,7 +108,7 @@ function userStore() {
   }
 
   function setEndTime(time: number, farmTime?: number, farmAmount?: number) {
-    state.current_farm_time = farmTime ?? state.farm_time * MINUTE
+    state.current_farm_time = farmTime ?? Math.round(state.farm_time * MINUTE)
     state.current_farm_amount = farmAmount ?? Math.round(state.farm_time * state.farm_amount)
     state.end_time = time
   }

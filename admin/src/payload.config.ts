@@ -9,6 +9,9 @@ import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
 import { ru } from '@payloadcms/translations/languages/ru'
 import { type Task } from './payload-types'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -42,7 +45,7 @@ export default buildConfig({
     },
     {
       slug: 'users',
-      admin: { useAsTitle: 'first_name', pagination: { defaultLimit: 100 } },
+      admin: { pagination: { defaultLimit: 100 } },
       fields: [
         { name: 'tg_id', type: 'number', required: true, unique: true, index: true },
         { name: 'first_name', type: 'text', required: true, unique: true, maxLength: 100 },

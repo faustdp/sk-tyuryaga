@@ -21,8 +21,16 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    alias: {
+      '@tonconnect/sdk/src/utils/log.ts': '@tonconnect/sdk/dist/tonconnect-sdk.min.js',
+      '@tonconnect/sdk/src/utils/timeout.ts': '@tonconnect/sdk/dist/tonconnect-sdk.min.js',
+      '@tonconnect/sdk/src/ton-connect.ts': '@tonconnect/sdk/dist/tonconnect-sdk.min.js', // lib/esm/index.mjs
+    },
+  },
   optimizeDeps: {
-    exclude: ['./admin'],
+    exclude: ['./admin', 'svelte-confetti'],
+    include: ['@tonconnect/ui', '@tonconnect/sdk'],
   },
   // test: {
   //   include: ['src/**/*.{test,spec}.{js,ts}'],

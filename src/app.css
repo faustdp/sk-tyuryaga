@@ -26,7 +26,7 @@
   --width-limit: 540px;
   --height-limit: 915px;
   --screen: 100vh;
-  --nav-height: 146px;
+  --nav-height: 130px;
   --dark-yellow: #95804c;
   --dark-green: #186f5a;
   font-family: var(--font-russo);
@@ -348,16 +348,17 @@ button:focus:not(:focus-visible) {
   top: calc(50% + 5px);
 }
 .img-2 {
-  left: calc(50% - 180px);
-  top: calc(50% + 88px);
+  left: calc(50% - 210px);
+  top: calc(50% + 110px);
 }
 .img-3 {
   left: calc(50% + 109px);
   top: calc(50% + 96px);
 }
 .img-4 {
-  left: calc(50% + 95px);
-  top: calc(50% - 29px);
+  left: calc(50% + 97px);
+  top: calc(50% - 42px);
+  transform: rotateY(180deg);
 }
 .img-5 {
   left: calc(50% + 76px);
@@ -372,7 +373,7 @@ button:focus:not(:focus-visible) {
   transform: rotateY(50deg) rotateZ(5deg) rotateZ(-10deg) skewX(-5deg);
   transform-origin: left;
   left: calc(50% - 221px);
-  top: calc(50% - 335px);
+  top: calc(50% - 320px);
 }
 .img-8 {
   left: calc(50% - 164px);
@@ -434,6 +435,12 @@ button:focus:not(:focus-visible) {
   }
   :root {
     --nav-height: 102px;
+  }
+}
+
+@media screen and (max-height: 645px) {
+  .img-2 {
+    top: calc(50% + 88px);
   }
 }
 

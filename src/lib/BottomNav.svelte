@@ -10,10 +10,10 @@
 </script>
 
 <footer
-  class="bg-nav fixed bottom-0 z-30 flex
-   w-full justify-center maxheight:!left-0 maxheight:!-z-10">
+  class="bg-nav fixed bottom-0 z-30 flex w-full
+   justify-center shadow-menu maxheight:!left-0 maxheight:!-z-10">
   <nav
-    class="flex w-full max-w-limit justify-around gap-x-1.5 px-3 pb-9 pt-8 maxheightSm:pb-1 maxheightSm:pt-5 smallscreen:justify-center"
+    class="flex w-full max-w-limit justify-around gap-x-1.5 px-3 pb-5 pt-8 maxheightSm:pb-1 maxheightSm:pt-5 smallscreen:justify-center"
     data-sveltekit-keepfocus>
     <NavBtn url="/friends" Icon={Inmates}>{data.nav_frens}</NavBtn>
     <NavBtn url="/tasks" Icon={Quest}>{data.nav_tasks}</NavBtn>
