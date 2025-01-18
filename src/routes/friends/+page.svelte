@@ -6,7 +6,7 @@
   import FriendsAmount from '@icons/friendsAmount.svg?component'
   import Inmates from '@icons/inmates.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import { setAmountFriends, setClaimFriends, setRefCigs, user } from '@state/user.svelte'
+  import { setAmountFriends, setCigs, setClaimFriends, setRefCigs, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
   import { postClaimFriends } from '@utils/api'
   import { DAY, SECOND } from '@utils/const'
@@ -43,10 +43,10 @@
     if (!pageData.friends?.length) return
     let sum = 0
     pageData.friends.forEach((el: FriendStat) => {
-      sum += Number(el.farm_cigs) * 0.1
+      sum += (Number(el.farm_cigs) - Number(el.ref_cigs)) * 0.1
       if (el.invitees) {
         el.invitees.forEach((el: FriendStat) => {
-          sum += Number(el.farm_cigs) * (el.depth === 2 ? 0.05 : 0.01)
+          sum += (Number(el.farm_cigs) - Number(el.ref_cigs)) * (el.depth === 2 ? 0.05 : 0.01)
         })
       }
     })
@@ -55,16 +55,24 @@
 
   async function handleClick() {
     if (!isReady) return
-    showConfetti = true
     const time = DAY + date.getTime()
+    const friendsCigs = user.amount_friends
+    const result = await postClaimFriends(new Date(time).toISOString(), friendsCigs)
+    if (result?.error) return
+    showConfetti = true
     confettiTO = setTimeout(() => {
       showConfetti = false
     }, SECOND * 10)
-    const friendsCigs = user.amount_friends
-    setRefCigs(friendsCigs)
-    setClaimFriends(time)
     setAmountFriends(0)
-    await postClaimFriends(new Date(time).toISOString(), friendsCigs)
+    if (result?.ok) {
+      setRefCigs(friendsCigs)
+      setCigs(friendsCigs)
+      setClaimFriends(time)
+    } else if (result?.data?.farm_cigs) {
+      user.farm_cigs = Number(result.data.farm_cigs)
+      user.ref_cigs = Number(result.data.ref_cigs)
+      setClaimFriends(new Date(result.data.claim_friends).getTime())
+    }
   }
 
   onDestroy(() => {
@@ -77,7 +85,7 @@
   <meta name="description" content={data.friends_content} />
 </svelte:head>
 
-{#snippet frens({ first_name, invitees, farm_cigs, ref_cigs }: FriendStat)}
+{#snippet frens({ first_name, invitees, farm_cigs }: FriendStat)}
   <div class="flex flex-1 items-center gap-x-3 py-2">
     <div class="flex size-8 select-none items-center justify-center rounded-full bg-cblue pt-0.5">
       {first_name[0].toUpperCase()}
@@ -87,7 +95,7 @@
       <span class="roboto flex gap-x-1 text-xs text-textgrey"><FriendsIcon />+{invitees?.length ?? 0}</span>
     </span>
     <p class="relative ml-auto flex items-center">
-      {(Number(farm_cigs) + Number(ref_cigs)).toLocaleString()}
+      {Number(farm_cigs).toLocaleString()}
       <Cigarette class="-mt-0.5 ml-1" width="36" height="19" />
     </p>
   </div>

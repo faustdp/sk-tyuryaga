@@ -5,13 +5,13 @@
   import { sineOut } from 'svelte/easing'
   import { Tween } from 'svelte/motion'
 
-  let cigs = new Tween(user.cigs, {
-    duration: 450,
+  let cigs = new Tween(user.farm_cigs, {
+    duration: 400,
     easing: sineOut,
   })
 
   $effect(() => {
-    cigs.target = user.cigs
+    cigs.target = user.farm_cigs
   })
 </script>
 

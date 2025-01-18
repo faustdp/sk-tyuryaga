@@ -25,16 +25,55 @@ async function postRequest(url: string, data: any) {
   }
 }
 
+interface PostEndTimeResponse {
+  data?:
+    | string
+    | {
+        end_time: string
+        farmed_amount: string
+        farmed_time: string
+      }
+  error?: string
+}
+
 export async function postEndTime(time: string, cigs: number, farmedTime: number) {
-  await postRequest(endTimeUrl, { time, cigs, farmedTime, id: user.id })
+  const res = await postRequest(endTimeUrl, { time, cigs, farmedTime, id: user.id })
+  if (!res) return null
+  const result: PostEndTimeResponse = await res.json()
+  return result
+}
+
+interface PostFarmCigs {
+  data?: {
+    farm_cigs: string
+  }
+  ok?: boolean
+  error?: string
 }
 
 export async function postFarmCigs(cigs: number, fromFarm = true) {
-  await postRequest(farmCigsUrl, { cigs, fromFarm, id: user.id })
+  const res = await postRequest(farmCigsUrl, { cigs, fromFarm, id: user.id })
+  if (!res) return null
+  const result: PostFarmCigs = await res.json()
+  return result
+}
+
+interface PostAddBonus {
+  data?: {
+    farm_cigs: string
+    level: string
+    bonuses: BonusIndexes[]
+    selected_images: number[]
+  }
+  ok?: boolean
+  error?: string
 }
 
 export async function postAddBonus({ cigs, level, index }: { cigs: number; level?: number; index?: number }) {
-  await postRequest(addBonusUrl, { cigs, level, index, id: user.id })
+  const res = await postRequest(addBonusUrl, { cigs, level, index, id: user.id })
+  if (!res) return null
+  const result: PostAddBonus = await res.json()
+  return result
 }
 
 export async function postSetAddress(address: string) {
@@ -42,12 +81,28 @@ export async function postSetAddress(address: string) {
   return res ? await res.json() : null
 }
 
+interface PostClaimFriends {
+  data?: {
+    farm_cigs: string
+    ref_cigs: string
+    claim_friends: string
+  }
+  ok?: boolean
+  error?: string
+}
+
 export async function postClaimFriends(time: string, cigs: number) {
-  await postRequest(claimFriendsUrl, { time, cigs, id: user.id })
+  const res = await postRequest(claimFriendsUrl, { time, cigs, id: user.id })
+  if (!res) return null
+  const result: PostClaimFriends = await res.json()
+  return result
 }
 
 export async function postSelectImage(index: number, image: number) {
-  await postRequest(selectImageUrl, { index, image, id: user.id })
+  const res = await postRequest(selectImageUrl, { index, image, id: user.id })
+  if (!res) return null
+  const result: Omit<PostFarmCigs, 'data'> = await res.json()
+  return result
 }
 
 export async function postCheckSubscription(name: string) {

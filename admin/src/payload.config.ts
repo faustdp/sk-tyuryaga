@@ -4,6 +4,7 @@ import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { APIError, buildConfig, type Payload, type PayloadRequest } from 'payload'
+import { type Language } from '@payloadcms/translations'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
@@ -15,6 +16,11 @@ dotenv.config()
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const languages: { [key: string]: Language } = {
+  en,
+  ru,
+}
 
 export default buildConfig({
   /*   hooks: {
@@ -303,7 +309,7 @@ export default buildConfig({
   graphQL: { disable: true },
   sharp,
   i18n: {
-    supportedLanguages: { en, ru },
+    supportedLanguages: languages,
     fallbackLanguage: 'en',
     translations: { ru },
   },

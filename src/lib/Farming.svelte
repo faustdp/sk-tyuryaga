@@ -25,7 +25,7 @@
     return Math.max(0, (time - now) / user.current_farm_time)
   }
 
-  const prevProgress = getProgress(user.end_time)
+  let prevProgress = getProgress(user.end_time)
   let wasFarming = user.end_time !== 0 && prevProgress !== 0
 
   let showConfetti = $state(false)
@@ -80,16 +80,44 @@
       showConfetti = false
       const now = Date.now()
       const time = now + user.farm_time * MINUTE
-      setEndTime(time)
-      setFarm(FARMING)
-      startInterval()
-      progress.target = 0
-      await postEndTime(new Date(time).toISOString(), user.current_farm_amount, user.current_farm_time)
+      user.current_farm_amount = user.farm_time * user.farm_amount
+      user.current_farm_time = user.farm_time * MINUTE
+      prevProgress = getProgress(time)
+      const result = await postEndTime(
+        new Date(time).toISOString(),
+        Math.round(user.farm_time * user.farm_amount),
+        Math.round(user.farm_time * MINUTE),
+      )
+      if (typeof result?.data === 'object' && result?.data?.end_time) {
+        const dbTime = new Date(result.data.end_time).getTime()
+        setEndTime(dbTime, Number(result.data.farmed_time), Number(result.data.farmed_amount))
+        if (dbTime !== time) {
+          wasFarming = true
+          prevProgress = getProgress(dbTime)
+          progress.set(prevProgress, { duration: 0 })
+        }
+        const isFarming = dbTime > now
+        if (isFarming) {
+          setFarm(FARMING)
+          startInterval()
+        } else {
+          setFarm(FARMED)
+        }
+      } else if (result?.data === 'OK') {
+        setEndTime(time)
+        setFarm(FARMING)
+        startInterval()
+      }
     } else if (user.farm === FARMED) {
+      const result = await postFarmCigs(user.current_farm_amount)
       showConfetti = true
       setFarm(CLAIMED)
-      setCigs(user.current_farm_amount)
-      await postFarmCigs(user.current_farm_amount)
+      if (result?.data?.farm_cigs) {
+        const cigs = Number(result.data.farm_cigs)
+        setCigs(cigs - user.farm_cigs)
+      } else {
+        setCigs(user.current_farm_amount)
+      }
     }
   }
 

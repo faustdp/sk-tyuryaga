@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, isNotNull, isNull, ne, or, sql } from 'drizzle-orm'
+import { and, arrayContains, desc, eq, gte, isNotNull, isNull, lt, ne, not, or, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 
@@ -148,8 +148,17 @@ async function setTime(id: number, time: string, cigs: number, farmedTime: numbe
         farmedAmount: String(cigs),
         farmedTime: String(farmedTime),
       })
+      .where(and(eq(users.id, id), isNull(users.endTime)))
+    if (typeof data?.rowCount === 'number' && data.rowCount > 0) return { data: 'OK' }
+    const newData = await db
+      .select({
+        end_time: users.endTime,
+        farmed_amount: users.farmedAmount,
+        farmed_time: users.farmedTime,
+      })
+      .from(users)
       .where(eq(users.id, id))
-    return { data }
+    return { data: newData[0] }
   } catch (error) {
     return { error }
   }
@@ -163,16 +172,19 @@ async function farmCigs(id: number, cigs: number, fromFarm = true) {
         farmCigs: sql`${users.farmCigs} + ${cigs}`,
         ...(fromFarm && {
           endTime: null,
-          farmedAmount: String(0),
-          farmedTime: String(0),
+          farmedAmount: '0',
+          farmedTime: '0',
         }),
       })
-      .where(
-        fromFarm
-          ? and(eq(users.id, id), isNotNull(users.endTime), ne(users.farmedAmount, String(0)))
-          : eq(users.id, id),
-      )
-    return { data }
+      .where(fromFarm ? and(eq(users.id, id), isNotNull(users.endTime), ne(users.farmedAmount, '0')) : eq(users.id, id))
+    if (typeof data?.rowCount === 'number' && data.rowCount > 0) return { ok: true }
+    const newData = await db
+      .select({
+        farm_cigs: users.farmCigs,
+      })
+      .from(users)
+      .where(eq(users.id, id))
+    return { data: newData[0] }
   } catch (error) {
     return { error }
   }
@@ -196,8 +208,24 @@ async function addBonus({ cigs, id, level, index }: { cigs: number; id: number; 
             : sql`'[]'::jsonb`,
         ...(level ? { level: String(level) } : {}),
       })
+      .where(
+        and(
+          eq(users.id, id),
+          gte(users.farmCigs, String(Math.abs(cigs))),
+          ...(index ? [not(arrayContains(users.bonuses, index))] : []),
+        ),
+      )
+    if (typeof data?.rowCount === 'number' && data.rowCount > 0) return { ok: true }
+    const newData = await db
+      .select({
+        farm_cigs: users.farmCigs,
+        level: users.level,
+        bonuses: users.bonuses,
+        selected_images: users.selectedImages,
+      })
+      .from(users)
       .where(eq(users.id, id))
-    return { data }
+    return { data: newData[0] }
   } catch (error) {
     return { error }
   }
@@ -210,9 +238,19 @@ async function claimFriends(id: number, time: string, cigs: number) {
       .set({
         claimFriends: time,
         refCigs: sql`${users.refCigs} + ${cigs}`,
+        farmCigs: sql`${users.farmCigs} + ${cigs}`,
       })
+      .where(and(eq(users.id, id), lt(users.claimFriends, new Date().toISOString())))
+    if (typeof data?.rowCount === 'number' && data.rowCount > 0) return { ok: true }
+    const newData = await db
+      .select({
+        farm_cigs: users.farmCigs,
+        ref_cigs: users.refCigs,
+        claim_friends: users.claimFriends,
+      })
+      .from(users)
       .where(eq(users.id, id))
-    return { data }
+    return { data: newData[0] }
   } catch (error) {
     return { error }
   }
@@ -223,9 +261,9 @@ async function selectImage(id: number, index: number, image: number) {
     const data = await db.execute(sql`
       UPDATE users
       SET selected_images[${index}] = ${image}
-      WHERE id = ${id}
+      WHERE id = ${id} AND (selected_images[${index}] IS NULL OR selected_images[${index}] != ${image})
   `)
-    return { data }
+    return { ok: typeof data?.rowCount === 'number' && data.rowCount > 0 }
   } catch (error) {
     return { error }
   }
@@ -380,8 +418,8 @@ async function taskStatus(id: number, task: number, status: DbTaskStatus) {
       .set({
         status: status,
       })
-      .where(and(eq(userTasks.userIdId, id), eq(userTasks.taskIdId, task)))
-    return { data }
+      .where(and(eq(userTasks.userIdId, id), eq(userTasks.taskIdId, task), ne(userTasks.status, status)))
+    return { ok: typeof data?.rowCount === 'number' && data?.rowCount > 0 }
   } catch (error) {
     return { error }
   }

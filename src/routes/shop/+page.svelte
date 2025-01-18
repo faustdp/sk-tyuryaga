@@ -73,7 +73,7 @@
   }
 
   async function buyBoost(price: number, isAllowed: boolean) {
-    if (user.cigs < price || !selectedItem || !isAllowed) return
+    if (user.farm_cigs < price || !selectedItem || !isAllowed) return
     await addBonus(selectedItem.idx, -price)
   }
 </script>
@@ -134,7 +134,7 @@
         (!hasBonus && user.level === LEVELS.length - 1)}
       {@const currLevel = hasBonus && user.level < LEVELS.length - 1 ? user.level + 1 : user.level}
       {@const prevLevel = hasBonus ? user.level : user.level - 1}
-      {@const isEnoughCigs = user.cigs >= LEVELS[currLevel][selectedItem.type]}
+      {@const isEnoughCigs = user.farm_cigs >= LEVELS[currLevel][selectedItem.type]}
       {@const isTasksCompleted = LEVELS[currLevel].tasks ? LEVELS[currLevel].tasks <= user.tasks_completed : true}
       {@const isInvitesCompleted = LEVELS[currLevel].invites ? LEVELS[currLevel].invites <= user.invites : true}
       {@const isStreakCompleted = LEVELS[currLevel].streak ? LEVELS[currLevel].streak <= user.activity_days : true}

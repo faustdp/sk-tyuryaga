@@ -10,7 +10,6 @@ interface User {
   language: string
   invites: number
   level: number
-  cigs: number
   farm_cigs: number
   ref_cigs: number
   claim_friends: number
@@ -37,7 +36,6 @@ function userStore() {
     language: 'ru',
     invites: 0,
     level: 0,
-    cigs: 0,
     farm_cigs: 0,
     ref_cigs: 0,
     claim_friends: Date.now() + DAY,
@@ -89,18 +87,12 @@ function userStore() {
     })
   }
 
-  function sumCigs() {
-    state.cigs = state.farm_cigs + state.ref_cigs
-  }
-
   function setCigs(cigs: number) {
     state.farm_cigs += cigs
-    sumCigs()
   }
 
   function setRefCigs(cigs: number) {
     state.ref_cigs += cigs
-    sumCigs()
   }
 
   function setFarm(farming: Farm) {
@@ -138,21 +130,27 @@ function userStore() {
 
   async function addBonus(idx: BonusIndexes, cigs: number) {
     if (state.bonuses.includes(idx)) return
-    state.bonuses = [...state.bonuses, idx]
+    const isLevelUp = state.bonuses.length + 1 >= IMG_NAMES.length
     const level = user.level
-    user.selected_images[idx] = level
-    calcBonus(idx)
-    const isLevelUp = state.bonuses.length >= IMG_NAMES.length
-    if (isLevelUp) {
-      upLevel()
-    }
-    if (cigs) {
+    const result = await postAddBonus({ cigs, ...(isLevelUp ? { level: level + 1 } : { index: idx }) })
+    if (result?.ok) {
+      state.bonuses = [...state.bonuses, idx]
+      user.selected_images[idx] = level
+      calcBonus(idx)
+      if (isLevelUp) {
+        upLevel()
+      }
       setCigs(cigs)
+      await postSelectImage(idx, level)
+    } else if (result?.data?.farm_cigs) {
+      const cigs = Number(result.data.farm_cigs)
+      const level = Number(result.data.level)
+      state.level = level
+      state.farm_cigs = cigs
+      state.bonuses = [...result.data.bonuses]
+      setBaseFarm(level, state.bonuses)
+      state.selected_images = result.data.selected_images
     }
-    await Promise.all([
-      postAddBonus({ cigs, ...(isLevelUp ? { level: state.level } : { index: idx }) }),
-      postSelectImage(idx, level),
-    ])
   }
 
   function increaseCompletedTasks() {

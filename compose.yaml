@@ -1,26 +1,4 @@
 services:
-  # directus:
-  #   image: directus/directus:11.1.0
-  #   ports:
-  #     - 8055:8055
-  #   volumes:
-  #     - ./database:/directus/database
-  #     - ./uploads:/directus/uploads
-  #     - ./extensions:/directus/extensions
-  #   environment:
-  #     DB_CLIENT: "pg"
-  #     DB_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
-  #     ADMIN_EMAIL: "${ADMIN_EMAIL}"
-  #     ADMIN_PASSWORD: "${ADMIN_PW}"
-  #     SECRET: "${SECRET}"
-  #     WEBSOCKETS_ENABLED: "true"
-  #     WEBSOCKETS_GRAPHQL_ENABLED: "false"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   networks:
-  #     - general
-
   postgresdb:
     image: postgres:17.1
     environment:
@@ -39,6 +17,19 @@ services:
       interval: 50s
       timeout: 10s
       retries: 5
+
+  # redis:
+  #   image: redis:7.2.7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - general
+  #   restart: always
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 50s
+  #     timeout: 10s
+  #     retries: 5
 
 volumes:
   pgdata2:
@@ -67,7 +58,6 @@ networks:
   #     - VITE_SITE_PORT=${VITE_SITE_PORT}
   #     - VITE_WS_URL=${VITE_WS_URL}
   #     - VITE_GTM_ID=${VITE_GTM_ID}
-  #     - VITE_YA_METRIKA=${VITE_YA_METRIKA}
   #     - VITE_BOT_NAME=${VITE_BOT_NAME}
   #     - VITE_BOT_APP_NAME=${VITE_BOT_APP_NAME}
   #     - VITE_BUGSNAG_KEY=${VITE_BUGSNAG_KEY}
@@ -82,17 +72,7 @@ networks:
   #     timeout: 10s
   #     retries: 3
 
-  # redis:
-  #   ports:
-  #     - "6379:6379"
-  #   networks:
-  #     - app-network
-  #   restart: always
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 50s
-  #     timeout: 10s
-  #     retries: 5
+
 # FROM node:18-alpine AS base
 # FROM base AS deps.
 # RUN apk add --no-cache libc6-compat

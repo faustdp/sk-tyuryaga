@@ -115,8 +115,15 @@
     item.status = taskStatus.done
     sortTasks(tasks.data)
     increaseCompletedTasks()
-    setCigs(item.reward)
-    await Promise.all([postTaskStatus(item.id, taskStatus.done), postFarmCigs(item.reward, false)])
+    const resp = await postTaskStatus(item.id, taskStatus.done)
+    const result = await resp?.json()
+    if (result?.ok) {
+      const farmResult = await postFarmCigs(item.reward, false)
+      const cigs = Number(farmResult?.data?.farm_cigs)
+      setCigs(farmResult?.data?.farm_cigs ? cigs - user.farm_cigs : item.reward)
+    } else {
+      setCigs(item.reward)
+    }
   }
 </script>
 

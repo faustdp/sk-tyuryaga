@@ -147,7 +147,7 @@ export const LEVELS: LevelsType[] = [
     [AMOUNT]: 100,
     [COMBO]: 80,
     [TIME]: 50,
-    tasks: 3,
+    tasks: 1,
     invites: 2,
   },
   {

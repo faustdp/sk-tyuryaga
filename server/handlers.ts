@@ -28,7 +28,7 @@ export async function setEndTime(req: Request, res: Response) {
   if (data.error) {
     return res.status(500).json({ error: 'inner_error' })
   }
-  return res.status(200).json({ message: 'OK' })
+  return res.status(200).json(data)
 }
 
 export async function setFarmCigs(req: Request, res: Response) {
@@ -40,7 +40,7 @@ export async function setFarmCigs(req: Request, res: Response) {
   if (data.error) {
     return res.status(500).json({ error: 'inner_error' })
   }
-  return res.status(200).json({ message: 'OK' })
+  return res.status(200).json(data)
 }
 
 export async function setAddBonus(req: Request, res: Response) {
@@ -52,7 +52,7 @@ export async function setAddBonus(req: Request, res: Response) {
   if (data.error) {
     return res.status(500).json({ error: 'inner_error' })
   }
-  return res.status(200).json({ message: 'OK' })
+  return res.status(200).json(data)
 }
 
 export async function setClaimFriends(req: Request, res: Response) {
@@ -64,7 +64,7 @@ export async function setClaimFriends(req: Request, res: Response) {
   if (data.error) {
     return res.status(500).json({ error: 'inner_error' })
   }
-  return res.status(200).json({ message: 'OK' })
+  return res.status(200).json(data)
 }
 
 export async function setSelectImage(req: Request, res: Response) {
@@ -76,7 +76,7 @@ export async function setSelectImage(req: Request, res: Response) {
   if (data.error) {
     return res.status(500).json({ error: 'inner_error' })
   }
-  return res.status(200).json({ message: 'OK' })
+  return res.status(200).json(data)
 }
 
 export async function handleSetAddress(req: Request, res: Response) {
@@ -123,7 +123,7 @@ export async function handleTaskStatus(req: Request, res: Response) {
   }
   const data = await taskStatus(id, task, status)
   if (data.error) return res.status(500).json({ error: 'inner_error' })
-  return res.status(200).json({ ok: data.data })
+  return res.status(200).json(data)
 }
 
 export async function handleGetFriends(req: Request, res: Response) {
