@@ -3,7 +3,7 @@ import crypto from 'node:crypto'
 import { Request, Response } from 'express'
 
 import type { CreateUser, Inviter, UserForDb } from '../database.types'
-import { token } from './config'
+import { sseClients, token } from './config'
 import { createInvite, createUser, createUserTasks, getInviter, getUser, getUserTasks, updateInvites } from './db'
 
 // interface GenericError {
@@ -144,6 +144,23 @@ export async function meHandler(req: Request, res: Response) {
         //   depth: 1,
         // }),
       ])
+      const stringId = String(inviterId)
+      if (sseClients.has(stringId)) {
+        const userConnections = sseClients.get(stringId)
+        if (userConnections) {
+          const clients = Object.keys(userConnections)
+          const data = {
+            type: 'invite',
+            data: {
+              username: inviter?.username,
+              name: inviter?.first_name,
+            },
+          }
+          clients.forEach((client) => {
+            userConnections[client].write(`data: ${JSON.stringify(data)}\n\n`)
+          })
+        }
+      }
     }
     return res.status(200).json({ valid: true, userData: Object.assign(createdData, tasks) })
   } catch (_err) {

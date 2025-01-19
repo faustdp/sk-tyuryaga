@@ -85,6 +85,19 @@ declare global {
     depth: number
     invitees?: FriendStat[]
   }
+
+  interface EventMessage {
+    type: string
+    data: {
+      name: string
+      username: string
+    }
+  }
+
+  interface ConnectionInfo {
+    type: 'connected'
+    message: string
+  }
 }
 
 declare module '*.svg' {

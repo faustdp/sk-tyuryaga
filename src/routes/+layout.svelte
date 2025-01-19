@@ -5,6 +5,7 @@
   import '@fontsource/roboto/400.css'
 
   import ProgressBar from '@components/ProgressBar.svelte'
+  import CheckSuccess from '@icons/checkSuccess.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setError, setIsLoaded } from '@state/app.svelte'
   import { tasks } from '@state/tasks.svelte'
@@ -17,6 +18,7 @@
     setRefCigs,
     setSelectedImages,
     setUser,
+    user,
   } from '@state/user.svelte'
   import {
     closeMiniApp,
@@ -29,14 +31,15 @@
     retrieveLaunchParams,
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
-  import { FARMED, FARMING, meUrl, MINUTE, taskStatus } from '@utils/const'
+  import { sseUrl } from '@utils/api'
+  import { CLIENT_ID, FARMED, FARMING, meUrl, MINUTE, siteUrl, taskStatus } from '@utils/const'
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
   import { onMount } from 'svelte'
   import { sineInOut } from 'svelte/easing'
   import { Tween } from 'svelte/motion'
   import { fade } from 'svelte/transition'
-  import { Toaster } from 'svelte-hot-french-toast'
+  import toast, { Toaster } from 'svelte-hot-french-toast'
 
   import BottomNav from '@/BottomNav.svelte'
   import data from '@/messages.json'
@@ -54,6 +57,7 @@
   })
 
   let interval: number | null = null
+  let eventSource: EventSource | null = null
 
   function stopProgress() {
     if (interval) {
@@ -72,6 +76,21 @@
       progress.set(nextProgress, { duration: nextProgress === 100 ? progressDefDur : progressShortDur })
       if (progress.current === 100) stopProgress()
     }, 80)
+  }
+
+  function connectSSE() {
+    eventSource = new EventSource(`${siteUrl}${sseUrl}${user.id}?clientId=${CLIENT_ID}`)
+
+    eventSource.onmessage = (event) => {
+      const msg = JSON.parse(event.data) as EventMessage | ConnectionInfo
+      if (msg.type === 'invite') {
+        toast.success(`${data.new_invite} ${msg.data.name} ${msg.data.username || ''}!`, {
+          class: 'toast-success',
+          icon: CheckSuccess,
+          duration: 3000,
+        })
+      }
+    }
   }
 
   async function initTgApp() {
@@ -189,6 +208,8 @@
 
       tasks.data = sortTasks(fetchedTasks as SocialItem[])
 
+      connectSSE()
+
       invalidate('app:friends')
     } catch (err) {
       if (err instanceof Error) {
@@ -232,6 +253,9 @@
 
     return () => {
       if (removeListeners) removeListeners()
+      if (eventSource) {
+        eventSource.close()
+      }
       stopProgress()
       clearInterval(friendsInterval)
     }

@@ -19,9 +19,9 @@ services:
       retries: 5
 
   # redis:
-  #   image: redis:7.2.7-alpine
+  #   image: redis:7.2.7-alpine3.21
   #   ports:
-  #     - "6379:6379"
+  #     - "6377:6379"
   #   networks:
   #     - general
   #   restart: always

@@ -19,21 +19,6 @@ interface Inviter {
 }
 
 interface GetUser {
-  /*   tg_id: number
-  username: string | null
-  first_name: string
-  invites: number
-  level: number
-  bonuses: number[]
-  selected_images: number[]
-  activity_days: number
-  ref_cigs: number
-  farm_cigs: number
-  end_time: string | null
-  language: string | null
-  claim_friends: string | null
-  farmed_amount: number
-  farmed_time: number */
   id: number
   tg_id: string
   username: string | null

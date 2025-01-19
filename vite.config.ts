@@ -13,6 +13,7 @@ export default defineConfig({
     nodePolyfills(),
   ],
   server: {
+    // hmr: false,
     port: 5773,
     proxy: {
       '/api': {

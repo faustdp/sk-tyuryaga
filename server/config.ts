@@ -4,11 +4,11 @@ import 'dotenv/config'
 // import BugsnagPluginExpress from '@bugsnag/plugin-express'
 import crypto from 'node:crypto'
 
-// import type { ErrorRequestHandler, RequestHandler } from 'express'
+import type { Response } from 'express' //ErrorRequestHandler, RequestHandler
 import { Bot } from 'grammy'
 // import type { WebSocket } from 'ws'
 
-export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828 // 5773 front
+export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828
 export const apiPaths = {
   apiPath: '/api',
   botPath: '/bot',
@@ -24,14 +24,17 @@ export const apiPaths = {
   checkSubscriptionPath: '/check-subscription',
   checkCodePath: '/check-code',
   taskStatusPath: '/task-status',
+  ssePath: '/events/:id',
 }
+
+export const sseClients = new Map<string, { [key: string]: Response }>()
 
 export const token = process.env.BOT_TOKEN!
 export const secretToken = process.env.SETUP_SECRET
 export const siteUrl =
   process.env.NODE_ENV === 'production'
     ? process.env.PUBLIC_SITE_URL
-    : `http://localhost:${process.env.PUBLIC_SITE_PORT}`
+    : `http://localhost:${process.env.PUBLIC_CLIENT_PORT}`
 
 // export const redisUrl =
 //   process.env.REDIS_URL ||
@@ -60,7 +63,7 @@ export const dbUrl =
 //   bug2: 'https://otlp.bugsnag.com',
 //   bug3: 'https://notify.bugsnag.com',
 // }
-export const serverId = crypto.randomBytes(10).toString('hex')
+export const serverId = crypto.randomBytes(5).toString('hex')
 // export const PUBSUB_CHANNEL = 'websocket_broadcast'
 // export const localConnections: Map<string, WebSocket> = new Map()
 

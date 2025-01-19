@@ -12,6 +12,7 @@ import {
   handleCheckSubscription,
   handleGetFriends,
   handleSetAddress,
+  handleSSE,
   handleTaskStatus,
   setAddBonus,
   setClaimFriends,
@@ -110,6 +111,10 @@ router.post(apiPaths.taskStatusPath, (req, res) => {
 
 router.post(apiPaths.getFriendsPath, (req, res) => {
   handleGetFriends(req, res)
+})
+
+router.get(apiPaths.ssePath, (req, res) => {
+  handleSSE(req, res)
 })
 
 router.post('/test', (req) => {

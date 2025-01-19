@@ -11,6 +11,7 @@ const checkSubscriptionUrl = '/api/check-subscription'
 const checkCodeUrl = '/api/check-code'
 const taskStatusUrl = '/api/task-status'
 export const friendsListUrl = '/api/friends-list'
+export const sseUrl = '/api/events/'
 
 async function postRequest(url: string, data: any) {
   try {

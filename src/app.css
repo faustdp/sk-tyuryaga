@@ -429,6 +429,12 @@ button:focus:not(:focus-visible) {
   }
 }
 
+@media screen and (max-height: 660px) {
+  .stats {
+    top: calc(50% - (var(--screen) / 2.75));
+  }
+}
+
 @media screen and (max-height: 755px) {
   .farming-btn {
     bottom: calc(50% - ((min(var(--height-limit), var(--screen)) / 2) - 104px));
@@ -461,13 +467,18 @@ button:focus:not(:focus-visible) {
   background-color: rgb(var(--c-green)) !important;
   color: white !important;
 }
+.toaster .toast-success svg {
+  width: 26px !important;
+}
 .toaster .toast-error {
   background-color: rgb(var(--c-tabs)) !important;
   color: rgb(var(--white)) !important;
 }
 .toaster .message {
   flex: none !important;
-  margin: 4px 0px 4px 7px !important;
+  flex-shrink: 1 !important;
+  margin: 4px 0px 4px 0px !important;
+  text-align: center;
 }
 .toaster .indicator {
   margin-top: -2px;

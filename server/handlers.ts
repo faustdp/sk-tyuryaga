@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 
 import { DbTaskStatus } from '../database.types'
-import { bot } from './config'
+import { bot, sseClients } from './config'
 import {
   addBonus,
   checkCode,
@@ -134,4 +134,40 @@ export async function handleGetFriends(req: Request, res: Response) {
     return res.status(500).json({ error: 'inner_error' })
   }
   return res.status(200).json({ data: data.data })
+}
+
+export async function handleSSE(req: Request, res: Response) {
+  const id = req.params.id
+  const clientId = req.query.clientId as string
+
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  })
+
+  const connectionInfo = {
+    type: 'connected',
+    message: 'Connection established',
+  }
+
+  res.write(`data: ${JSON.stringify(connectionInfo)}\n\n`)
+
+  if (!sseClients.has(id)) {
+    sseClients.set(id, {})
+  }
+
+  const clientConnections = sseClients.get(id)
+  if (!clientConnections) return
+  clientConnections[clientId] = res
+
+  req.on('close', () => {
+    const connections = sseClients.get(id)
+    if (!connections) return
+    if (Object.keys(clientConnections).length <= 1) {
+      sseClients.delete(id)
+    } else {
+      delete connections[clientId]
+    }
+  })
 }
