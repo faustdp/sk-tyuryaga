@@ -6,14 +6,14 @@ import type { CreateUser, Inviter, UserForDb } from '../database.types'
 import { sseClients, token } from './config'
 import { createInvite, createUser, createUserTasks, getInviter, getUser, getUserTasks, updateInvites } from './db'
 
-// interface GenericError {
-//   message: string
-//   stack: string
-//   name: string
-//   statusCode?: number
-// }
+/* interface GenericError {
+  message: string
+  stack: string
+  name: string
+  statusCode?: number
+}
 
-/* interface ClientError {
+ interface ClientError {
   message: string
   component: string
   info: string
@@ -67,9 +67,7 @@ export async function meHandler(req: Request, res: Response) {
   try {
     const initData: string | undefined = req.body.initData
 
-    if (!initData) {
-      return res.status(400).json({ valid: false, error: 'telegram_error' })
-    }
+    if (!initData) return res.status(400).json({ valid: false, error: 'telegram_error' })
 
     const params = new URLSearchParams(initData)
     // const isValid = validateTgWebAppData(params)
@@ -90,9 +88,7 @@ export async function meHandler(req: Request, res: Response) {
 
     const { data, error } = await getUser(userData.id)
 
-    if (error) {
-      return res.status(500).json({ error: error.message })
-    }
+    if (error) return res.status(500).json({ error: error.message })
 
     if (data) {
       const tasks = await getUserTasks(data.id)
@@ -135,25 +131,17 @@ export async function meHandler(req: Request, res: Response) {
     const tasks = await createUserTasks(createdData.id)
 
     if (inviterId) {
-      await Promise.all([
-        updateInvites(inviterId),
-        createInvite(inviterId, createdData.id),
-        // sendToUser(inviterId, {
-        //   firstName: createdData.first_name,
-        //   username: createdData.username,
-        //   depth: 1,
-        // }),
-      ])
+      await Promise.all([updateInvites(inviterId), createInvite(inviterId, createdData.id)])
       const stringId = String(inviterId)
-      if (sseClients.has(stringId)) {
+      if (sseClients.has(stringId) && inviter) {
         const userConnections = sseClients.get(stringId)
         if (userConnections) {
           const clients = Object.keys(userConnections)
           const data = {
             type: 'invite',
             data: {
-              username: inviter?.username,
-              name: inviter?.first_name,
+              username: inviter.username,
+              name: inviter.first_name,
             },
           }
           clients.forEach((client) => {

@@ -164,7 +164,6 @@ export const LEVELS: LevelsType[] = [
   {
     baseTime: 15,
     baseAmount: 28,
-    // next: 10350,
     [AMOUNT]: 1500,
     [COMBO]: 1200,
     [TIME]: 750,
@@ -214,7 +213,6 @@ export const LEVELS: LevelsType[] = [
   // {
   //   baseTime: 1440,
   //   baseAmount: 91,
-  //   next: 4275585,
   //   [AMOUNT]: 619650,
   //   [COMBO]: 495720,
   //   [TIME]: 309825,

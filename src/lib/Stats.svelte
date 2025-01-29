@@ -15,8 +15,8 @@
   })
 </script>
 
-<section class="stats fixed left-1/2 z-30 mx-auto flex -translate-x-1/2 items-center justify-center gap-x-4">
+<section class="stats fixed left-1/2 z-30 mx-auto flex -translate-x-1/2 items-center justify-center gap-x-3.5">
   <Amount class="stats-amount absolute" />
-  <Cigarette class="mb-[3px]" />
+  <Cigarette class="mb-[3px] basis-8" />
   <h1 class="arbutus text-xl text-textlight">{Math.trunc(cigs.current)}</h1>
 </section>

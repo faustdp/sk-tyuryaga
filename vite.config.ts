@@ -14,6 +14,7 @@ export default defineConfig({
   ],
   server: {
     // hmr: false,
+    allowedHosts: ['shnyaga.faustdp.icu'],
     port: 5773,
     proxy: {
       '/api': {

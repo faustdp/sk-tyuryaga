@@ -105,12 +105,6 @@ function userStore() {
     state.end_time = time
   }
 
-  function upLevel() {
-    if (state.level >= LEVELS.length - 1) return
-    state.level += 1
-    state.bonuses = []
-  }
-
   function setClaimFriends(time: number) {
     state.claim_friends = time
   }
@@ -130,15 +124,16 @@ function userStore() {
 
   async function addBonus(idx: BonusIndexes, cigs: number) {
     if (state.bonuses.includes(idx)) return
-    const isLevelUp = state.bonuses.length + 1 >= IMG_NAMES.length
+    state.bonuses = [...state.bonuses, idx]
+    const isLevelUp = state.bonuses.length >= IMG_NAMES.length && state.level < LEVELS.length - 1
     const level = user.level
     const result = await postAddBonus({ cigs, ...(isLevelUp ? { level: level + 1 } : { index: idx }) })
     if (result?.ok) {
-      state.bonuses = [...state.bonuses, idx]
       user.selected_images[idx] = level
       calcBonus(idx)
       if (isLevelUp) {
-        upLevel()
+        state.level += 1
+        state.bonuses = []
       }
       setCigs(cigs)
       await postSelectImage(idx, level)
@@ -150,6 +145,8 @@ function userStore() {
       state.bonuses = [...result.data.bonuses]
       setBaseFarm(level, state.bonuses)
       state.selected_images = result.data.selected_images
+    } else {
+      state.bonuses = state.bonuses.filter((el) => el !== idx)
     }
   }
 

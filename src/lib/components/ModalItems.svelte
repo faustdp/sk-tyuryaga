@@ -7,6 +7,7 @@
   import { app, closeModal } from '@state/app.svelte'
   import { user } from '@state/user.svelte'
   import { postSelectImage } from '@utils/api'
+  import { LEVELS } from '@utils/const'
   import { onDestroy } from 'svelte'
   import { sineInOut } from 'svelte/easing'
   import { fade, fly } from 'svelte/transition'
@@ -22,7 +23,7 @@
   let isLocked = $derived(current > user.level - 1 + (user.bonuses.includes(selectedIdx) ? 1 : 0))
   let items = $derived.by(() => {
     if (selectedIdx === null) return prevItems?.length > 0 ? prevItems : []
-    return Array.from({ length: 10 }, (_, i) => `/imgs/${selectedIdx}/${i + 1}.webp`)
+    return Array.from({ length: LEVELS.length }, (_, i) => `/imgs/${selectedIdx}/${i + 1}.webp`)
   })
 
   async function handleSelect() {
@@ -93,14 +94,14 @@
         </Carousel.Item>
       {/each}
     </Carousel.Content>
-    {#if isLocked}
+    {#if isLocked && prev >= 0}
       <div
-        transition:fade={{ duration: prev >= 0 ? 240 : 0, easing: sineInOut }}
+        transition:fade={{ duration: 240, easing: sineInOut }}
         class="pointer-events-none fixed left-0 top-0 z-30 size-full select-none rounded-xl bg-black opacity-30">
       </div>
       <div
-        in:fade={{ duration: prev >= 0 ? 240 : 0, easing: sineInOut }}
-        out:fly={{ duration: prev >= 0 ? 240 : 0, x: '150', easing: sineInOut }}
+        in:fade={{ duration: 330, easing: sineInOut }}
+        out:fly={{ duration: 240, x: '150', easing: sineInOut }}
         class="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 select-none">
         <Lock />
       </div>

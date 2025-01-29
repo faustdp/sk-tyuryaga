@@ -25,9 +25,7 @@ export async function setEndTime(req: Request, res: Response) {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await setTime(id, time, cigs, farmedTime)
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
   return res.status(200).json(data)
 }
 
@@ -37,9 +35,20 @@ export async function setFarmCigs(req: Request, res: Response) {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await farmCigs(id, cigs, fromFarm)
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  // if (data.ok) { : { id: number; cigs: number; fromFarm: boolean; clientId: string }
+  //   const client = sseClients.get(String(id))
+  //   if (client && Object.keys(client).length > 1) {
+  //     Object.keys(client).forEach((el) => {
+  //       if (el === clientId) return
+  //       const cigsAmount = {
+  //         type: 'cigs',
+  //         data: { cigs },
+  //       }
+  //       client[el].write(`data: ${JSON.stringify(cigsAmount)}\n\n`)
+  //     })
+  //   }
+  // }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
   return res.status(200).json(data)
 }
 
@@ -49,9 +58,7 @@ export async function setAddBonus(req: Request, res: Response) {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await addBonus({ cigs, id, level, index })
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
   return res.status(200).json(data)
 }
 
@@ -61,9 +68,7 @@ export async function setClaimFriends(req: Request, res: Response) {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await claimFriends(id, time, cigs)
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
   return res.status(200).json(data)
 }
 
@@ -73,9 +78,8 @@ export async function setSelectImage(req: Request, res: Response) {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await selectImage(id, index, image)
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
+
   return res.status(200).json(data)
 }
 
@@ -110,9 +114,7 @@ export async function handleCheckCode(req: Request, res: Response) {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await checkCode(id, task, code)
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
   return res.status(200).json({ ok: data.ok, done: data.done })
 }
 
@@ -130,9 +132,7 @@ export async function handleGetFriends(req: Request, res: Response) {
   const { id }: { id: number } = req.body
   if (typeof id !== 'number') return res.status(400).json({ error: 'data_error' })
   const data = await getFriendsList(id)
-  if (data.error) {
-    return res.status(500).json({ error: 'inner_error' })
-  }
+  if (data.error) return res.status(500).json({ error: 'inner_error' })
   return res.status(200).json({ data: data.data })
 }
 
@@ -148,7 +148,7 @@ export async function handleSSE(req: Request, res: Response) {
 
   const connectionInfo = {
     type: 'connected',
-    message: 'Connection established',
+    message: 'OK',
   }
 
   res.write(`data: ${JSON.stringify(connectionInfo)}\n\n`)

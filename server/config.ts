@@ -6,7 +6,6 @@ import crypto from 'node:crypto'
 
 import type { Response } from 'express' //ErrorRequestHandler, RequestHandler
 import { Bot } from 'grammy'
-// import type { WebSocket } from 'ws'
 
 export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828
 export const apiPaths = {
@@ -26,8 +25,6 @@ export const apiPaths = {
   taskStatusPath: '/task-status',
   ssePath: '/events/:id',
 }
-
-export const sseClients = new Map<string, { [key: string]: Response }>()
 
 export const token = process.env.BOT_TOKEN!
 export const secretToken = process.env.SETUP_SECRET
@@ -64,8 +61,7 @@ export const dbUrl =
 //   bug3: 'https://notify.bugsnag.com',
 // }
 export const serverId = crypto.randomBytes(5).toString('hex')
-// export const PUBSUB_CHANNEL = 'websocket_broadcast'
-// export const localConnections: Map<string, WebSocket> = new Map()
+export const sseClients = new Map<string, { [key: string]: Response }>()
 
 export const w8 = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

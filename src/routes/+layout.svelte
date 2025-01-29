@@ -27,7 +27,7 @@
     isTMA,
     miniAppReady,
     mountMiniApp,
-    parseInitData,
+    // parseInitData,
     retrieveLaunchParams,
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
@@ -100,7 +100,7 @@
     if (!isTG) {
       // return setError(data.errors.telegram_error)
       //TODO: QRCODE
-      const user = parseInitData(initData).user
+      /*       const user = parseInitData(initData).user
       if (!user) return
       const { id: tg_id, username, firstName: first_name } = user
       setUser({
@@ -109,7 +109,7 @@
         first_name,
         username,
         invites: 0,
-      })
+      }) */
     }
 
     let params
@@ -235,7 +235,6 @@
   onMount(() => {
     let removeListeners: null | typeof noop = null
     startProgress()
-
     try {
       init()
       mountMiniApp()
@@ -243,8 +242,6 @@
       fixTouch().then((listener: typeof noop) => {
         removeListeners = listener
       })
-      // mountBackButton()
-      // showBackButton()
     } catch (_err) {}
 
     const friendsInterval = setInterval(() => {
@@ -253,9 +250,7 @@
 
     return () => {
       if (removeListeners) removeListeners()
-      if (eventSource) {
-        eventSource.close()
-      }
+      if (eventSource) eventSource.close()
       stopProgress()
       clearInterval(friendsInterval)
     }

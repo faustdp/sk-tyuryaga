@@ -1,7 +1,6 @@
 import cors from 'cors'
 import express, { Router } from 'express'
 
-// import { handler } from './build/handler.js'
 // import path from 'path'
 // import { fileURLToPath } from 'url'
 import botHandler from './server/bot'
@@ -25,20 +24,8 @@ import { meHandler } from './server/me'
 // const dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 
-// app.use(
-//   cors({
-//     origin:
-//       process.env.NODE_ENV === 'production'
-//         ? process.env.PUBLIC_SITE_URL
-//         : `http://localhost:${process.env.PUBLIC_SITE_PORT}`,
-//   }),
-// )
+app.use(cors({ origin: siteUrl })) // [process.env.PUBLIC_SITE_URL, siteUrl]
 
-app.use(
-  cors({
-    origin: siteUrl,
-  }),
-)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.enable('trust proxy')
@@ -61,7 +48,7 @@ app.enable('trust proxy')
 
 const router = Router()
 
-router.get(apiPaths.healthPath, (req, res) => {
+router.get(apiPaths.healthPath, (_req, res) => {
   res.status(200).send('OK')
 })
 
@@ -117,16 +104,17 @@ router.get(apiPaths.ssePath, (req, res) => {
   handleSSE(req, res)
 })
 
-router.post('/test', (req) => {
-  console.log('fromFront:', req.body)
-})
+if (process.env.NODE_ENV !== 'production') {
+  router.post('/test', (req) => {
+    console.log('fromFront:', req.body)
+  })
+}
 
 app.use(apiPaths.apiPath, router)
 
 setupBot()
 
 // app.use(webhookCallback(bot, "express")) webhookcb from grammy
-// app.use(handler)
 
 let isClosing = false
 
