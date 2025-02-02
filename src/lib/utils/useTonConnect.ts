@@ -10,10 +10,10 @@ import { onMount, setContext } from 'svelte'
 import toast from 'svelte-hot-french-toast'
 
 import data from '@/messages.json'
-import { PUBLIC_BOT_NAME, PUBLIC_NODE_ENV, PUBLIC_SITE_URL } from '$env/static/public'
+import { PUBLIC_BOT_NAME, PUBLIC_NODE_ENV, PUBLIC_TEST_URL } from '$env/static/public'
 
 export function useTonConnect(disconnect = false) {
-  const manifestUrl = `${PUBLIC_SITE_URL}/tonconnect-manifest.json`
+  const manifestUrl = `${PUBLIC_TEST_URL}/tonconnect-manifest.json`
   const twaReturnUrl = `https://t.me/${PUBLIC_BOT_NAME}` as `${string}://${string}`
 
   const createTonConnectUI = () => {

@@ -10,9 +10,16 @@ import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
 import { ru } from '@payloadcms/translations/languages/ru'
 import { type Task } from './payload-types'
-import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 
-dotenv.config()
+// dotenv.config()
+
+if (process.env.NODE_ENV !== 'production') {
+  const dotenv = await import('dotenv')
+  dotenv.config()
+}
+
+console.log(process.env.DATABASE_URI)
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

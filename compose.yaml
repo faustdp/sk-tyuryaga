@@ -6,36 +6,71 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - '6432:5432'
+      - "6432:5432"
     volumes:
       - pgdata2:/var/lib/postgresql/data
     networks:
       - general
     restart: always
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 50s
       timeout: 10s
       retries: 5
 
   payload:
-    build:
-      context: ./admin
-      dockerfile: Dockerfile
-    image: node:22-alpine
+    image: faustdp/dock:payload-shnyaga
+    env_file:
+      - .env.production
+    environment:
+      - DATABASE_URI=${DATABASE_URI}
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
     ports:
-      - '3000:3000'
-    volumes:
-      - admin:/home/node/app
-      - admin/node_modules:/home/node/app/node_modules
+      - "3000:3000"
+    expose:
+      - "3000"
     networks:
       - general
-    working_dir: /home/node/app/
-    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && pnpm dev"
+    restart: on-failure
     depends_on:
-      - postgresdb
+      postgresdb:
+        condition: service_healthy
+  
+  shnyaga:
+    build:
+      context: .
+    ports:
+      - "5773:5773"
+    expose:
+      - "5773"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
     env_file:
-      - .env
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - SITE_URL=${SITE_URL}
+      - SETUP_SECRET=${SETUP_SECRET}
+      - PUBLIC_SITE_URL=${PUBLIC_SITE_URL}
+      - PUBLIC_TEST_URL=${PUBLIC_TEST_URL}
+      - PUBLIC_SITE_PORT=${PUBLIC_SITE_PORT}
+      - PUBLIC_BOT_NAME=${PUBLIC_BOT_NAME}
+      - PUBLIC_BOT_APPNAME=${PUBLIC_BOT_APPNAME}
+      - PUBLIC_NODE_ENV=${PUBLIC_NODE_ENV}
+    networks:
+      - general
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5773/health || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
 
 volumes:
   pgdata2:
@@ -43,63 +78,6 @@ volumes:
 networks:
   general:
     driver: bridge
-
-  # web:
-  #   build:
-  #     context: .
-  #   ports:
-  #     - "8881:8888"
-  #   expose:
-  #     - "8888"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   environment:
-  #     - NODE_ENV=production
-  #     - VITE_BOT_TOKEN=${VITE_BOT_TOKEN}
-  #     - VITE_SITE_URL=${VITE_SITE_URL}
-  #     - VITE_SETUP_SECRET=${VITE_SETUP_SECRET}
-  #     - VITE_SITE_PORT=${VITE_SITE_PORT}
-  #     - VITE_WS_URL=${VITE_WS_URL}
-  #     - VITE_GTM_ID=${VITE_GTM_ID}
-  #     - VITE_BOT_NAME=${VITE_BOT_NAME}
-  #     - VITE_BOT_APP_NAME=${VITE_BOT_APP_NAME}
-  #     - VITE_BUGSNAG_KEY=${VITE_BUGSNAG_KEY}
-  #     - BUGSNAG_KEY_NODE=${BUGSNAG_KEY_NODE}
-  #     - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
-  #     - REDIS_URL=redis://${REDIS_USER}:${REDIS_PASSWORD}@redis:${REDIS_PORT}
-  #   networks:
-  #     - app-network
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl -f http://localhost:8888/health || exit 1"]
-  #     interval: 60s
-  #     timeout: 10s
-  #     retries: 3
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# FROM node:20-alpine AS builder
-# WORKDIR /app
-
-# COPY pnpm-lock.yaml package.json ./
-# RUN npm install -g pnpm
-# RUN pnpm install --prod --frozen-lockfile
-
-# COPY . .
-# RUN pnpm run build
-# RUN pnpm run build:server
-
-# FROM node:20-alpine
-# WORKDIR /app
-
-# COPY --from=builder /app/dist ./dist
-# COPY --from=builder /app/index.mjs ./
-
-# EXPOSE 8888
-
-# CMD ["node", "index.mjs"]
-
 
   # redis:
   #   image: redis:7.2.7-alpine3.21
@@ -113,3 +91,16 @@ networks:
   #     interval: 50s
   #     timeout: 10s
   #     retries: 5
+
+  # build:
+  #   context: ./admin
+  # image: node:22.12.0-alpine
+  # volumes:
+  #   - admin:/home/node/app
+  #   - admin/node_modules:/home/node/app/node_modules
+  # working_dir: /home/node/app/
+
+  # - BUGSNAG_KEY_NODE=${BUGSNAG_KEY_NODE}
+  # - PUBLIC_GTM_ID=${PUBLIC_GTM_ID}
+  # - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+  # - REDIS_URL=redis://${REDIS_USER}:${REDIS_PASSWORD}@redis:${REDIS_PORT}

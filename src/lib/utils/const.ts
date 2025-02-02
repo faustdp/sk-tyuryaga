@@ -7,7 +7,6 @@ import Tw from '@icons/socials/x.svg?component'
 import Yt from '@icons/socials/yt.svg?component'
 
 import data from '@/messages.json'
-import { PUBLIC_NODE_ENV, PUBLIC_SITE_PORT, PUBLIC_SITE_URL } from '$env/static/public'
 
 export const iconsComponents: IconsComponents = {
   inst: Ig,
@@ -19,7 +18,6 @@ export const iconsComponents: IconsComponents = {
   discord: Disc,
 }
 
-export const siteUrl = PUBLIC_NODE_ENV === 'production' ? PUBLIC_SITE_URL : `http://localhost:${PUBLIC_SITE_PORT}`
 export const CLIENT_ID = Math.random().toString(36).slice(2, 8)
 export const TEST_ADDRESS = 'EQChHpu8-rFBQyVCXJtT1aTwODTBc1dFUAEatbYy11ZLcBST'
 export const TON_KEY = 'TON_CONNECT'

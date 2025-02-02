@@ -1,8 +1,9 @@
 import cors from 'cors'
+import { config } from 'dotenv'
 import express, { Router } from 'express'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-// import path from 'path'
-// import { fileURLToPath } from 'url'
 import botHandler from './server/bot'
 import { apiPaths, serverId, setupBot, sitePort, siteUrl } from './server/config'
 import * as DB from './server/db'
@@ -21,7 +22,11 @@ import {
 } from './server/handlers'
 import { meHandler } from './server/me'
 
-// const dirname = path.dirname(fileURLToPath(import.meta.url))
+// if (process.env.NODE_ENV !== 'production') {
+// const dotenv = await import('dotenv')
+config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' })
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 
 app.use(cors({ origin: siteUrl })) // [process.env.PUBLIC_SITE_URL, siteUrl]
@@ -29,22 +34,6 @@ app.use(cors({ origin: siteUrl })) // [process.env.PUBLIC_SITE_URL, siteUrl]
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.enable('trust proxy')
-
-// if (process.env.NODE_ENV === 'production') {
-//   app.get(['*.js', '*.css', '*.html', '*.svg'], (req, res, next) => {
-//     const ext = req.url.split('.').pop()
-//     if (req.header('Accept-Encoding')?.includes('br') && ext && mimeTypes[ext]) {
-//       req.url = req.url + '.br'
-//       res.set('Content-Encoding', 'br')
-//       res.set('Content-Type', mimeTypes[ext])
-//     }
-//     next()
-//   })
-//   app.use(express.static(path.resolve(dirname, 'build')))
-//   app.get('/*splat', (req, res) => {
-//     res.sendFile(path.resolve(dirname, 'dist', 'index.html'))
-//   })
-// }
 
 const router = Router()
 
@@ -111,6 +100,22 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 app.use(apiPaths.apiPath, router)
+
+if (process.env.NODE_ENV === 'production') {
+  // app.get(['*.js', '*.css', '*.html', '*.svg'], (req, res, next) => {
+  //   const ext = req.url.split('.').pop()
+  //   if (req.header('Accept-Encoding')?.includes('br') && ext && mimeTypes[ext]) {
+  //     req.url = req.url + '.br'
+  //     res.set('Content-Encoding', 'br')
+  //     res.set('Content-Type', mimeTypes[ext])
+  //   }
+  //   next()
+  // })
+  app.use(express.static(path.resolve(dirname, 'build')))
+  app.get('/*splat', (req, res) => {
+    res.sendFile(path.resolve(dirname, 'build', 'index.html'))
+  })
+}
 
 setupBot()
 

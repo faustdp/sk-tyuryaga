@@ -27,12 +27,11 @@
     isTMA,
     miniAppReady,
     mountMiniApp,
-    // parseInitData,
     retrieveLaunchParams,
   } from '@telegram-apps/sdk'
   import { noop, sortTasks, w8 } from '@utils'
   import { sseUrl } from '@utils/api'
-  import { CLIENT_ID, FARMED, FARMING, meUrl, MINUTE, siteUrl, taskStatus } from '@utils/const'
+  import { CLIENT_ID, FARMED, FARMING, meUrl, MINUTE, taskStatus } from '@utils/const'
   import { fixTouch } from '@utils/fixTouch'
   import { useTonConnect } from '@utils/useTonConnect'
   import { onMount } from 'svelte'
@@ -45,11 +44,12 @@
   import data from '@/messages.json'
   import { invalidate } from '$app/navigation'
   import { page } from '$app/state'
+  import { PUBLIC_SITE_URL } from '$env/static/public'
   import * as Dialog from '$lib/components/dialog/'
 
   console.clear()
 
-  let progressDefDur = 140
+  let progressDefDur = 1400
   const progressShortDur = 130
   let progress = new Tween(0, {
     duration: progressShortDur,
@@ -79,7 +79,7 @@
   }
 
   function connectSSE() {
-    eventSource = new EventSource(`${siteUrl}${sseUrl}${user.id}?clientId=${CLIENT_ID}`)
+    eventSource = new EventSource(`${PUBLIC_SITE_URL}${sseUrl}${user.id}?clientId=${CLIENT_ID}`)
 
     eventSource.onmessage = (event) => {
       const msg = JSON.parse(event.data) as EventMessage | ConnectionInfo
@@ -126,6 +126,8 @@
       })
 
       if (response.ok === false) {
+        const result = await response.json()
+        console.log('+layout130', result)
         throw new Error(response.statusText)
       }
 
@@ -287,7 +289,7 @@
       </div>
     {:else if app.isLoading}
       <div
-        in:fade={{ delay: 100, duration: 0 }}
+        in:fade={{ delay: 130, duration: 0 }}
         out:fade={{ duration: app.error ? 0 : 250, easing: sineInOut }}
         class="fixed z-50 size-full">
         <img

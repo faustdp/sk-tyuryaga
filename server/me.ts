@@ -87,7 +87,7 @@ export async function meHandler(req: Request, res: Response) {
     if (!userData.id) return res.status(500).json({ error: 'inner_error' })
 
     const { data, error } = await getUser(userData.id)
-
+    console.log('me90', data, error)
     if (error) return res.status(500).json({ error: error.message })
 
     if (data) {

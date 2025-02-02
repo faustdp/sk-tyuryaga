@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 // import Bugsnag from '@bugsnag/js'
 // import BugsnagPluginExpress from '@bugsnag/plugin-express'
 import crypto from 'node:crypto'
@@ -28,17 +26,12 @@ export const apiPaths = {
 
 export const token = process.env.BOT_TOKEN!
 export const secretToken = process.env.SETUP_SECRET
-export const siteUrl =
-  process.env.NODE_ENV === 'production'
-    ? process.env.PUBLIC_SITE_URL
-    : `http://localhost:${process.env.PUBLIC_CLIENT_PORT}`
+export const siteUrl = process.env.SITE_URL
 
 // export const redisUrl =
 //   process.env.REDIS_URL ||
 //   `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-export const dbUrl =
-  process.env.DATABASE_URL ||
-  `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
+export const dbUrl = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
 // export const mimeTypes = {
 //   js: 'application/javascript; charset=UTF-8',
 //   css: 'text/css',
