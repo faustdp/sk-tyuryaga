@@ -2,6 +2,8 @@ import { SIXTY, taskStatus } from '@utils/const'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+import { PUBLIC_NODE_ENV } from '$env/static/public'
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -38,11 +40,13 @@ export function shortenAddress(addr: string) {
 }
 
 export function logServer(data: any, file?: string) {
-  fetch('/api/test', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...(file ? { file } : {}), data }),
-  })
+  if (PUBLIC_NODE_ENV !== 'production') {
+    fetch('/api/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...(file ? { file } : {}), data }),
+    })
+  }
 }
 
 // const sortStatus: { [key: string]: number } = {

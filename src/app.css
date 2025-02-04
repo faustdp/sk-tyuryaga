@@ -348,25 +348,25 @@ button:focus:not(:focus-visible) {
   top: calc(50% + 5px);
 }
 .img-2 {
-  left: calc(50% - 210px);
-  top: calc(50% + 110px);
+  left: calc(50% - 220px);
+  top: calc(50% + 97px);
 }
 .img-3 {
-  left: calc(50% + 109px);
-  top: calc(50% + 96px);
+  left: calc(50% + 119px);
+  top: calc(50% + 102px);
 }
 .img-4 {
-  left: calc(50% + 97px);
-  top: calc(50% - 42px);
-  transform: rotateY(180deg);
+  left: calc(50% + 98px);
+  top: calc(50% - 45px);
+  /* transform: rotateY(180deg); */
 }
 .img-5 {
-  left: calc(50% + 76px);
+  left: calc(50% + 82px);
   top: calc(50% - 192px);
 }
 .img-6 {
-  left: calc(50% + 125px);
-  top: calc(50% - 272px);
+  left: calc(50% + 131px);
+  top: calc(50% - 278px);
   transform: rotateY(26deg);
 }
 .img-7 {
@@ -376,8 +376,8 @@ button:focus:not(:focus-visible) {
   top: calc(50% - 320px);
 }
 .img-8 {
-  left: calc(50% - 164px);
-  top: calc(50% - 142px);
+  left: calc(50% - 155px);
+  top: calc(50% - 131px);
 }
 .img-9 {
   left: calc(50% - 170px);

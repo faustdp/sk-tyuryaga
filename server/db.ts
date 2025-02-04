@@ -7,7 +7,7 @@ import * as schema from '../drizzle/schema'
 import { dbUrl } from './config'
 
 const { users, userTasks, tasks } = schema
-console.log('db10', dbUrl)
+
 const { Pool } = pg
 const pool = new Pool({ connectionString: dbUrl })
 const db = drizzle(pool, { schema })

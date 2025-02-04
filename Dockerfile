@@ -1,4 +1,4 @@
-FROM node:22.12.0-alpine AS builder
+FROM node:22.13.1-alpine AS builder
 WORKDIR /app
 
 COPY pnpm-lock.yaml package.json ./
@@ -9,7 +9,7 @@ COPY . .
 RUN pnpm run build
 RUN pnpm run build:server
 
-FROM node:22.12.0-alpine
+FROM node:22.13.1-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apk add --no-cache curl

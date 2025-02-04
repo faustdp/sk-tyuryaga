@@ -13,7 +13,7 @@
     "test": "vitest",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "server": "tsx watch --trace-warnings --trace-deprecation --env-file=.env ./server.ts",
+    "server": "tsx watch --trace-warnings --trace-deprecation --env-file=.env.local ./server.ts",
     "server:prod": "NODE_ENV=production node --env-file=.env.production index.mjs"
   },
   "devDependencies": {
@@ -75,6 +75,11 @@
   "overrides": {
     "vite-plugin-node-polyfills": {
       "vite": "^6.0.0"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "whatwg-url": "14.x"
     }
   }
 }

@@ -146,6 +146,9 @@ export interface Task {
   id: number;
   type: 'invite' | 'code' | 'subscribe';
   reward: number;
+  /**
+   * Select an icon or enter a custom URL
+   */
   icon: {
     iconType: 'predefined' | 'custom';
     icon_name?: ('inst' | 'tg' | 'tiktok' | 'vk' | 'youtube' | 'twitter' | 'discord') | null;

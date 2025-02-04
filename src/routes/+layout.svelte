@@ -47,7 +47,7 @@
   import { PUBLIC_SITE_URL } from '$env/static/public'
   import * as Dialog from '$lib/components/dialog/'
 
-  console.clear()
+  // console.clear()
 
   let progressDefDur = 1400
   const progressShortDur = 130
@@ -126,8 +126,6 @@
       })
 
       if (response.ok === false) {
-        const result = await response.json()
-        console.log('+layout130', result)
         throw new Error(response.statusText)
       }
 

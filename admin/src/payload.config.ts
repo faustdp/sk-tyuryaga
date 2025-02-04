@@ -19,8 +19,6 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config()
 }
 
-console.log(process.env.DATABASE_URI)
-
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 

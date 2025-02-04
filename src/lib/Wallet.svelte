@@ -3,7 +3,7 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, closeWallet } from '@state/app.svelte'
   import { user } from '@state/user.svelte'
-  import { logServer, shortenAddress } from '@utils'
+  import { shortenAddress } from '@utils'
   import { TON_KEY } from '@utils/const'
   import { getContext } from 'svelte'
   import { quartOut } from 'svelte/easing'
@@ -21,9 +21,8 @@
       } else {
         await tonConnectUI.openModal()
       }
-    } catch (error) {
-      console.log('Wallet24', error)
-      logServer(error, 'error')
+    } catch {
+      // logServer(error, 'error')
     }
   }
 </script>

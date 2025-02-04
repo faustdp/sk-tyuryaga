@@ -103,7 +103,8 @@ export async function handleCheckSubscription(req: Request, res: Response) {
     const isOk =
       result && (result.status === 'member' || result.status === 'creator' || result.status === 'administrator')
     return res.status(200).json({ ok: isOk })
-  } catch {
+  } catch (err) {
+    if (err.description.includes('inaccessible')) return res.status(200).json({ ok: true })
     return res.status(500).json({ error: 'inner_error' })
   }
 }

@@ -69,7 +69,7 @@ export const IMG_NAMES: Images[] = [
     name: data.images_3,
     desc: data.images_desc,
     class: 'img-3 trans-z-40',
-    width: '80',
+    width: '60',
   },
   {
     type: AMOUNT,
@@ -109,7 +109,7 @@ export const IMG_NAMES: Images[] = [
     name: data.images_8,
     desc: data.images_desc,
     class: 'img-8',
-    width: '60',
+    width: '40',
   },
   {
     type: COMBO,
