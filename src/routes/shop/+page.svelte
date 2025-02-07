@@ -6,7 +6,7 @@
   import WalletBtn from '@icons/WalletBtn.svelte'
   import { app, setActiveTab } from '@state/app.svelte'
   import { addBonus, user } from '@state/user.svelte'
-  import { isEnglish } from '@utils'
+  import { getImgUrl, isEnglish, preloadImg } from '@utils'
   import { AMOUNT, BONUSES, COMBO, cubicOut, IMG_INDEXES, IMG_NAMES, LEVELS, TIME } from '@utils/const'
   import useRipple from '@utils/useRipple.svelte'
   import { sineOut } from 'svelte/easing'
@@ -45,6 +45,11 @@
     if (app.activeShopTab === tab) return
     setActiveTab(tab)
   }
+
+  $effect(() => {
+    if (!selectedItem || user.level >= LEVELS.length - 1) return
+    preloadImg(getImgUrl(selectedItem.idx, user.level + 1))
+  })
 
   $effect(() => {
     const currTab = app.activeShopTab
@@ -141,7 +146,7 @@
       {@const isTaskAllowed = isEnoughCigs && !hasBonus && isTasksCompleted && isInvitesCompleted && isStreakCompleted}
       {@const isLastItem = hasBonus && user.level === LEVELS.length - 1}
       <div class="mb-2 mt-3 flex items-center gap-x-2">
-        {#if hasPrevItem}
+        {#if hasPrevItem && prevLevel !== currLevel}
           <LevelCard level={prevLevel} index={selectedItem.idx} />
           <ArrowRight class="mt-[22px]" />
         {/if}

@@ -3,7 +3,7 @@ import crypto from 'node:crypto'
 import { Request, Response } from 'express'
 
 import type { CreateUser, Inviter, UserForDb } from '../database.types'
-import { sseClients, token } from './config'
+import { Bugsnag, sseClients, token } from './config'
 import { createInvite, createUser, createUserTasks, getInviter, getUser, getUserTasks, updateInvites } from './db'
 
 /* interface GenericError {
@@ -70,17 +70,17 @@ export async function meHandler(req: Request, res: Response) {
     if (!initData) return res.status(400).json({ valid: false, error: 'telegram_error' })
 
     const params = new URLSearchParams(initData)
-    // const isValid = validateTgWebAppData(params)
+    const isValid = validateTgWebAppData(params)
 
-    // if (!isValid) return res.status(200).json({ valid: false, error: 'data_error' })
+    if (!isValid) return res.status(200).json({ valid: false, error: 'data_error' })
 
-    // const authDate = params.get('auth_date')
-    // const currentTimestamp = Math.floor(Date.now() / 1000)
-    // const MAX_AGE = 3600
+    const authDate = params.get('auth_date')
+    const currentTimestamp = Math.floor(Date.now() / 1000)
+    const MAX_AGE = 3600
 
-    // if (authDate && currentTimestamp - parseInt(authDate) > MAX_AGE) {
-    //   return res.status(200).json({ valid: false, error: 'outdated_error' })
-    // }
+    if (authDate && currentTimestamp - parseInt(authDate) > MAX_AGE) {
+      return res.status(200).json({ valid: false, error: 'outdated_error' })
+    }
 
     const userData: UserForDb = JSON.parse(params.get('user') || '{}')
 
@@ -151,9 +151,9 @@ export async function meHandler(req: Request, res: Response) {
       }
     }
     return res.status(200).json({ valid: true, userData: Object.assign(createdData, tasks) })
-  } catch (_err) {
-    console.log('me135', _err)
-    // Bugsnag.notify(<GenericError>err)
+  } catch (err) {
+    console.log('me135', err)
+    Bugsnag.notify(err as Error)
     return res.status(500).json({ error: 'inner_error' })
   }
 }

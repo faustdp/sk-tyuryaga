@@ -208,14 +208,15 @@ export const LEVELS: LevelsType[] = [
     [COMBO]: 330480,
     [TIME]: 206550,
   },
-  // {
-  //   baseTime: 1440,
-  //   baseAmount: 91,
-  //   [AMOUNT]: 619650,
-  //   [COMBO]: 495720,
-  //   [TIME]: 309825,
-  // },
 ] as const
+
+// {
+//   baseTime: 1440,
+//   baseAmount: 91,
+//   [AMOUNT]: 619650,
+//   [COMBO]: 495720,
+//   [TIME]: 309825,
+// },
 
 export const taskStatus = {
   start: 'start',

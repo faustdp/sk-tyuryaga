@@ -38,6 +38,8 @@
     "typescript-eslint": "^8.22.0"
   },
   "dependencies": {
+    "@bugsnag/js": "^8.2.0",
+    "@bugsnag/plugin-express": "^8.2.0",
     "@fontsource/arbutus": "^5.1.1",
     "@fontsource/roboto": "^5.1.1",
     "@fontsource/russo-one": "^5.1.1",
@@ -61,6 +63,7 @@
     "esbuild": "^0.24.2",
     "express": "^5.0.1",
     "grammy": "^1.34.1",
+    "helmet": "^8.0.0",
     "pg": "^8.13.1",
     "svelte": "^5.19.5",
     "svelte-confetti": "^2.3.1",

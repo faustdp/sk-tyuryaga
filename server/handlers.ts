@@ -30,12 +30,12 @@ export async function setEndTime(req: Request, res: Response) {
 }
 
 export async function setFarmCigs(req: Request, res: Response) {
-  const { id, cigs, fromFarm } = req.body
+  const { id, cigs, fromFarm } = req.body // { id, cigs, fromFarm, clientId }
   if (typeof id !== 'number' || typeof cigs !== 'number' || typeof fromFarm !== 'boolean') {
     return res.status(400).json({ error: 'data_error' })
   }
   const data = await farmCigs(id, cigs, fromFarm)
-  // if (data.ok) { : { id: number; cigs: number; fromFarm: boolean; clientId: string }
+  // if (data.ok) {
   //   const client = sseClients.get(String(id))
   //   if (client && Object.keys(client).length > 1) {
   //     Object.keys(client).forEach((el) => {
@@ -104,7 +104,7 @@ export async function handleCheckSubscription(req: Request, res: Response) {
       result && (result.status === 'member' || result.status === 'creator' || result.status === 'administrator')
     return res.status(200).json({ ok: isOk })
   } catch (err) {
-    if (err.description.includes('inaccessible')) return res.status(200).json({ ok: true })
+    if (err.description?.includes('inaccessible')) return res.status(200).json({ ok: true })
     return res.status(500).json({ error: 'inner_error' })
   }
 }

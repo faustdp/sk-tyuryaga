@@ -1,11 +1,12 @@
 import cors from 'cors'
 import { config } from 'dotenv'
 import express, { Router } from 'express'
+import helmet from 'helmet'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
 import botHandler from './server/bot'
-import { apiPaths, serverId, setupBot, sitePort, siteUrl } from './server/config'
+import { apiPaths, bugSnagMiddleware, serverId, setupBot, sitePort, siteUrl, sources } from './server/config'
 import * as DB from './server/db'
 import {
   handleCheckCode,
@@ -22,17 +23,35 @@ import {
 } from './server/handlers'
 import { meHandler } from './server/me'
 
-// if (process.env.NODE_ENV !== 'production') {
-// const dotenv = await import('dotenv')
+const { self, tg, tag, anal, analeu, inline, data, bug1, bug2, bug3, https } = sources
+
 config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' })
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 
-app.use(cors({ origin: siteUrl })) // [process.env.PUBLIC_SITE_URL, siteUrl]
+app.use(cors({ origin: siteUrl }))
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [self],
+          scriptSrc: [self, tg, tag, anal, siteUrl, bug1, bug2, bug3],
+          imgSrc: [self, data, tag],
+          scriptSrcElem: [self, inline, tg, tag, bug1, bug2, bug3],
+          connectSrc: [self, anal, analeu, bug1, bug2, bug3, https],
+          upgradeInsecureRequests: null,
+        },
+      },
+    }),
+  )
+}
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(bugSnagMiddleware.requestHandler)
 app.enable('trust proxy')
 
 const router = Router()
@@ -102,15 +121,6 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(apiPaths.apiPath, router)
 
 if (process.env.NODE_ENV === 'production') {
-  // app.get(['*.js', '*.css', '*.html', '*.svg'], (req, res, next) => {
-  //   const ext = req.url.split('.').pop()
-  //   if (req.header('Accept-Encoding')?.includes('br') && ext && mimeTypes[ext]) {
-  //     req.url = req.url + '.br'
-  //     res.set('Content-Encoding', 'br')
-  //     res.set('Content-Type', mimeTypes[ext])
-  //   }
-  //   next()
-  // })
   app.use(express.static(path.resolve(dirname, 'build')))
   app.get('/*splat', (req, res) => {
     res.sendFile(path.resolve(dirname, 'build', 'index.html'))
@@ -118,6 +128,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 setupBot()
+
+app.use(bugSnagMiddleware.errorHandler)
 
 // app.use(webhookCallback(bot, "express")) webhookcb from grammy
 

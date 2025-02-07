@@ -70,3 +70,8 @@ export function getFirstLetter(name: string): string {
 }
 
 export const isEnglish = (word: string): boolean => /[a-zA-Z]/.test(word)
+
+export function preloadImg(imgUrl: string) {
+  const img = new Image()
+  img.src = imgUrl
+}

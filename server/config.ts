@@ -1,8 +1,8 @@
-// import Bugsnag from '@bugsnag/js'
-// import BugsnagPluginExpress from '@bugsnag/plugin-express'
 import crypto from 'node:crypto'
 
-import type { Response } from 'express' //ErrorRequestHandler, RequestHandler
+import Bugsnag from '@bugsnag/js'
+import BugsnagPluginExpress from '@bugsnag/plugin-express'
+import type { ErrorRequestHandler, RequestHandler, Response } from 'express'
 import { Bot } from 'grammy'
 
 export const sitePort = Number(process.env.PUBLIC_SITE_PORT) || 8828
@@ -23,40 +23,46 @@ export const apiPaths = {
   taskStatusPath: '/task-status',
   ssePath: '/events/:id',
 }
-
 export const token = process.env.BOT_TOKEN!
 export const secretToken = process.env.SETUP_SECRET
-export const siteUrl = process.env.SITE_URL
-
+export const siteUrl = process.env.SITE_URL!
 // export const redisUrl =
 //   process.env.REDIS_URL ||
 //   `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
 export const dbUrl = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
-// export const mimeTypes = {
-//   js: 'application/javascript; charset=UTF-8',
-//   css: 'text/css',
-//   html: 'text/html',
-//   svg: 'image/svg+xml',
-// }
-// export const sources = {
-//   self: "'self'",
-//   tg: 'https://telegram.org',
-//   tag: 'https://www.googletagmanager.com',
-//   anal: 'https://www.google-analytics.com',
-//   analeu: 'https://region1.google-analytics.com',
-//   ya: 'https://mc.yandex.ru',
-//   yaeu: 'https://mc.yandex.com',
-//   inline: "'unsafe-inline'",
-//   font: 'https://fonts.googleapis.com/',
-//   data: 'data:',
-//   bug1: 'https://sessions.bugsnag.com',
-//   bug2: 'https://otlp.bugsnag.com',
-//   bug3: 'https://notify.bugsnag.com',
-// }
 export const serverId = crypto.randomBytes(5).toString('hex')
 export const sseClients = new Map<string, { [key: string]: Response }>()
-
 export const w8 = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export const sources = {
+  self: "'self'",
+  tg: 'https://telegram.org',
+  tag: 'https://www.googletagmanager.com',
+  anal: 'https://www.google-analytics.com',
+  analeu: 'https://region1.google-analytics.com',
+  inline: "'unsafe-inline'",
+  data: 'data:',
+  bug1: 'https://sessions.bugsnag.com',
+  bug2: 'https://otlp.bugsnag.com',
+  bug3: 'https://notify.bugsnag.com',
+  https: 'https:',
+}
+
+Bugsnag.start({
+  apiKey: process.env.BUGSNAG_KEY_NODE || '',
+  plugins: [BugsnagPluginExpress],
+  autoTrackSessions: false,
+  logger: null,
+})
+
+interface BugsnagPluginExpressResult {
+  errorHandler: ErrorRequestHandler
+  requestHandler: RequestHandler
+  runInContext: RequestHandler
+}
+
+const bugSnagMiddleware = Bugsnag.getPlugin('express') as BugsnagPluginExpressResult
+
+export { Bugsnag, bugSnagMiddleware }
 
 export const bot = new Bot(token)
 

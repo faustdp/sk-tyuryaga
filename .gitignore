@@ -21,3 +21,4 @@ database/
 uploads/
 extensions/
 .next/
+index.mjs

@@ -2,7 +2,7 @@ import { type Request, type Response } from 'express'
 import { InlineKeyboard } from 'grammy'
 import { type Message, type Update } from 'grammy/types'
 
-import { bot, handleBotStart } from './config' //Bugsnag
+import { bot, Bugsnag, handleBotStart } from './config' //Bugsnag
 
 async function handleMessage(msg: Message) {
   if (!msg.text) return
@@ -32,15 +32,15 @@ export default async function (req: Request, res: Response) {
   // console.log('bot49', ph.photos[0][0]?.file_unique_id, req.body.message)
   try {
     const update: Update = req.body
-    console.log('bot36', update)
+    // console.log('bot36', update)
     // await bot.handleUpdate(update) if you need to invoke bot.on('callback_query') etc, => update.callback_query={from={},message={}},data='help_command'
     if ('message' in update) {
       await handleMessage(update.message as Message)
     }
 
     return res.status(200).json({ message: 'OK' })
-  } catch (_err) {
-    // Bugsnag.notify(<Error>err)
+  } catch (err) {
+    Bugsnag.notify(<Error>err)
     return res.status(500).json({ error: 'Внутрення ошибка' })
   }
 }

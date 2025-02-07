@@ -31,7 +31,7 @@ services:
       - "5777"
     networks:
       - general
-    restart: on-failure
+    restart: always
     depends_on:
       postgresdb:
         condition: service_healthy
@@ -66,6 +66,7 @@ services:
       - PUBLIC_NODE_ENV=${PUBLIC_NODE_ENV}
     networks:
       - general
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:5773/health || exit 1"]
       interval: 60s

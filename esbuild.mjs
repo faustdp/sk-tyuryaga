@@ -8,7 +8,7 @@ await esbuild
     entryPoints: ['./server.ts'],
     outfile: './index.mjs',
     bundle: true,
-    minify: true,
+    // minify: true,
     conditions: ['production'],
     platform: 'node',
     format: 'esm',
