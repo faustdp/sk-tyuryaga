@@ -10,9 +10,7 @@ import sharp from 'sharp'
 import { en } from '@payloadcms/translations/languages/en'
 import { ru } from '@payloadcms/translations/languages/ru'
 import { type Task } from './payload-types'
-// import dotenv from 'dotenv'
-
-// dotenv.config()
+// import { migrations } from '../migrations'
 
 if (process.env.NODE_ENV !== 'production') {
   const dotenv = await import('dotenv')
@@ -310,7 +308,10 @@ export default buildConfig({
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI || '' },
+    migrationDir: './migrations',
+    // prodMigrations: migrations,
   }),
+
   graphQL: { disable: true },
   sharp,
   i18n: {

@@ -19,9 +19,9 @@ services:
       retries: 5
 
   payload:
-    image: faustdp/dock:payload-shnyaga
-    env_file:
-      - .env.production
+    image: node:22.13.1-alpine
+    build:
+      context: ./admin
     environment:
       - DATABASE_URI=${DATABASE_URI}
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
@@ -37,6 +37,7 @@ services:
         condition: service_healthy
   
   shnyaga:
+    image: node:22.13.1-alpine
     build:
       context: .
     ports:
@@ -46,8 +47,6 @@ services:
     depends_on:
       postgresdb:
         condition: service_healthy
-    env_file:
-      - .env.production
     environment:
       - NODE_ENV=production
       - POSTGRES_USER=${POSTGRES_USER}
@@ -64,6 +63,8 @@ services:
       - PUBLIC_BOT_NAME=${PUBLIC_BOT_NAME}
       - PUBLIC_BOT_APPNAME=${PUBLIC_BOT_APPNAME}
       - PUBLIC_NODE_ENV=${PUBLIC_NODE_ENV}
+      - PUBLIC_BUGSNAG_KEY=${PUBLIC_BUGSNAG_KEY}
+      - BUGSNAG_KEY_NODE=${BUGSNAG_KEY_NODE}
     networks:
       - general
     restart: always

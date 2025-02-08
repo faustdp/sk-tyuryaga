@@ -146,20 +146,3 @@ export async function handleBotStart(chatId: string | number, _firstName?: strin
 //       : `Твой персонаж достиг ${level}-го уровня!\n\nКентов подтянул - уважение в хате повысил.\nТеперь ты на шаг ближе к воровскому. Продолжай двигаться дальше по ровней дороге!\nИ кентов поблагодари - кто поддержал, они с тобой будут до талого!`
 //   return bot.telegram.sendMessage(chatId, msg)
 // }
-
-// Bugsnag.start({
-//   apiKey: process.env.BUGSNAG_KEY_NODE || '',
-//   plugins: [BugsnagPluginExpress],
-//   autoTrackSessions: false,
-//   logger: null,
-// })
-
-// interface BugsnagPluginExpressResult {
-//   errorHandler: ErrorRequestHandler
-//   requestHandler: RequestHandler
-//   runInContext: RequestHandler
-// }
-
-// const bugSnagMiddleware = Bugsnag.getPlugin('express') as BugsnagPluginExpressResult
-
-// export { Bugsnag, bugSnagMiddleware }
