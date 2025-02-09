@@ -6,7 +6,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import botHandler from './server/bot'
-import { apiPaths, bugSnagMiddleware, serverId, setupBot, sitePort, siteUrl, sources } from './server/config'
+import { apiPaths, bugSnagMiddleware, serverId, setupBot, sitePort, siteUrl } from './server/config'
 import * as DB from './server/db'
 import {
   handleCheckCode,
@@ -23,8 +23,6 @@ import {
 } from './server/handlers'
 import { meHandler } from './server/me'
 
-const { self, tg, tag, anal, analeu, inline, data, bug1, bug2, bug3, https } = sources
-
 config({ path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local' })
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -35,24 +33,18 @@ app.use(cors({ origin: siteUrl }))
 if (process.env.NODE_ENV === 'production') {
   app.use(
     helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: [self],
-          scriptSrc: [self, tg, tag, anal, siteUrl, bug1, bug2, bug3],
-          imgSrc: [self, data, tag],
-          scriptSrcElem: [self, inline, tg, tag, bug1, bug2, bug3],
-          connectSrc: [self, anal, analeu, bug1, bug2, bug3, https],
-          upgradeInsecureRequests: null,
-        },
-      },
+      contentSecurityPolicy: false,
     }),
   )
 }
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(bugSnagMiddleware.requestHandler)
 app.enable('trust proxy')
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(bugSnagMiddleware.requestHandler)
+}
 
 const router = Router()
 
@@ -125,11 +117,10 @@ if (process.env.NODE_ENV === 'production') {
   app.get('/*splat', (req, res) => {
     res.sendFile(path.resolve(dirname, 'build', 'index.html'))
   })
+  app.use(bugSnagMiddleware.errorHandler)
 }
 
 setupBot()
-
-app.use(bugSnagMiddleware.errorHandler)
 
 // app.use(webhookCallback(bot, "express")) webhookcb from grammy
 

@@ -14,7 +14,7 @@ import { type Task } from './payload-types'
 
 if (process.env.NODE_ENV !== 'production') {
   const dotenv = await import('dotenv')
-  dotenv.config()
+  dotenv.config({ path: '.env.local' })
 }
 
 const filename = fileURLToPath(import.meta.url)
@@ -322,6 +322,15 @@ export default buildConfig({
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
+  ],
+  endpoints: [
+    {
+      path: '/health',
+      method: 'get',
+      handler: () => {
+        return new Response('OK', { status: 200 })
+      },
+    },
   ],
 })
 

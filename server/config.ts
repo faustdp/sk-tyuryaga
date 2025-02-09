@@ -33,25 +33,27 @@ export const dbUrl = `postgres://${process.env.POSTGRES_USER}:${process.env.POST
 export const serverId = crypto.randomBytes(5).toString('hex')
 export const sseClients = new Map<string, { [key: string]: Response }>()
 export const w8 = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-export const sources = {
-  self: "'self'",
-  tg: 'https://telegram.org',
-  tag: 'https://www.googletagmanager.com',
-  anal: 'https://www.google-analytics.com',
-  analeu: 'https://region1.google-analytics.com',
-  inline: "'unsafe-inline'",
-  data: 'data:',
-  bug1: 'https://sessions.bugsnag.com',
-  bug2: 'https://otlp.bugsnag.com',
-  bug3: 'https://notify.bugsnag.com',
-  https: 'https:',
-}
+// export const sources = {
+//   self: "'self'",
+//   tg: 'https://telegram.org',
+//   tag: 'https://www.googletagmanager.com',
+//   anal: 'https://www.google-analytics.com',
+//   analeu: 'https://region1.google-analytics.com',
+//   inline: "'unsafe-inline'",
+//   data: 'data:',
+//   bug1: 'https://sessions.bugsnag.com',
+//   bug2: 'https://otlp.bugsnag.com',
+//   bug3: 'https://notify.bugsnag.com',
+//   https: 'https:',
+// }
 
 Bugsnag.start({
   apiKey: process.env.BUGSNAG_KEY_NODE || '',
   plugins: [BugsnagPluginExpress],
   autoTrackSessions: false,
   logger: null,
+  enabledReleaseStages: ['production'],
+  releaseStage: process.env.NODE_ENV,
 })
 
 interface BugsnagPluginExpressResult {

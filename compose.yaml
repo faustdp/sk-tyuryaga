@@ -19,9 +19,7 @@ services:
       retries: 5
 
   payload:
-    image: node:22.13.1-alpine
-    build:
-      context: ./admin
+    image: faustdp/dock:payload-shnyaga
     environment:
       - DATABASE_URI=${DATABASE_URI}
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
@@ -35,9 +33,15 @@ services:
     depends_on:
       postgresdb:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://payload:5777/health || exit 1"] 
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
   
   shnyaga:
-    image: node:22.13.1-alpine
+    image: faustdp/dock:shnyaga
     build:
       context: .
     ports:
@@ -69,7 +73,7 @@ services:
       - general
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5773/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://shnyaga:5773/health || exit 1"]
       interval: 60s
       timeout: 10s
       retries: 3
