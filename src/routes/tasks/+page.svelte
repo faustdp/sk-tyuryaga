@@ -9,6 +9,7 @@
   import { app, openModal } from '@state/app.svelte'
   import { tasks } from '@state/tasks.svelte'
   import { increaseCompletedTasks, setCigs, user } from '@state/user.svelte'
+  import { openTelegramLink } from '@telegram-apps/sdk'
   import { sortTasks, w8 } from '@utils'
   import { postCheckSubscription, postFarmCigs, postTaskStatus } from '@utils/api'
   import { iconsComponents, TASK_CODE, TASK_INVITE, taskStatus } from '@utils/const'
@@ -24,6 +25,16 @@
 
   function closeDrawer() {
     isDrawerOpened = false
+  }
+
+  function openLink(link: string) {
+    const fixedLink = link.startsWith('https') ? link : `https://${link}`
+    const tgLink = link.includes('t.me/')
+    if (tgLink) {
+      openTelegramLink(fixedLink)
+    } else {
+      window.open(fixedLink, '_blank')
+    }
   }
 
   let selectedTaskCheck: SocialItem | null = $state(null)
@@ -71,7 +82,9 @@
     }
 
     if (item.status === taskStatus.loading) {
-      if (item.link) return window.open(item.link, '_blank')
+      if (item.link) {
+        return openLink(item.link)
+      }
     }
 
     if (item.status === taskStatus.check) {
@@ -90,7 +103,9 @@
         }
       } else {
         item.status = item.type === TASK_CODE ? taskStatus.check : taskStatus.loading
-        window.open(item.link, '_blank')
+        if (item.link) {
+          openLink(item.link)
+        }
         if (item.type === TASK_CODE) {
           await postTaskStatus(item.id, taskStatus.check)
         } else if (item.delay) {

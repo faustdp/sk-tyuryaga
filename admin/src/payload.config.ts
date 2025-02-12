@@ -387,7 +387,8 @@ async function createUserTasks(payload: Payload, doc: Task, req: PayloadRequest)
 
 function isValidUrl(url: string): boolean {
   try {
-    new URL(url)
+    const fixedUrl = url.includes('://') ? url : `https://${url}`
+    new URL(fixedUrl)
     return true
   } catch {
     return false

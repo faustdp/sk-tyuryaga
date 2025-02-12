@@ -30,7 +30,7 @@ export const siteUrl = process.env.SITE_URL!
 //   process.env.REDIS_URL ||
 //   `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
 export const dbUrl = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
-export const serverId = crypto.randomBytes(5).toString('hex')
+export const serverId = process.env.SERVER_ID || crypto.randomBytes(5).toString('hex')
 export const sseClients = new Map<string, { [key: string]: Response }>()
 export const w8 = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 // export const sources = {
@@ -74,33 +74,22 @@ export async function setupBot() {
     process.exit(1)
   }
 
-  bot.on('message', async (ctx) => {
-    console.log('config98', ctx.msg.text, ctx.update.message.from)
-    try {
-      handleBotStart(ctx.update.message.from.id)
-    } catch (error) {
-      console.log(error)
+  if (process.env.NODE_ENV !== 'production') {
+    if (!bot.isRunning()) {
+      bot.start()
     }
-  })
-
-  if (!bot.isRunning()) {
-    bot.start()
   }
-  // try {
-  //   // await bot.telegram.deleteWebhook({ drop_pending_updates: true })
-  //   const webhook = await bot.telegram.getWebhookInfo()
-  //   if (webhook.url !== '' && webhook.url === `${siteUrl}${apiPath}${botPath}`) return
 
-  //   await bot.launch({
-  //     webhook: {
-  //       domain: siteUrl,
-  //       path: `${apiPath}${botPath}`,
-  //       secretToken,
-  //     },
-  //   })
-  // } catch (err) {
-  //   console.error('Error setting Telegram Bot WebHook:', err)
-  // }
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const webhook = await bot.api.getWebhookInfo()
+      const botUrl = `${siteUrl}${apiPaths.apiPath}${apiPaths.botPath}`
+      if (webhook.url !== '' && webhook.url === botUrl) return
+      await bot.api.setWebhook(botUrl, { secret_token: secretToken })
+    } catch (error) {
+      console.error('Error setting Telegram Bot WebHook:', error)
+    }
+  }
 }
 
 // export function escapeMarkdown(text: string) {

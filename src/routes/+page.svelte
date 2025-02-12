@@ -34,7 +34,9 @@
     {/if}
   {/each}
   <Farming />
-  <Steam />
+  {#if user.level > 0 || user.bonuses.includes(3)}
+    <Steam />
+  {/if}
 </main>
 
 <Wallet />

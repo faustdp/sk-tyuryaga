@@ -11,7 +11,7 @@ services:
       - pgdata2:/var/lib/postgresql/data
     networks:
       - general
-    restart: always
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 50s
@@ -29,12 +29,12 @@ services:
       - "5777"
     networks:
       - general
-    restart: always
+    restart: unless-stopped
     depends_on:
       postgresdb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://payload:5777/health || exit 1"] 
+      test: ["CMD-SHELL", "curl -f http://payload:5777/api/health || exit 1"] 
       interval: 30s
       timeout: 10s
       retries: 5
@@ -44,8 +44,6 @@ services:
     image: faustdp/dock:shnyaga
     build:
       context: .
-    ports:
-      - "5773:5773"
     expose:
       - "5773"
     depends_on:
@@ -69,9 +67,47 @@ services:
       - PUBLIC_NODE_ENV=${PUBLIC_NODE_ENV}
       - PUBLIC_BUGSNAG_KEY=${PUBLIC_BUGSNAG_KEY}
       - BUGSNAG_KEY_NODE=${BUGSNAG_KEY_NODE}
+      - SERVER_ID=first
     networks:
       - general
-    restart: always
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://shnyaga:5773/health || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+  shnyagatwo:
+    image: faustdp/dock:shnyaga
+    build:
+      context: .
+    expose:
+      - "5773"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - SITE_URL=${SITE_URL}
+      - SETUP_SECRET=${SETUP_SECRET}
+      - PUBLIC_SITE_URL=${PUBLIC_SITE_URL}
+      - PUBLIC_TEST_URL=${PUBLIC_TEST_URL}
+      - PUBLIC_SITE_PORT=${PUBLIC_SITE_PORT}
+      - PUBLIC_BOT_NAME=${PUBLIC_BOT_NAME}
+      - PUBLIC_BOT_APPNAME=${PUBLIC_BOT_APPNAME}
+      - PUBLIC_NODE_ENV=${PUBLIC_NODE_ENV}
+      - PUBLIC_BUGSNAG_KEY=${PUBLIC_BUGSNAG_KEY}
+      - BUGSNAG_KEY_NODE=${BUGSNAG_KEY_NODE}
+      - SERVER_ID=second
+    networks:
+      - general
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://shnyaga:5773/health || exit 1"]
       interval: 60s
@@ -84,25 +120,3 @@ volumes:
 networks:
   general:
     driver: bridge
-
-  # redis:
-  #   image: redis:7.2.7-alpine3.21
-  #   ports:
-  #     - "6377:6379"
-  #   networks:
-  #     - general
-  #   restart: always
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 50s
-  #     timeout: 10s
-  #     retries: 5
-
-  # build:
-  #   context: ./admin
-  #   - ./admin/node_modules:/home/node/app/node_modules
-
-  # - BUGSNAG_KEY_NODE=${BUGSNAG_KEY_NODE}
-  # - PUBLIC_GTM_ID=${PUBLIC_GTM_ID}
-  # - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
-  # - REDIS_URL=redis://${REDIS_USER}:${REDIS_PASSWORD}@redis:${REDIS_PORT}

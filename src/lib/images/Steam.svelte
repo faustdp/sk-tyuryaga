@@ -6,6 +6,7 @@
   import { keyframes } from './steamKeyframes'
 
   const animations: Animation[] = []
+  let mounted = false
 
   const applyAnimations = () => {
     const childs = document.getElementById('steam')?.children
@@ -60,6 +61,15 @@
 
   $effect(() => {
     const farm = user.farm
+    if (!mounted) {
+      mounted = true
+      if (farm === FARMING) {
+        animations.forEach((anim) => {
+          anim.playbackRate = 1
+        })
+      }
+      return
+    }
     if (farm === CLAIMED || animations.length === 0) return
     let interval: NodeJS.Timeout
     if (farm === FARMING) {

@@ -2,7 +2,7 @@ import { type Request, type Response } from 'express'
 import { InlineKeyboard } from 'grammy'
 import { type Message, type Update } from 'grammy/types'
 
-import { bot, Bugsnag, handleBotStart } from './config' //Bugsnag
+import { bot, Bugsnag, handleBotStart } from './config'
 
 async function handleMessage(msg: Message) {
   if (!msg.text) return

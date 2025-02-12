@@ -55,6 +55,7 @@
   $effect(() => {
     if (!app.isModalOpened) {
       prev = -1
+      current = -1
     }
   })
 
@@ -94,14 +95,14 @@
         </Carousel.Item>
       {/each}
     </Carousel.Content>
-    {#if isLocked && prev >= 0}
+    {#if isLocked}
       <div
-        transition:fade={{ duration: 240, easing: sineInOut }}
+        transition:fade={{ duration: prev >= 0 ? 240 : 0, easing: sineInOut }}
         class="pointer-events-none fixed left-0 top-0 z-30 size-full select-none rounded-xl bg-black opacity-30">
       </div>
       <div
-        in:fade={{ duration: 330, easing: sineInOut }}
-        out:fly={{ duration: 240, x: '150', easing: sineInOut }}
+        in:fade={{ duration: prev >= 0 ? 330 : 0, easing: sineInOut }}
+        out:fly={{ duration: prev >= 0 ? 240 : 0, x: '150', easing: sineInOut }}
         class="pointer-events-none absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 select-none">
         <Lock />
       </div>
