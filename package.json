@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite dev --open",
     "build": "vite build",
+    "build:deployed": "vite build --mode deployed",
     "build:watch": "vite build --watch",
     "build:server": "node esbuild.mjs",
     "preview": "vite preview --open --port 5773",

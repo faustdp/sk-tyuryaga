@@ -99,6 +99,7 @@
       'query_id=AAGQoqw0AAAAAJCirDTR49X6&user=%7B%22id%22%3A883729040%2C%22first_name%22%3A%22Denis%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22paskodenis%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPZp_j8q1EwiqyrZYJ_D1D9aqUwujRQ5FHKWz4i20l6M.svg%22%7D&auth_date=1733681189&signature=VJ959-6RmChdCsoTU7qwutF-rIEvClKvwV4amcdYeTbgSseO_CAsLbKmZVKrOArFwhYP0aUlfZoU6Rl_V_kWAA&hash=c57aaccbc063e5f40364e362ba27129ab0043015b9f0b7431a66a6abb3cd8559'
     if (!isTG) {
       // return setError(data.errors.telegram_error)
+      //TODO: items page images shift
     }
 
     let params

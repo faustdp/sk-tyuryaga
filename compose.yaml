@@ -11,7 +11,7 @@ services:
       - pgdata2:/var/lib/postgresql/data
     networks:
       - general
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 50s
@@ -29,7 +29,7 @@ services:
       - "5777"
     networks:
       - general
-    restart: unless-stopped
+    restart: always
     depends_on:
       postgresdb:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
       - SERVER_ID=first
     networks:
       - general
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://shnyaga:5773/health || exit 1"]
       interval: 60s
@@ -107,7 +107,7 @@ services:
       - SERVER_ID=second
     networks:
       - general
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://shnyaga:5773/health || exit 1"]
       interval: 60s
