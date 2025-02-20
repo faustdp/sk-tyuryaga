@@ -30,6 +30,7 @@
       <img
         src={getImgUrl(idx, user.selected_images[idx] < 0 ? 0 : user.selected_images[idx])}
         width="100"
+        height="100"
         alt="Text"
         class="relative z-10 h-full" />
     </picture>

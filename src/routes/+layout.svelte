@@ -7,7 +7,7 @@
   import ProgressBar from '@components/ProgressBar.svelte'
   import CheckSuccess from '@icons/checkSuccess.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
-  import { app, setError, setIsLoaded } from '@state/app.svelte'
+  import { app, setError, setIsLoaded, setNow } from '@state/app.svelte'
   import { tasks } from '@state/tasks.svelte'
   import {
     setBaseFarm,
@@ -95,11 +95,9 @@
 
   async function initTgApp() {
     const isTG = await isTMA()
-    const initData =
-      'query_id=AAGQoqw0AAAAAJCirDTR49X6&user=%7B%22id%22%3A883729040%2C%22first_name%22%3A%22Denis%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22paskodenis%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FPZp_j8q1EwiqyrZYJ_D1D9aqUwujRQ5FHKWz4i20l6M.svg%22%7D&auth_date=1733681189&signature=VJ959-6RmChdCsoTU7qwutF-rIEvClKvwV4amcdYeTbgSseO_CAsLbKmZVKrOArFwhYP0aUlfZoU6Rl_V_kWAA&hash=c57aaccbc063e5f40364e362ba27129ab0043015b9f0b7431a66a6abb3cd8559'
+
     if (!isTG) {
-      // return setError(data.errors.telegram_error)
-      //TODO: items page images shift
+      return setError(data.errors.telegram_error)
     }
 
     let params
@@ -112,7 +110,7 @@
       const response = await fetch(meUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ initData: params?.initDataRaw ? params.initDataRaw : initData }),
+        body: JSON.stringify({ initData: params?.initDataRaw }),
       })
 
       if (response.ok === false) {
@@ -151,7 +149,10 @@
         farmed_amount,
         farmed_time,
         tasks: fetchedTasks,
+        now,
       } = result.userData
+
+      setNow(now)
 
       let tasks_completed = 0
       if (fetchedTasks) {
@@ -194,7 +195,6 @@
 
       if (end_time) {
         const value = new Date(end_time).getTime()
-        const now = Date.now()
         setEndTime(value, Number(farmed_time), Number(farmed_amount))
         setFarm(value > now ? FARMING : FARMED)
       }

@@ -2,7 +2,8 @@
   import Cigarette from '@icons/cigarette.svg?component'
   import cigarette from '@icons/cigarette.svg?url'
   import FarmBtn from '@icons/FarmBtn.svelte'
-  import { addBonus, setCigs, setEndTime, setFarm, user } from '@state/user.svelte'
+  import { app } from '@state/app.svelte'
+  import { setCigs, setEndTime, setFarm, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
   import { postEndTime, postFarmCigs } from '@utils/api'
   import { CLAIMED, FARMED, FARMING, MINUTE, SECOND } from '@utils/const'
@@ -15,7 +16,7 @@
 
   function getProgress(time: number) {
     if (time === 0) return 1
-    const now = Date.now()
+    const now = app.now
     if (now > time) {
       if (user.farm === FARMING) {
         setFarm(FARMED)
@@ -25,14 +26,13 @@
     return Math.max(0, (time - now) / user.current_farm_time)
   }
 
-  let prevProgress = getProgress(user.end_time)
-  let wasFarming = user.end_time !== 0 && prevProgress !== 0
-
   let showConfetti = $state(false)
   let time = $state('')
 
   let timeInterval: NodeJS.Timeout
 
+  let prevProgress = getProgress(user.end_time)
+  let wasFarming = user.end_time !== 0 && prevProgress !== 0
   const progress = new Tween(prevProgress, {
     duration: () =>
       user.farm !== FARMING ? 200 : wasFarming ? prevProgress * user.current_farm_time : user.current_farm_time,
@@ -40,6 +40,7 @@
   })
 
   function startInterval() {
+    if (!progress) return
     progress.target = 0
     time = formatTime(progress.current * user.current_farm_time)
     timeInterval = setInterval(() => {
@@ -78,7 +79,7 @@
     if (user.farm === FARMING) return
     if (user.farm === CLAIMED) {
       showConfetti = false
-      const now = Date.now()
+      const now = app.now
       const time = now + user.farm_time * MINUTE
       user.current_farm_amount = user.farm_time * user.farm_amount
       user.current_farm_time = user.farm_time * MINUTE
@@ -139,17 +140,6 @@
   class="farming-btn fixed left-1/2 z-30
     mx-auto flex h-14 w-full max-w-xs -translate-x-1/2 {isActive ? 'scale-95' : 'scale-100'} items-center
     justify-center gap-x-4 rounded-xl transition-transform">
-  <button class="absolute top-0 -mt-40 ml-5" onclick={() => addBonus(5, 0)}>+time bonus</button>
-  <button class="absolute top-10 -mt-40 ml-5" onclick={() => addBonus(1, 0)}>+amount bonus</button>
-  <button
-    class="absolute top-20 -mt-40 ml-5"
-    onclick={() => {
-      for (let i = 0; i < 9; i++) {
-        addBonus(i as BonusIndexes, 0)
-      }
-    }}>
-    +all bonuses
-  </button>
   <FarmBtn progress={progress.current} />
   <button
     class="flex size-full items-center justify-center gap-x-2 text-xl outline-none"

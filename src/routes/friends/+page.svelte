@@ -6,12 +6,12 @@
   import FriendsAmount from '@icons/friendsAmount.svg?component'
   import Inmates from '@icons/inmates.svg?component'
   import WalletBtn from '@icons/WalletBtn.svelte'
+  import { app } from '@state/app.svelte'
   import { setAmountFriends, setCigs, setClaimFriends, setRefCigs, user } from '@state/user.svelte'
   import { formatTime } from '@utils'
   import { postClaimFriends } from '@utils/api'
   import { DAY, SECOND } from '@utils/const'
   import { onDestroy, untrack } from 'svelte'
-  import { SvelteDate } from 'svelte/reactivity'
   import { Confetti } from 'svelte-confetti'
 
   import data from '@/messages.json'
@@ -19,25 +19,15 @@
   let { data: pageData } = $props()
 
   let confettiTO: NodeJS.Timeout
-  let date = new SvelteDate()
   let isDrawerOpened = $state(false)
   let showConfetti = $state(false)
+  let interval: NodeJS.Timeout
 
   function closeDrawer() {
     isDrawerOpened = false
   }
 
-  $effect(() => {
-    const interval = setInterval(() => {
-      date.setTime(Date.now())
-    }, SECOND)
-
-    return () => {
-      clearInterval(interval)
-    }
-  })
-
-  let isReady = $derived(user.claim_friends - date.getTime() <= 0)
+  let isReady = $derived(user.claim_friends - app.now <= 0)
 
   $effect(() => {
     if (!pageData.friends?.length) return
@@ -55,7 +45,7 @@
 
   async function handleClick() {
     if (!isReady) return
-    const time = DAY + date.getTime()
+    const time = DAY + app.now
     const friendsCigs = user.amount_friends
     const result = await postClaimFriends(new Date(time).toISOString(), friendsCigs)
     if (result?.error) return
@@ -77,6 +67,7 @@
 
   onDestroy(() => {
     clearTimeout(confettiTO)
+    clearInterval(interval)
   })
 </script>
 
@@ -125,7 +116,7 @@
           {#if isReady}
             {data.take}
           {:else}
-            {data.friends_take} {formatTime(user.claim_friends - date.getTime(), true)}
+            {data.friends_take} {formatTime(user.claim_friends - app.now, true)}
           {/if}
         </span>
       </button>

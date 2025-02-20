@@ -122,8 +122,6 @@ if (process.env.NODE_ENV === 'production') {
 
 setupBot()
 
-// app.use(webhookCallback(bot, "express")) webhookcb from grammy
-
 let isClosing = false
 
 async function shutdown() {

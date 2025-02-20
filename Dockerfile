@@ -18,4 +18,5 @@ COPY --from=builder /app/build ./build
 COPY --from=builder /app/index.mjs ./
 RUN chown -R nextjs:nodejs /app
 USER nextjs
+EXPOSE 5773
 CMD ["node", "index.mjs"]

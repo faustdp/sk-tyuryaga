@@ -1,4 +1,4 @@
-import { TIME } from '@utils/const'
+import { SECOND, TIME } from '@utils/const'
 
 interface State {
   isLoading: boolean
@@ -7,6 +7,7 @@ interface State {
   isModalOpened: boolean
   activeShopTab: BoostValue
   error: null | string
+  now: number
 }
 
 function appStore() {
@@ -17,7 +18,10 @@ function appStore() {
     isModalOpened: false,
     activeShopTab: TIME,
     error: null,
+    now: Date.now(),
   })
+
+  let interval: NodeJS.Timeout
 
   function setIsLoaded() {
     state.isLoading = false
@@ -55,6 +59,20 @@ function appStore() {
     state.isModalOpened = false
   }
 
+  function startInterval() {
+    interval = setInterval(() => {
+      state.now += SECOND
+    }, SECOND)
+  }
+
+  function setNow(date: number) {
+    clearInterval(interval)
+    state.now = date
+    startInterval()
+  }
+
+  startInterval()
+
   return {
     get app() {
       return state
@@ -68,6 +86,7 @@ function appStore() {
     setActiveTab,
     openModal,
     closeModal,
+    setNow,
   }
 }
 
@@ -82,4 +101,5 @@ export const {
   setActiveTab,
   openModal,
   closeModal,
+  setNow,
 } = appStore()

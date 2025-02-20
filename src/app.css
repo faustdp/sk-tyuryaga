@@ -358,7 +358,6 @@ button:focus:not(:focus-visible) {
 .img-4 {
   left: calc(50% + 98px);
   top: calc(50% - 45px);
-  /* transform: rotateY(180deg); */
 }
 .img-5 {
   left: calc(50% + 82px);
@@ -385,7 +384,7 @@ button:focus:not(:focus-visible) {
 }
 
 .farming-btn {
-  bottom: calc(50% - ((min(var(--height-limit), var(--screen)) / 2) - 160px));
+  bottom: calc(50% - ((min(var(--height-limit), var(--screen)) / 2) - 150px));
 }
 
 .stats {
@@ -420,6 +419,9 @@ button:focus:not(:focus-visible) {
   .img-7 {
     transform: rotateY(6deg) rotateZ(6deg);
     left: calc(50% - 182px);
+  }
+  .img-2 {
+    left: calc(50% - 185px);
   }
 }
 

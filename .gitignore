@@ -23,4 +23,3 @@ extensions/
 .next/
 index.mjs
 .dockerignore
-admin/
